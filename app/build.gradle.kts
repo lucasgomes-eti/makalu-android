@@ -45,6 +45,9 @@ android {
 }
 
 dependencies {
+    //Project
+    implementation(project(":shared"))
+
     // Android
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
