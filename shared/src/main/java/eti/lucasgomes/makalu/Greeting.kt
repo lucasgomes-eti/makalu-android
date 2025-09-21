@@ -1,5 +1,5 @@
 package eti.lucasgomes.makalu
 
 object Greeting {
-    const val name = "Shared Package"
+    const val NAME = "Hello from shared module"
 }
