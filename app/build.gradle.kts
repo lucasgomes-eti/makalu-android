@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 kotlin {
@@ -48,6 +49,7 @@ dependencies {
     //Project
     implementation(project(":shared"))
     implementation(project(":home"))
+    implementation(project(":auth"))
 
     // Android
     implementation(libs.androidx.core.ktx)
@@ -57,6 +59,10 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
+    implementation(libs.androidx.compose.navigation)
+
+    // DI
+    implementation(libs.koin.androidx.compose)
 
     // Test
     testImplementation(libs.junit)

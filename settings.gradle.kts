@@ -23,3 +23,4 @@ rootProject.name = "Makalu"
 include(":app")
 include(":shared")
 include(":home")
+include(":auth")
