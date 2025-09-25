@@ -1,0 +1,34 @@
+package eti.lucasgomes.makalu.ui.appScaffold
+
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
+import eti.lucasgomes.makalu.features.auth.login.LoginEntry
+import eti.lucasgomes.makalu.features.auth.registration.RegistrationEntry
+import eti.lucasgomes.makalu.features.home.HomeEntry
+import eti.lucasgomes.makalu.shared.navigation.Destination
+import eti.lucasgomes.makalu.shared.navigation.Navigator
+
+@Composable
+fun NavigationGraph(
+    concreteNavigator: NavHostController,
+    abstractNavigator: Navigator,
+    innerPadding: PaddingValues
+) {
+    NavHost(
+        navController = concreteNavigator,
+        startDestination = abstractNavigator.startDestination
+    ) {
+        navigation<Destination.Graph.Auth>(startDestination = Destination.Screen.Login) {
+            composable<Destination.Screen.Login> { LoginEntry(innerPadding) }
+            composable<Destination.Screen.Registration> { RegistrationEntry(innerPadding) }
+        }
+
+        navigation<Destination.Graph.Home>(startDestination = Destination.Screen.Home) {
+            composable<Destination.Screen.Home> { HomeEntry(innerPadding) }
+        }
+    }
+}
