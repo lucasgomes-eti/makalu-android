@@ -41,6 +41,7 @@ android {
 dependencies {
     //Project
     implementation(project(":shared"))
+    implementation(project(":components"))
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))

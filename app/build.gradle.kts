@@ -50,6 +50,7 @@ dependencies {
     implementation(project(":shared"))
     implementation(project(":home"))
     implementation(project(":auth"))
+    implementation(project(":components"))
 
     // Android
     implementation(libs.androidx.core.ktx)

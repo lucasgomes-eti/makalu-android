@@ -1,7 +1,6 @@
-package eti.lucasgomes.makalu
+package eti.lucasgomes.makalu.navigation
 
 import androidx.navigation.NavOptionsBuilder
-import eti.lucasgomes.makalu.navigation.NavOptions
 
 fun bindNavigationOptions(navOptions: NavOptions?): NavOptionsBuilder.() -> Unit {
     return {
