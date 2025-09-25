@@ -2,8 +2,9 @@ package eti.lucasgomes.makalu
 
 import android.app.Application
 import eti.lucasgomes.makalu.di.appModule
-import eti.lucasgomes.makalu.di.authModule
-import eti.lucasgomes.makalu.di.homeModule
+import eti.lucasgomes.makalu.features.auth.di.authModule
+import eti.lucasgomes.makalu.features.home.di.homeModule
+import eti.lucasgomes.makalu.shared.sharedModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin

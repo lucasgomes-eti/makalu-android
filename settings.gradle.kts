@@ -22,6 +22,6 @@ dependencyResolutionManagement {
 rootProject.name = "Makalu"
 include(":app")
 include(":shared")
-include(":home")
-include(":auth")
+include(":features:home")
+include(":features:auth")
 include(":components")

@@ -14,7 +14,7 @@ kotlin {
 }
 
 android {
-    namespace = "eti.lucasgomes.makalu"
+    namespace = "eti.lucasgomes.makalu.components"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

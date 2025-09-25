@@ -48,9 +48,9 @@ android {
 dependencies {
     //Project
     implementation(project(":shared"))
-    implementation(project(":home"))
-    implementation(project(":auth"))
     implementation(project(":components"))
+    implementation(project(":features:auth"))
+    implementation(project(":features:home"))
 
     // Android
     implementation(libs.androidx.core.ktx)
