@@ -2,8 +2,10 @@ package eti.lucasgomes.makalu
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.mutableStateOf
 
-class BottomNavigationBar(val isBottomBarVisible: MutableState<Boolean>) {
+class BottomBarUiController {
+    val isBottomBarVisible: MutableState<Boolean> = mutableStateOf(true)
 
     /** Default state is 'visible'**/
     fun show() {
@@ -16,6 +18,6 @@ class BottomNavigationBar(val isBottomBarVisible: MutableState<Boolean>) {
     }
 }
 
-val LocalBottomNavigationBar = compositionLocalOf<BottomNavigationBar> {
-    error("No BottomNavigationBar provided")
+val LocalBottomBarUiController = compositionLocalOf<BottomBarUiController> {
+    error("No BottomBar provided")
 }

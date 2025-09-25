@@ -1,10 +1,11 @@
 package eti.lucasgomes.makalu
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun HomeEntry() {
+fun HomeEntry(innerPadding: PaddingValues) {
     val viewModel = koinViewModel<HomeViewModel>()
-    HomeScreen { viewModel.goToLogin() }
+    ScreenContainer(innerPadding) { HomeScreen { viewModel.goToLogin() } }
 }

@@ -1,4 +1,4 @@
-package eti.lucasgomes.makalu
+package eti.lucasgomes.makalu.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,24 +9,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun HomeScreen(onAction: () -> Unit) {
+internal fun LoginScreen(onHome: () -> Unit, onRegistration: () -> Unit) {
     Column(
-        Modifier
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+        Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(Greeting.NAME)
-        Text("Home")
-        Button(onClick = onAction) { Text("Go to login") }
+        Text("Login")
+        Button(onClick = onHome) { Text("Go to home") }
+        Button(onClick = onRegistration) { Text("Go to registration") }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun HomePreview() {
-    HomeScreen() {}
+private fun LoginPreview() {
+    LoginScreen({ }, {})
 }

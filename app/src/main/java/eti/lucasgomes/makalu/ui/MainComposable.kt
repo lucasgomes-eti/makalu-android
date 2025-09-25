@@ -1,21 +1,28 @@
 package eti.lucasgomes.makalu.ui
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.IntOffset
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -26,19 +33,23 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import eti.lucasgomes.makalu.BottomNavigationBar
+import eti.lucasgomes.makalu.BottomBarUiController
 import eti.lucasgomes.makalu.HomeEntry
-import eti.lucasgomes.makalu.LocalBottomNavigationBar
-import eti.lucasgomes.makalu.LoginEntry
+import eti.lucasgomes.makalu.LocalBottomBarUiController
+import eti.lucasgomes.makalu.LocalTopBarUiController
+import eti.lucasgomes.makalu.TopBarUiController
+import eti.lucasgomes.makalu.login.LoginEntry
 import eti.lucasgomes.makalu.navigation.BottomNavigationItem
 import eti.lucasgomes.makalu.navigation.Destination
 import eti.lucasgomes.makalu.navigation.NavigationAction
 import eti.lucasgomes.makalu.navigation.Navigator
 import eti.lucasgomes.makalu.navigation.ObserveAsEvents
 import eti.lucasgomes.makalu.navigation.bindNavigationOptions
+import eti.lucasgomes.makalu.registration.RegistrationEntry
 import eti.lucasgomes.makalu.ui.theme.MakaluTheme
 import org.koin.compose.koinInject
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainComposable() {
     MakaluTheme {
@@ -57,17 +68,54 @@ fun MainComposable() {
         }
 
         val bottomNavigationItems = listOf(
-            BottomNavigationItem("Home", Destination.HomeScreen, Icons.Default.Home),
+            BottomNavigationItem("Home", Destination.Screen.Home, Icons.Default.Home),
         )
 
-        val bottomNavigationBar = remember {
-            BottomNavigationBar(isBottomBarVisible = mutableStateOf(true))
-        }
+        val bottomBarUiController = remember { BottomBarUiController() }
+        val topBarUiController = remember { TopBarUiController() }
 
         Scaffold(
+            topBar = {
+                AnimatedVisibility(
+                    visible = topBarUiController.isTopBarVisible.value,
+                    enter = fadeIn() + slideIn { IntOffset(0, -it.height) },
+                    exit = slideOut { IntOffset(0, -it.height) } + fadeOut()
+                ) {
+                    TopAppBar(
+                        title = {
+                            AnimatedContent(
+                                targetState = topBarUiController.title.value
+                            ) { value ->
+                                Text(value)
+                            }
+                        },
+                        actions = {
+                            topBarUiController.actions.forEach { action ->
+                                with(action) {
+                                    IconButton(onClick = onClick) {
+                                        Icon(icon, contentDescription)
+                                    }
+                                }
+
+                            }
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = { navController.navigateUp() }) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                            }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = colorScheme.surfaceContainer,
+                            titleContentColor = colorScheme.contentColorFor(colorScheme.surfaceContainer),
+                            actionIconContentColor = colorScheme.contentColorFor(colorScheme.surfaceContainer),
+                            navigationIconContentColor = colorScheme.contentColorFor(colorScheme.surfaceContainer),
+                        )
+                    )
+                }
+            },
             bottomBar = {
                 AnimatedVisibility(
-                    visible = bottomNavigationBar.isBottomBarVisible.value,
+                    visible = bottomBarUiController.isBottomBarVisible.value,
                     enter = fadeIn() + slideIn { IntOffset(0, it.height) },
                     exit = slideOut { IntOffset(0, it.height) } + fadeOut()
                 ) {
@@ -102,19 +150,21 @@ fun MainComposable() {
                 }
             }
         ) { innerPadding ->
-            CompositionLocalProvider(LocalBottomNavigationBar provides bottomNavigationBar) {
+            CompositionLocalProvider(
+                LocalBottomBarUiController provides bottomBarUiController,
+                LocalTopBarUiController provides topBarUiController
+            ) {
                 NavHost(
                     navController = navController,
                     startDestination = navigator.startDestination
                 ) {
-
-                    navigation<Destination.AuthGraph>(startDestination = Destination.LoginScreen) {
-                        composable<Destination.LoginScreen> { LoginEntry(innerPadding) }
+                    navigation<Destination.Graph.Auth>(startDestination = Destination.Screen.Login) {
+                        composable<Destination.Screen.Login> { LoginEntry(innerPadding) }
+                        composable<Destination.Screen.Registration> { RegistrationEntry(innerPadding) }
                     }
 
-                    navigation<Destination.HomeGraph>(startDestination = Destination.HomeScreen) {
-
-                        composable<Destination.HomeScreen> { HomeEntry() }
+                    navigation<Destination.Graph.Home>(startDestination = Destination.Screen.Home) {
+                        composable<Destination.Screen.Home> { HomeEntry(innerPadding) }
                     }
                 }
             }

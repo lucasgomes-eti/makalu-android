@@ -1,4 +1,4 @@
-package eti.lucasgomes.makalu
+package eti.lucasgomes.makalu.registration
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,18 +8,13 @@ import eti.lucasgomes.makalu.navigation.Navigator
 import eti.lucasgomes.makalu.navigation.PopUpToOptions
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private val navigator: Navigator) : ViewModel() {
+class RegistrationViewModel(private val navigator: Navigator) : ViewModel() {
 
-    fun goToLogin() {
+    fun goToHome() {
         viewModelScope.launch {
             navigator.navigate(
-                Destination.Graph.Auth,
-                NavOptions(
-                    popUpTo = PopUpToOptions(
-                        destination = Destination.Graph.Home,
-                        inclusive = true
-                    )
-                )
+                Destination.Graph.Home,
+                NavOptions(popUpTo = PopUpToOptions(Destination.Graph.Auth, inclusive = true))
             )
         }
     }

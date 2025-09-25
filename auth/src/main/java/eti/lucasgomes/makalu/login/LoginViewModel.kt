@@ -1,4 +1,4 @@
-package eti.lucasgomes.makalu
+package eti.lucasgomes.makalu.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,9 +13,15 @@ class LoginViewModel(private val navigator: Navigator) : ViewModel() {
     fun goToHome() {
         viewModelScope.launch {
             navigator.navigate(
-                Destination.HomeGraph,
-                NavOptions(popUpTo = PopUpToOptions(Destination.AuthGraph, inclusive = true))
+                Destination.Graph.Home,
+                NavOptions(popUpTo = PopUpToOptions(Destination.Graph.Auth, inclusive = true))
             )
+        }
+    }
+
+    fun goToRegistration() {
+        viewModelScope.launch {
+            navigator.navigate(Destination.Screen.Registration)
         }
     }
 }

@@ -1,0 +1,29 @@
+package eti.lucasgomes.makalu
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
+
+@Composable
+fun ScreenContainer(
+    innerPadding: PaddingValues,
+    hasBottomBar: Boolean = true,
+    hasTopBar: Boolean = false,
+    content: @Composable () -> Unit
+) {
+    val bottomBar = LocalBottomBarUiController.current
+    val topBar = LocalTopBarUiController.current
+    LaunchedEffect(Unit) {
+        if (hasBottomBar) bottomBar.show() else bottomBar.hide()
+        if (hasTopBar) topBar.show() else topBar.hide()
+    }
+    Box(
+        Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+    ) { content() }
+}
