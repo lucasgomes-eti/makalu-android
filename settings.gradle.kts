@@ -19,6 +19,13 @@ dependencyResolutionManagement {
     }
 }
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 rootProject.name = "Makalu"
 include(":app")
- 
+include(":shared")
+include(":features:home")
+include(":features:auth")
+include(":components")
+include(":features:orders")
+include(":features:profile")
