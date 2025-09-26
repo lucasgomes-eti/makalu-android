@@ -21,5 +21,11 @@ sealed interface Destination {
 
         @Serializable
         data object Registration : Destination
+
+        @Serializable
+        data object Orders : Destination
+
+        @Serializable
+        data object Profile : Destination
     }
 }

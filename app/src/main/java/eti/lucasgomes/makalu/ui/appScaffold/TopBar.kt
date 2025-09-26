@@ -6,8 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -18,7 +16,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
+import eti.lucasgomes.makalu.R
 import eti.lucasgomes.makalu.components.TopBarUiController
 import eti.lucasgomes.makalu.shared.navigation.Navigator
 import kotlinx.coroutines.launch
@@ -54,7 +54,7 @@ fun TopBar(topBarUiController: TopBarUiController) {
             },
             navigationIcon = {
                 IconButton(onClick = { scope.launch { navigator.navigateUp() } }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                    Icon(painterResource(R.drawable.arrow_back), "Back")
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(

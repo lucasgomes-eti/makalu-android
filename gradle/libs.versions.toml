@@ -10,10 +10,10 @@ coreKtx = "1.17.0"
 junit = "4.13.2"
 lifecycleRuntimeKtx = "2.9.4"
 activityCompose = "1.11.0"
-composeBom = "2025.09.00"
+composeBom = "2025.09.01"
 kotlinxCoroutinesCore = "1.10.2"
 kotlinxSerialization = "1.9.0"
-navigationCompose = "2.9.4"
+navigationCompose = "2.9.5"
 koin = "4.1.1"
 
 [libraries]

@@ -5,20 +5,20 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import eti.lucasgomes.makalu.R
 import eti.lucasgomes.makalu.components.BottomBarUiController
 import eti.lucasgomes.makalu.navigation.BottomNavigationItem
 import eti.lucasgomes.makalu.shared.navigation.Destination
@@ -29,7 +29,27 @@ fun BottomBar(
     navHostController: NavHostController,
 ) {
     val bottomNavigationItems = listOf(
-        BottomNavigationItem("Home", Destination.Screen.Home, Icons.Default.Home, "Home"),
+        BottomNavigationItem(
+            name = "Home",
+            route = Destination.Screen.Home,
+            defaultIcon = painterResource(R.drawable.outline_home),
+            selectedIcon = painterResource(R.drawable.filled_home),
+            contentDescription = "Home"
+        ),
+        BottomNavigationItem(
+            name = "Orders",
+            route = Destination.Screen.Orders,
+            defaultIcon = painterResource(R.drawable.outline_receipt),
+            selectedIcon = painterResource(R.drawable.filled_receipt),
+            contentDescription = "Orders"
+        ),
+        BottomNavigationItem(
+            name = "Profile",
+            route = Destination.Screen.Profile,
+            defaultIcon = painterResource(R.drawable.outline_person),
+            selectedIcon = painterResource(R.drawable.filled_person),
+            contentDescription = "Profile"
+        ),
     )
 
     AnimatedVisibility(
@@ -41,12 +61,18 @@ fun BottomBar(
             val navBackStackEntry by navHostController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
             bottomNavigationItems.forEach { item ->
+                val selected = currentDestination?.hierarchy?.any { destination ->
+                    destination.hasRoute(item.route::class)
+                } == true
                 NavigationBarItem(
-                    icon = { Icon(item.icon, item.contentDescription) },
+                    icon = {
+                        Icon(
+                            if (selected) item.selectedIcon else item.defaultIcon,
+                            item.contentDescription
+                        )
+                    },
                     label = { Text(item.name) },
-                    selected = currentDestination?.hierarchy?.any { destination ->
-                        destination.hasRoute(item.route::class)
-                    } == true,
+                    selected = selected,
                     onClick = {
                         navHostController.navigate(item.route) {
                             // Pop up to the start destination of the graph to

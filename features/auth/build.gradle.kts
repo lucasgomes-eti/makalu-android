@@ -14,7 +14,7 @@ kotlin {
 }
 
 android {
-    namespace = "eti.lucasgomes.makalu"
+    namespace = "eti.lucasgomes.makalu.features.auth"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -40,8 +40,8 @@ android {
 
 dependencies {
     //Project
-    implementation(project(":shared"))
-    implementation(project(":components"))
+    implementation(projects.shared)
+    implementation(projects.components)
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))

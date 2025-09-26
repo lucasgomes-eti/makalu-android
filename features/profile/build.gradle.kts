@@ -14,7 +14,7 @@ kotlin {
 }
 
 android {
-    namespace = "eti.lucasgomes.makalu.components"
+    namespace = "eti.lucasgomes.makalu.features.profile"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -41,6 +41,7 @@ android {
 dependencies {
     //Project
     implementation(projects.shared)
+    implementation(projects.components)
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
