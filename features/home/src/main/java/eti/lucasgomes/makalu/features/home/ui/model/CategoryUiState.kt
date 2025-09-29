@@ -1,6 +1,6 @@
 package eti.lucasgomes.makalu.features.home.ui.model
 
-data class CategoryUiState(
+internal data class CategoryUiState(
     val label: String,
     val isSelected: Boolean,
 )

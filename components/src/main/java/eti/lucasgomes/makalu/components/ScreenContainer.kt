@@ -13,13 +13,16 @@ fun ScreenContainer(
     innerPadding: PaddingValues,
     hasBottomBar: Boolean = true,
     hasTopBar: Boolean = false,
+    hasFab: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val bottomBar = LocalBottomBarUiController.current
     val topBar = LocalTopBarUiController.current
+    val fab = LocalFabUiController.current
     LaunchedEffect(Unit) {
         if (hasBottomBar) bottomBar.show() else bottomBar.hide()
         if (hasTopBar) topBar.show() else topBar.hide()
+        if (hasFab) fab.show() else fab.hide()
     }
     Box(
         Modifier
