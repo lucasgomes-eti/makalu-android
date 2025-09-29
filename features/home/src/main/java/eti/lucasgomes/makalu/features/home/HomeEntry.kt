@@ -13,5 +13,5 @@ import org.koin.androidx.compose.koinViewModel
 fun HomeEntry(innerPadding: PaddingValues) {
     val viewModel = koinViewModel<HomeViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    ScreenContainer(innerPadding) { HomeScreen(uiState) }
+    ScreenContainer(innerPadding, hasFab = true) { HomeScreen(uiState, viewModel::onAction) }
 }

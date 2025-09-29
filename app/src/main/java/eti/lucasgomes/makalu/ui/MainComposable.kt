@@ -7,13 +7,16 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.rememberNavController
 import eti.lucasgomes.makalu.components.BottomBarUiController
+import eti.lucasgomes.makalu.components.FabUiController
 import eti.lucasgomes.makalu.components.LocalBottomBarUiController
+import eti.lucasgomes.makalu.components.LocalFabUiController
 import eti.lucasgomes.makalu.components.LocalTopBarUiController
 import eti.lucasgomes.makalu.components.TopBarUiController
 import eti.lucasgomes.makalu.navigation.ObserveAsEvents
 import eti.lucasgomes.makalu.navigation.bindNavigationEvents
 import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.ui.appScaffold.BottomBar
+import eti.lucasgomes.makalu.ui.appScaffold.FloatingActionButton
 import eti.lucasgomes.makalu.ui.appScaffold.NavigationGraph
 import eti.lucasgomes.makalu.ui.appScaffold.TopBar
 import eti.lucasgomes.makalu.ui.theme.MakaluTheme
@@ -33,14 +36,17 @@ fun MainComposable() {
 
         val bottomBarUiController = remember { BottomBarUiController() }
         val topBarUiController = remember { TopBarUiController() }
+        val fabUiController = remember { FabUiController() }
 
         Scaffold(
             topBar = { TopBar(topBarUiController) },
-            bottomBar = { BottomBar(bottomBarUiController, concreteNavigator) }
+            bottomBar = { BottomBar(bottomBarUiController, concreteNavigator) },
+            floatingActionButton = { FloatingActionButton(fabUiController) }
         ) { innerPadding ->
             CompositionLocalProvider(
                 LocalBottomBarUiController provides bottomBarUiController,
-                LocalTopBarUiController provides topBarUiController
+                LocalTopBarUiController provides topBarUiController,
+                LocalFabUiController provides fabUiController
             ) {
                 NavigationGraph(concreteNavigator, abstractNavigator, innerPadding)
             }

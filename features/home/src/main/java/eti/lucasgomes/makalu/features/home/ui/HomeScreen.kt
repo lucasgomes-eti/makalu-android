@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -21,14 +22,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import eti.lucasgomes.makalu.components.ConfigureFab
 import eti.lucasgomes.makalu.features.home.R
 import eti.lucasgomes.makalu.features.home.ui.components.StoreListItem
 import eti.lucasgomes.makalu.features.home.ui.model.CategoryUiState
+import eti.lucasgomes.makalu.features.home.ui.model.HomeAction
 import eti.lucasgomes.makalu.features.home.ui.model.HomeUiState
 import eti.lucasgomes.makalu.features.home.ui.model.StoreUiState
 
 @Composable
-internal fun HomeScreen(uiState: HomeUiState) {
+internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
+    ConfigureFab(icon = painterResource(R.drawable.search), contentDescription = "Search Store") { }
+    if (uiState.isAuthDialogVisible) {
+        RequireAuthDialog(
+            onDismissRequest = { onAction(HomeAction.AuthDialogDismissed) },
+            onConfirmation = { onAction(HomeAction.AuthClicked) }
+        )
+    }
     Column(
         Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -71,15 +81,38 @@ internal fun HomeScreen(uiState: HomeUiState) {
                 16.dp,
                 0.dp,
                 16.dp,
-                16.dp
+                79.dp
             ),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(uiState.stores) { store ->
-                StoreListItem(store)
+                StoreListItem(store) { onAction(HomeAction.StoreClicked) }
             }
         }
     }
+}
+
+@Composable
+private fun RequireAuthDialog(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+) {
+    AlertDialog(
+        icon = { Icon(painterResource(R.drawable.login), "Login Icon") },
+        title = { Text("Login Required") },
+        text = { Text("You must be logged in to order.") },
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            TextButton(onClick = onConfirmation) {
+                Text("Login")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text("Dismiss")
+            }
+        }
+    )
 }
 
 @Preview(showBackground = true)
@@ -102,5 +135,5 @@ private fun HomePreview() {
                 )
             )
         )
-    )
+    ) {}
 }

@@ -22,14 +22,14 @@ import coil3.compose.AsyncImage
 import eti.lucasgomes.makalu.features.home.ui.model.StoreUiState
 
 @Composable
-internal fun StoreListItem(store: StoreUiState) {
+internal fun StoreListItem(store: StoreUiState, onStoreClicked: () -> Unit) {
     Surface(
         modifier = Modifier.Companion
             .fillMaxWidth()
             .height(80.dp),
         border = BorderStroke(1.dp, colorScheme.outline),
         shape = RoundedCornerShape(12.dp),
-        onClick = {}
+        onClick = onStoreClicked
     ) {
         Row(
             modifier = Modifier.Companion.fillMaxWidth(),

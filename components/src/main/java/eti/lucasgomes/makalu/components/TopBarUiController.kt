@@ -10,7 +10,7 @@ class TopBarUiController {
     val isTopBarVisible: MutableState<Boolean> = mutableStateOf(false)
     val title: MutableState<String> = mutableStateOf("")
 
-    val actions: SnapshotStateList<TopBarAction> = mutableStateListOf<TopBarAction>()
+    val actions: SnapshotStateList<TopBarAction> = mutableStateListOf()
 
     /** Default state is 'hidden'**/
     fun show() {
