@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
@@ -22,11 +23,12 @@ import coil3.compose.AsyncImage
 import eti.lucasgomes.makalu.features.home.ui.model.StoreUiState
 
 @Composable
-internal fun StoreListItem(store: StoreUiState, onStoreClicked: () -> Unit) {
+internal fun LazyItemScope.StoreListItem(store: StoreUiState.Data, onStoreClicked: () -> Unit) {
     Surface(
         modifier = Modifier.Companion
             .fillMaxWidth()
-            .height(80.dp),
+            .height(80.dp)
+            .animateItem(),
         border = BorderStroke(1.dp, colorScheme.outline),
         shape = RoundedCornerShape(12.dp),
         onClick = onStoreClicked
