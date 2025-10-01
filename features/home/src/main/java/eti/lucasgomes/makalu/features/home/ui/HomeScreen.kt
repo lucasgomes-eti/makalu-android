@@ -2,7 +2,6 @@ package eti.lucasgomes.makalu.features.home.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -10,35 +9,39 @@ import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearWavyProgressIndicator
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.IndicatorBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import eti.lucasgomes.makalu.components.ConfigureFab
+import eti.lucasgomes.makalu.components.ExpressivePullToRefreshIndicator
 import eti.lucasgomes.makalu.components.ExpressiveTextButton
 import eti.lucasgomes.makalu.components.OnFirstComposition
 import eti.lucasgomes.makalu.features.home.R
@@ -75,13 +78,22 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
             horizontalArrangement = Arrangement.Absolute.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            ExpressiveTextButton(onClick = {}) {
-                AnimatedContent(
-                    targetState = uiState.address
-                ) { value ->
-                    Text(value)
+            ExpressiveTextButton(
+                onClick = {},
+                modifier = Modifier.widthIn(
+                    ButtonDefaults.MinWidth,
+                    with(LocalDensity.current) { LocalWindowInfo.current.containerSize.width.toDp() - ButtonDefaults.MinWidth - 32.dp }
+                )
+            ) {
+                Row(modifier = Modifier.width(IntrinsicSize.Max)) {
+                    AnimatedContent(
+                        modifier = Modifier.weight(1f),
+                        targetState = uiState.address
+                    ) { value ->
+                        Text(value, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    }
+                    Icon(painterResource(R.drawable.arrow_right), "Arrow Right")
                 }
-                Icon(painterResource(R.drawable.arrow_right), "Arrow Right")
             }
             FilledTonalIconButton(onClick = {}) {
                 Icon(painterResource(R.drawable.sort), "Sort")
@@ -129,33 +141,10 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
             state = pullToRefreshState,
             onRefresh = { onAction(HomeAction.RefreshStores) },
             indicator = {
-                IndicatorBox(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .align(Alignment.TopCenter),
-                    state = pullToRefreshState,
-                    isRefreshing = uiState.isStoresLoading,
-                    containerColor = PullToRefreshDefaults.loadingIndicatorContainerColor,
-                    elevation = 0.dp
-                ) {
-                    Crossfade(
-                        targetState = uiState.isStoresLoading,
-                    ) { refreshing ->
-                        if (refreshing) {
-                            LoadingIndicator(
-                                modifier = Modifier.size(38.dp),
-                                color = PullToRefreshDefaults.loadingIndicatorColor
-                            )
-                        } else {
-                            LoadingIndicator(
-                                modifier = Modifier.size(38.dp),
-                                progress = { pullToRefreshState.distanceFraction },
-                                color = PullToRefreshDefaults.loadingIndicatorColor
-                            )
-                        }
-                    }
-                }
-
+                ExpressivePullToRefreshIndicator(
+                    pullToRefreshState,
+                    uiState.isStoresLoading
+                )
             }
         ) {
             LazyColumn(
