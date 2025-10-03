@@ -31,11 +31,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -60,7 +66,10 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
     OnFirstComposition {
         onAction(HomeAction.InitialFetch)
     }
-    ConfigureFab(icon = painterResource(R.drawable.search), contentDescription = "Search Store") { }
+    ConfigureFab(
+        icon = painterResource(R.drawable.search),
+        contentDescription = stringResource(R.string.accessibility_search_store)
+    ) { }
     if (uiState.isAuthDialogVisible) {
         RequireAuthDialog(
             onDismissRequest = { onAction(HomeAction.AuthDialogDismissed) },
@@ -82,21 +91,38 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
                 onClick = {},
                 modifier = Modifier.widthIn(
                     ButtonDefaults.MinWidth,
-                    with(LocalDensity.current) { LocalWindowInfo.current.containerSize.width.toDp() - ButtonDefaults.MinWidth - 32.dp }
+                    with(LocalDensity.current) {
+                        LocalWindowInfo.current.containerSize.width.toDp() - ButtonDefaults.MinWidth - 32.dp
+                    }
                 )
             ) {
                 Row(modifier = Modifier.width(IntrinsicSize.Max)) {
+                    val loadingAddressText = stringResource(R.string.loading_address)
+                    var address by remember { mutableStateOf(uiState.address) }
+                    LaunchedEffect(uiState.isAddressLoading) {
+                        address = if (uiState.isAddressLoading) {
+                            loadingAddressText
+                        } else {
+                            uiState.address
+                        }
+                    }
                     AnimatedContent(
                         modifier = Modifier.weight(1f),
-                        targetState = uiState.address
+                        targetState = address
                     ) { value ->
                         Text(value, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
-                    Icon(painterResource(R.drawable.arrow_right), "Arrow Right")
+                    Icon(
+                        painterResource(R.drawable.arrow_right),
+                        stringResource(R.string.accessibility_arrow_right_icon)
+                    )
                 }
             }
             FilledTonalIconButton(onClick = {}) {
-                Icon(painterResource(R.drawable.sort), "Sort")
+                Icon(
+                    painterResource(R.drawable.sort),
+                    stringResource(R.string.accessibility_sort_icon)
+                )
             }
         }
         Column(Modifier.height(32.dp)) {

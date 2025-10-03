@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -30,25 +31,25 @@ fun BottomBar(
 ) {
     val bottomNavigationItems = listOf(
         BottomNavigationItem(
-            name = "Home",
+            name = stringResource(R.string.home),
             route = Destination.Screen.Home,
             defaultIcon = painterResource(R.drawable.outline_home),
             selectedIcon = painterResource(R.drawable.filled_home),
-            contentDescription = "Home"
+            contentDescription = stringResource(R.string.accessibility_home_icon)
         ),
         BottomNavigationItem(
-            name = "Orders",
+            name = stringResource(R.string.orders),
             route = Destination.Screen.Orders,
             defaultIcon = painterResource(R.drawable.outline_receipt),
             selectedIcon = painterResource(R.drawable.filled_receipt),
-            contentDescription = "Orders"
+            contentDescription = stringResource(R.string.accessibility_orders_icon)
         ),
         BottomNavigationItem(
-            name = "Profile",
+            name = stringResource(R.string.profile),
             route = Destination.Screen.Profile,
             defaultIcon = painterResource(R.drawable.outline_person),
             selectedIcon = painterResource(R.drawable.filled_person),
-            contentDescription = "Profile"
+            contentDescription = stringResource(R.string.accessibility_profile_icon)
         ),
     )
 

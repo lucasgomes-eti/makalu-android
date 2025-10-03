@@ -31,7 +31,7 @@ internal class HomeViewModel(private val navigator: Navigator) : ViewModel() {
     private fun onInitialFetch() = withScreenModelScope {
         _uiState.update { state ->
             state.copy(
-                address = "Loading Address...",
+                isAddressLoading = true,
                 isFiltersLoading = true,
                 isStoresLoading = true,
                 stores = listOf(StoreUiState.Loading)
@@ -39,7 +39,7 @@ internal class HomeViewModel(private val navigator: Navigator) : ViewModel() {
         }
         delay(1_000L)
         _uiState.update { state ->
-            state.copy(address = "4140 Parker Rd. Allentown")
+            state.copy(address = "4140 Parker Rd. Allentown", isAddressLoading = false)
         }
         delay(1_000L)
         _uiState.update { state ->
