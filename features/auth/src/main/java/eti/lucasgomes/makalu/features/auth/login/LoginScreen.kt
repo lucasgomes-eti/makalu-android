@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import eti.lucasgomes.makalu.components.ExpressiveButton
+import eti.lucasgomes.makalu.components.buttons.ExpressiveButton
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable

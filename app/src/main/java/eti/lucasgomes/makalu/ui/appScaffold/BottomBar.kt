@@ -20,7 +20,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import eti.lucasgomes.makalu.R
-import eti.lucasgomes.makalu.components.BottomBarUiController
+import eti.lucasgomes.makalu.components.appBars.BottomBarUiController
 import eti.lucasgomes.makalu.navigation.BottomNavigationItem
 import eti.lucasgomes.makalu.shared.navigation.Destination
 

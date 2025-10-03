@@ -46,10 +46,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import eti.lucasgomes.makalu.components.ConfigureFab
 import eti.lucasgomes.makalu.components.ExpressivePullToRefreshIndicator
-import eti.lucasgomes.makalu.components.ExpressiveTextButton
-import eti.lucasgomes.makalu.components.OnFirstComposition
+import eti.lucasgomes.makalu.components.buttons.ConfigureFab
+import eti.lucasgomes.makalu.components.buttons.ExpressiveTextButton
+import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 import eti.lucasgomes.makalu.features.home.R
 import eti.lucasgomes.makalu.features.home.ui.components.LoadingStoresListItem
 import eti.lucasgomes.makalu.features.home.ui.components.NoStoresListItem

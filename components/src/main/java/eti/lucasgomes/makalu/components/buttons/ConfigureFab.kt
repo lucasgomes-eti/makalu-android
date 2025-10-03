@@ -1,4 +1,4 @@
-package eti.lucasgomes.makalu.components
+package eti.lucasgomes.makalu.components.buttons
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

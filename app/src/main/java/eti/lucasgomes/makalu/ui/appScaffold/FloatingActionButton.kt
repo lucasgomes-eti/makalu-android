@@ -4,7 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import eti.lucasgomes.makalu.components.FabUiController
+import eti.lucasgomes.makalu.components.buttons.FabUiController
 
 @Composable
 fun FloatingActionButton(fabUiController: FabUiController) {
