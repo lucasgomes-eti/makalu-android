@@ -1,4 +1,4 @@
-package eti.lucasgomes.makalu.components
+package eti.lucasgomes.makalu.components.appBars
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import eti.lucasgomes.makalu.components.appBars.LocalBottomBarUiController
+import eti.lucasgomes.makalu.components.appBars.LocalTopBarUiController
+import eti.lucasgomes.makalu.components.buttons.LocalFabUiController
 
 @Composable
 fun ScreenContainer(

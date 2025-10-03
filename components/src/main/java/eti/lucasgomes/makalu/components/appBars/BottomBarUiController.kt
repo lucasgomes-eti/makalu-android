@@ -1,4 +1,4 @@
-package eti.lucasgomes.makalu.components
+package eti.lucasgomes.makalu.components.appBars
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.compositionLocalOf

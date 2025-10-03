@@ -19,7 +19,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import eti.lucasgomes.makalu.R
-import eti.lucasgomes.makalu.components.TopBarUiController
+import eti.lucasgomes.makalu.components.appBars.TopBarUiController
 import eti.lucasgomes.makalu.shared.navigation.Navigator
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
