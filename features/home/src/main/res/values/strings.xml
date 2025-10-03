@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_search_store">Search store icon</string>
+    <string name="accessibility_arrow_right_icon">Arrow right icon</string>
+    <string name="accessibility_sort_icon">Sort icon</string>
+    <string name="loading_stores_in_your_area">Loading stores in your area</string>
+    <string name="accessibility_store_image">Store image</string>
+    <string name="no_stores_found">No stores found</string>
+    <string name="accessibility_login_icon">Login icon</string>
+    <string name="login_required">Login required</string>
+    <string name="you_must_be_logged_in_to_order">You must be logged in to order.</string>
+    <string name="login">Login</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="loading_address">Loading Address…</string>
+</resources>

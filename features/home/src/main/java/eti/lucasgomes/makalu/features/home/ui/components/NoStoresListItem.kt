@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import eti.lucasgomes.makalu.features.home.R
 
@@ -25,11 +26,11 @@ internal fun LazyItemScope.NoStoresListItem() {
         Column {
             Icon(
                 painterResource(R.drawable.store),
-                contentDescription = "Store image",
+                contentDescription = stringResource(R.string.accessibility_store_image),
                 modifier = Modifier.Companion.size(128.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
-            Text("No stores found")
+            Text(stringResource(R.string.no_stores_found))
         }
     }
 }

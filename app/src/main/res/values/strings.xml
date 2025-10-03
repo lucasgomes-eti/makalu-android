@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Makalu</string>
+    <string name="home">Home</string>
+    <string name="orders">Orders</string>
+    <string name="accessibility_home_icon">Home icon</string>
+    <string name="accessibility_orders_icon">Orders icon</string>
+    <string name="profile">Profile</string>
+    <string name="accessibility_profile_icon">Profile icon</string>
 </resources>
