@@ -7,6 +7,6 @@ import org.koin.dsl.module
 
 val sharedModule = module {
     single<Navigator> {
-        DefaultNavigator(startDestination = Destination.Graph.Home)
+        DefaultNavigator(startDestination = Destination.Graph.Auth)
     }
 }

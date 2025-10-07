@@ -1,32 +1,129 @@
 package eti.lucasgomes.makalu.features.auth.login
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
-import eti.lucasgomes.makalu.components.buttons.ExpressiveButton
+import androidx.compose.ui.unit.dp
+import eti.lucasgomes.makalu.components.buttons.ExpressiveLoadingButton
+import eti.lucasgomes.makalu.components.buttons.ExpressiveTextButton
+import eti.lucasgomes.makalu.features.auth.R
+import eti.lucasgomes.makalu.features.auth.login.model.LoginAction
+import eti.lucasgomes.makalu.features.auth.login.model.LoginUiState
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun LoginScreen(onHome: () -> Unit, onRegistration: () -> Unit) {
+internal fun LoginScreen(uiState: LoginUiState, onAction: (LoginAction) -> Unit) {
+
+    val keyBoardController = LocalSoftwareKeyboardController.current
+
     Column(
-        Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
+        Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Login")
-        ExpressiveButton(onClick = onHome) { Text("Go to home") }
-        ExpressiveButton(onClick = onRegistration) { Text("Go to registration") }
+        Icon(
+            modifier = Modifier.size(128.dp),
+            painter = painterResource(R.drawable.storefront),
+            contentDescription = "Makalu logo",
+            tint = colorScheme.primary
+        )
+        Text("Makalu", style = typography.displayLarge)
+        TextField(
+            label = { Text("Email") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = uiState.isLoading.not(),
+            value = uiState.email,
+            onValueChange = { onAction(LoginAction.LoginChanged(it)) },
+            leadingIcon = { Icon(painterResource(R.drawable.email), "Email icon") },
+            placeholder = { Text("username@email.com") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            ),
+        )
+        TextField(
+            label = { Text("Password") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = uiState.isLoading.not(),
+            value = uiState.password,
+            onValueChange = { onAction(LoginAction.PasswordChanged(it)) },
+            leadingIcon = { Icon(painterResource(R.drawable.password), "Password icon") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = {
+                keyBoardController?.hide()
+                onAction(LoginAction.LoginClicked)
+            }),
+            visualTransformation = if (uiState.isPasswordVisible.not()) PasswordVisualTransformation() else VisualTransformation.None,
+            trailingIcon = {
+                IconButton(onClick = { onAction(LoginAction.ShowPasswordClicked) }) {
+                    Crossfade(uiState.isPasswordVisible) { isPasswordVisible ->
+                        if (isPasswordVisible) {
+                            Icon(
+                                painterResource(R.drawable.visibility_off),
+                                "Hide password icon"
+                            )
+                        } else {
+                            Icon(
+                                painterResource(R.drawable.visibility),
+                                "Show password icon"
+                            )
+
+                        }
+                    }
+                }
+            }
+        )
+        ExpressiveLoadingButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { onAction(LoginAction.LoginClicked) },
+            isLoading = uiState.isLoading
+        ) { Text("Login") }
+        Spacer(Modifier.height(64.dp))
+        Text("Don't have an account yet?", style = typography.labelLarge)
+        ExpressiveTextButton(
+            onClick = { onAction(LoginAction.RegistrationClicked) },
+            enabled = uiState.isLoading.not()
+        ) { Text("Create an account") }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun LoginPreview() {
-    LoginScreen({ }, {})
+    LoginScreen(LoginUiState()) {}
 }
