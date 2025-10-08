@@ -58,7 +58,6 @@ fun ExpressiveLoadingButton(
     interactionSource: MutableInteractionSource? = null,
     content: @Composable RowScope.() -> Unit,
 ) {
-//    Box(modifier, contentAlignment = Alignment.Center) {
     Crossfade(
         isLoading,
     ) { loading ->
@@ -80,7 +79,6 @@ fun ExpressiveLoadingButton(
             }
         }
     }
-//    }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)

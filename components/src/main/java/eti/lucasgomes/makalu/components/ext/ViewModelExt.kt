@@ -4,6 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-inline fun ViewModel.withScreenModelScope(crossinline block: suspend () -> Unit) {
+inline fun ViewModel.withViewModelScope(crossinline block: suspend () -> Unit) {
     viewModelScope.launch { block() }
 }

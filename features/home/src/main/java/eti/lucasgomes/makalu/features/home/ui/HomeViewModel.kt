@@ -1,7 +1,7 @@
 package eti.lucasgomes.makalu.features.home.ui
 
 import androidx.lifecycle.ViewModel
-import eti.lucasgomes.makalu.components.ext.withScreenModelScope
+import eti.lucasgomes.makalu.components.ext.withViewModelScope
 import eti.lucasgomes.makalu.features.home.ui.model.FilterUiState
 import eti.lucasgomes.makalu.features.home.ui.model.HomeAction
 import eti.lucasgomes.makalu.features.home.ui.model.HomeUiState
@@ -28,7 +28,7 @@ internal class HomeViewModel(private val navigator: Navigator) : ViewModel() {
         }
     }
 
-    private fun onInitialFetch() = withScreenModelScope {
+    private fun onInitialFetch() = withViewModelScope {
         _uiState.update { state ->
             state.copy(
                 isAddressLoading = true,
@@ -64,7 +64,7 @@ internal class HomeViewModel(private val navigator: Navigator) : ViewModel() {
         }
     }
 
-    private fun onRefreshStores() = withScreenModelScope {
+    private fun onRefreshStores() = withViewModelScope {
         _uiState.update { state -> state.copy(isStoresLoading = true) }
         delay(2_000L)
         _uiState.update { state ->
@@ -88,16 +88,16 @@ internal class HomeViewModel(private val navigator: Navigator) : ViewModel() {
         }
     }
 
-    private fun onStoreClicked() = withScreenModelScope {
+    private fun onStoreClicked() = withViewModelScope {
         _uiState.update { state -> state.copy(isAuthDialogVisible = true) }
     }
 
-    private fun onAuthClicked() = withScreenModelScope {
+    private fun onAuthClicked() = withViewModelScope {
         _uiState.update { state -> state.copy(isAuthDialogVisible = false) }
         navigator.navigate(Destination.Screen.Login)
     }
 
-    private fun onAuthDialogDismissed() = withScreenModelScope {
+    private fun onAuthDialogDismissed() = withViewModelScope {
         _uiState.update { state -> state.copy(isAuthDialogVisible = false) }
     }
 }

@@ -1,8 +1,8 @@
-package eti.lucasgomes.makalu.features.auth.login
+package eti.lucasgomes.makalu.features.auth.login.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import eti.lucasgomes.makalu.components.ext.withScreenModelScope
+import eti.lucasgomes.makalu.components.ext.withViewModelScope
 import eti.lucasgomes.makalu.features.auth.login.model.LoginAction
 import eti.lucasgomes.makalu.features.auth.login.model.LoginUiState
 import eti.lucasgomes.makalu.shared.navigation.Destination
@@ -22,7 +22,7 @@ class LoginViewModel(private val navigator: Navigator) : ViewModel() {
 
     fun onAction(action: LoginAction) {
         when (action) {
-            is LoginAction.LoginChanged -> onLoginChanged(action.text)
+            is LoginAction.EmailChanged -> onLoginChanged(action.text)
             is LoginAction.PasswordChanged -> onPasswordChanged(action.text)
             LoginAction.ShowPasswordClicked -> onShowPasswordClicked()
             LoginAction.LoginClicked -> onLoginClicked()
@@ -30,25 +30,25 @@ class LoginViewModel(private val navigator: Navigator) : ViewModel() {
         }
     }
 
-    private fun onLoginChanged(text: String) = withScreenModelScope {
+    private fun onLoginChanged(text: String) = withViewModelScope {
         _uiState.update { state -> state.copy(email = text) }
     }
 
-    private fun onPasswordChanged(text: String) = withScreenModelScope {
+    private fun onPasswordChanged(text: String) = withViewModelScope {
         _uiState.update { state -> state.copy(password = text) }
     }
 
-    private fun onShowPasswordClicked() = withScreenModelScope {
+    private fun onShowPasswordClicked() = withViewModelScope {
         _uiState.update { state -> state.copy(isPasswordVisible = state.isPasswordVisible.not()) }
     }
 
-    private fun onLoginClicked() = withScreenModelScope {
+    private fun onLoginClicked() = withViewModelScope {
         _uiState.update { state -> state.copy(isLoading = true) }
         delay(2000)
         _uiState.update { state -> state.copy(isLoading = false) }
     }
 
-    private fun onRegistrationClicked() = withScreenModelScope {
+    private fun onRegistrationClicked() = withViewModelScope {
         navigator.navigate(Destination.Screen.Registration)
     }
 

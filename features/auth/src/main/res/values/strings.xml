@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="email">Email</string>
+    <string name="accessibility_makalu_logo">Makalu logo</string>
+    <string name="accessibility_email_icon">Email icon</string>
+    <string name="accessibility_password_icon">Password icon</string>
+    <string name="email_placeholder">username@email.com</string>
+    <string name="password">Password</string>
+    <string name="accessibility_hide_password_icon">Hide password icon</string>
+    <string name="accessibility_show_password_icon">Show password icon</string>
+    <string name="login">Login</string>
+    <string name="don_t_have_an_account_yet">Don\'t have an account yet?</string>
+    <string name="create_an_account">Create an account</string>
+    <string name="registration">Registration</string>
+</resources>

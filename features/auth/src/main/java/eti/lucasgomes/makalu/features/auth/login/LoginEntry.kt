@@ -5,6 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import eti.lucasgomes.makalu.components.ScreenContainer
+import eti.lucasgomes.makalu.features.auth.login.ui.LoginScreen
+import eti.lucasgomes.makalu.features.auth.login.ui.LoginViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

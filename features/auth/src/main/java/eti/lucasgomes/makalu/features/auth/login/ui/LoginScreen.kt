@@ -1,4 +1,4 @@
-package eti.lucasgomes.makalu.features.auth.login
+package eti.lucasgomes.makalu.features.auth.login.ui
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -54,18 +55,23 @@ internal fun LoginScreen(uiState: LoginUiState, onAction: (LoginAction) -> Unit)
         Icon(
             modifier = Modifier.size(128.dp),
             painter = painterResource(R.drawable.storefront),
-            contentDescription = "Makalu logo",
+            contentDescription = stringResource(R.string.accessibility_makalu_logo),
             tint = colorScheme.primary
         )
         Text("Makalu", style = typography.displayLarge)
         TextField(
-            label = { Text("Email") },
+            label = { Text(stringResource(R.string.email)) },
             modifier = Modifier.fillMaxWidth(),
             enabled = uiState.isLoading.not(),
             value = uiState.email,
-            onValueChange = { onAction(LoginAction.LoginChanged(it)) },
-            leadingIcon = { Icon(painterResource(R.drawable.email), "Email icon") },
-            placeholder = { Text("username@email.com") },
+            onValueChange = { onAction(LoginAction.EmailChanged(it)) },
+            leadingIcon = {
+                Icon(
+                    painterResource(R.drawable.email),
+                    stringResource(R.string.accessibility_email_icon)
+                )
+            },
+            placeholder = { Text(stringResource(R.string.email_placeholder)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
@@ -73,12 +79,17 @@ internal fun LoginScreen(uiState: LoginUiState, onAction: (LoginAction) -> Unit)
             ),
         )
         TextField(
-            label = { Text("Password") },
+            label = { Text(stringResource(R.string.password)) },
             modifier = Modifier.fillMaxWidth(),
             enabled = uiState.isLoading.not(),
             value = uiState.password,
             onValueChange = { onAction(LoginAction.PasswordChanged(it)) },
-            leadingIcon = { Icon(painterResource(R.drawable.password), "Password icon") },
+            leadingIcon = {
+                Icon(
+                    painterResource(R.drawable.password),
+                    stringResource(R.string.accessibility_password_icon)
+                )
+            },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
@@ -95,12 +106,12 @@ internal fun LoginScreen(uiState: LoginUiState, onAction: (LoginAction) -> Unit)
                         if (isPasswordVisible) {
                             Icon(
                                 painterResource(R.drawable.visibility_off),
-                                "Hide password icon"
+                                stringResource(R.string.accessibility_hide_password_icon)
                             )
                         } else {
                             Icon(
                                 painterResource(R.drawable.visibility),
-                                "Show password icon"
+                                stringResource(R.string.accessibility_show_password_icon)
                             )
 
                         }
@@ -112,13 +123,13 @@ internal fun LoginScreen(uiState: LoginUiState, onAction: (LoginAction) -> Unit)
             modifier = Modifier.fillMaxWidth(),
             onClick = { onAction(LoginAction.LoginClicked) },
             isLoading = uiState.isLoading
-        ) { Text("Login") }
+        ) { Text(stringResource(R.string.login)) }
         Spacer(Modifier.height(64.dp))
-        Text("Don't have an account yet?", style = typography.labelLarge)
+        Text(stringResource(R.string.don_t_have_an_account_yet), style = typography.labelLarge)
         ExpressiveTextButton(
             onClick = { onAction(LoginAction.RegistrationClicked) },
             enabled = uiState.isLoading.not()
-        ) { Text("Create an account") }
+        ) { Text(stringResource(R.string.create_an_account)) }
     }
 }
 
