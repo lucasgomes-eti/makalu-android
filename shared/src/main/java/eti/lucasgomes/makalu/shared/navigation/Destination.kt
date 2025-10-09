@@ -27,5 +27,8 @@ sealed interface Destination {
 
         @Serializable
         data object Profile : Destination
+
+        @Serializable
+        data object ImagePreview : Destination
     }
 }

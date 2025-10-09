@@ -6,7 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 @Composable
 fun ConfigureTopBar(
     title: String,
-    navigationActions: List<TopBarAction>,
+    navigationActions: List<TopBarAction> = emptyList(),
 ) {
     val topBar = LocalTopBarUiController.current
     LaunchedEffect(Unit) {

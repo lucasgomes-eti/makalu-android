@@ -52,4 +52,7 @@ dependencies {
     // Tooling
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Image
+    implementation(libs.zoomable.image.coil3)
 }

@@ -22,11 +22,16 @@ class RegistrationViewModel(private val navigator: Navigator) : ViewModel() {
     fun onAction(action: RegistrationAction) {
         when (action) {
             is RegistrationAction.EmailChanged -> onEmailChanged(action.text)
+            RegistrationAction.ProfileImageClicked -> onProfileImageClicked()
         }
     }
 
     private fun onEmailChanged(text: String) = withViewModelScope {
         _uiState.update { state -> state.copy(email = text) }
+    }
+
+    private fun onProfileImageClicked() = withViewModelScope {
+        navigator.navigate(Destination.Screen.ImagePreview)
     }
 
     private fun goToHome() {
