@@ -25,7 +25,7 @@ fun NavigationGraph(
         navController = concreteNavigator,
         startDestination = abstractNavigator.startDestination
     ) {
-        navigation<Destination.Graph.Auth>(startDestination = Destination.Screen.Login) {
+        navigation<Destination.Graph.Auth>(startDestination = Destination.Screen.ImagePreview) {
             composable<Destination.Screen.Login> { LoginEntry(innerPadding) }
             composable<Destination.Screen.Registration> { RegistrationEntry(innerPadding) }
             composable<Destination.Screen.ImagePreview> { ImagePreviewEntry(innerPadding) }

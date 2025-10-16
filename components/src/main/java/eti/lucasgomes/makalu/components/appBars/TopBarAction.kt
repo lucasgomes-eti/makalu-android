@@ -1,9 +1,9 @@
 package eti.lucasgomes.makalu.components.appBars
 
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
 
 data class TopBarAction(
-    val icon: ImageVector,
+    val icon: Painter,
     val contentDescription: String,
     val onClick: () -> Unit
 )
