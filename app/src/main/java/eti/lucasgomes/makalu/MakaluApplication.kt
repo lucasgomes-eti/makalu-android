@@ -1,6 +1,7 @@
 package eti.lucasgomes.makalu
 
 import android.app.Application
+import eti.lucasgomes.makalu.components.componentsModule
 import eti.lucasgomes.makalu.di.appModule
 import eti.lucasgomes.makalu.features.auth.di.authModule
 import eti.lucasgomes.makalu.features.home.di.homeModule
@@ -18,7 +19,15 @@ class MakaluApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@MakaluApplication)
-            modules(appModule, sharedModule, authModule, homeModule, profileModule, ordersModule)
+            modules(
+                appModule,
+                sharedModule,
+                componentsModule,
+                authModule,
+                homeModule,
+                profileModule,
+                ordersModule
+            )
         }
     }
 }

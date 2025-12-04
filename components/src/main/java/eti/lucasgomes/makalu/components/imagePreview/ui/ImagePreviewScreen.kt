@@ -1,20 +1,16 @@
-package eti.lucasgomes.makalu.components.imagePreview
+package eti.lucasgomes.makalu.components.imagePreview.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AppBarRow
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -39,14 +34,13 @@ import com.tanishranjan.cropkit.rememberCropController
 import eti.lucasgomes.makalu.components.R
 import eti.lucasgomes.makalu.components.appBars.ConfigureTopBar
 import eti.lucasgomes.makalu.components.appBars.TopBarAction
+import eti.lucasgomes.makalu.components.imagePreview.model.ImagePreviewAction
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun ImagePreviewScreen() {
+internal fun ImagePreviewScreen(onAction: (ImagePreviewAction) -> Unit) {
     var imageBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
     imageBitmapState = ImageBitmap.imageResource(R.drawable.profile_pic)
-    var isCroppedShowing by remember { mutableStateOf(false) }
-    var croppedImageBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
 
     ConfigureTopBar(
         title = "Image preview", navigationActions = listOf(
@@ -110,8 +104,11 @@ internal fun ImagePreviewScreen() {
                 FilledIconButton(
                     modifier = Modifier.width(64.dp),
                     onClick = {
-                        croppedImageBitmapState = cropController.crop().asImageBitmap()
-                        isCroppedShowing = true
+                        onAction(
+                            ImagePreviewAction.ImageCropped(
+                                cropController.crop().asImageBitmap()
+                            )
+                        )
                     },
                 ) {
                     Icon(
@@ -127,21 +124,5 @@ internal fun ImagePreviewScreen() {
                 .padding(16.dp),
             cropController = cropController
         )
-    }
-
-    if (isCroppedShowing) {
-        AlertDialog(onDismissRequest = { isCroppedShowing = false }, confirmButton = {
-            Button(onClick = { isCroppedShowing = false }) {
-                Text("Ok")
-            }
-        }, text = {
-            croppedImageBitmapState?.let { image ->
-                Image(
-                    bitmap = image,
-                    contentDescription = "Cropped image",
-                    contentScale = ContentScale.FillWidth
-                )
-            }
-        })
     }
 }

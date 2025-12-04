@@ -11,5 +11,12 @@ interface Navigator {
         navOptions: NavOptions? = null
     )
 
+    suspend fun <T> navigateForResult(
+        destination: Destination,
+        requestKey: String
+    ): T
+
     suspend fun navigateUp()
+
+    suspend fun <T> navigateUpWithResult(requestKey: String, result: T)
 }

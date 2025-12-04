@@ -31,7 +31,11 @@ class RegistrationViewModel(private val navigator: Navigator) : ViewModel() {
     }
 
     private fun onProfileImageClicked() = withViewModelScope {
-        navigator.navigate(Destination.Screen.ImagePreview)
+        val imageResult = navigator.navigateForResult<String>(
+            Destination.Screen.ImagePreview,
+            "imagePreviewResult"
+        )
+        _uiState.update { state -> state.copy(email = imageResult) }
     }
 
     private fun goToHome() {

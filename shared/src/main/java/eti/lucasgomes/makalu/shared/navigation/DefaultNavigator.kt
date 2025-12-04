@@ -7,6 +7,8 @@ class DefaultNavigator(override val startDestination: Destination) : Navigator {
     private val _navigationActions = Channel<NavigationAction>()
     override val navigationActions = _navigationActions.receiveAsFlow()
 
+    private val navigationResults = Channel<Any?>()
+
     override suspend fun navigate(
         destination: Destination,
         navOptions: NavOptions?
@@ -14,7 +16,19 @@ class DefaultNavigator(override val startDestination: Destination) : Navigator {
         _navigationActions.send(NavigationAction.Navigate(destination, navOptions))
     }
 
+    override suspend fun <T> navigateForResult(destination: Destination, requestKey: String): T {
+        _navigationActions.send(NavigationAction.NavigateForResult(destination, requestKey) {
+            navigationResults.send(it)
+        })
+
+        return navigationResults.receive() as T
+    }
+
     override suspend fun navigateUp() {
         _navigationActions.send(NavigationAction.NavigateUp)
+    }
+
+    override suspend fun <T> navigateUpWithResult(requestKey: String, result: T) {
+        _navigationActions.send(NavigationAction.NavigateUpWithResult(requestKey, result))
     }
 }

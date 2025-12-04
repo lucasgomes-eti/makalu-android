@@ -1,6 +1,5 @@
 package eti.lucasgomes.makalu.features.auth.registration.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,9 +50,9 @@ internal fun RegistrationScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            Image(
-                painter = painterResource(eti.lucasgomes.makalu.components.R.drawable.profile_pic),
-                contentDescription = "Profile picture",
+            Box(
+                //painter = painterResource(eti.lucasgomes.makalu.components.R.drawable.profile_pic),
+                //contentDescription = "Profile picture",
                 modifier = Modifier
                     .size(128.dp)
                     .clip(CircleShape)
