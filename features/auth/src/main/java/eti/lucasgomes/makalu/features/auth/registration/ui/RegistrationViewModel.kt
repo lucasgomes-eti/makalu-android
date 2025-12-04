@@ -19,10 +19,20 @@ class RegistrationViewModel(private val navigator: Navigator) : ViewModel() {
     private val _uiState = MutableStateFlow(RegistrationUiState())
     val uiState = _uiState.asStateFlow()
 
+    init {
+//        withViewModelScope {
+//            delay(3_000)
+//            _uiState.update { state -> state.copy(profilePicture = "https://images.unsplash.com/photo-1764712754791-8627ebded3f6?q=80&w=690&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D") }
+//        }
+    }
+
     fun onAction(action: RegistrationAction) {
         when (action) {
             is RegistrationAction.EmailChanged -> onEmailChanged(action.text)
             RegistrationAction.ProfileImageClicked -> onProfileImageClicked()
+            RegistrationAction.ImagePickerDismissed -> onImagePickerDismissed()
+            RegistrationAction.SelectGalleryImage -> TODO()
+            RegistrationAction.CaptureCameraImage -> TODO()
         }
     }
 
@@ -31,11 +41,16 @@ class RegistrationViewModel(private val navigator: Navigator) : ViewModel() {
     }
 
     private fun onProfileImageClicked() = withViewModelScope {
-        val imageResult = navigator.navigateForResult<String>(
-            Destination.Screen.ImagePreview,
-            "imagePreviewResult"
-        )
-        _uiState.update { state -> state.copy(email = imageResult) }
+        _uiState.update { state -> state.copy(isImagePickerVisible = true) }
+//        val imageResult = navigator.navigateForResult<String>(
+//            Destination.Screen.ImagePreview,
+//            "imagePreviewResult"
+//        )
+//        _uiState.update { state -> state.copy(email = imageResult) }
+    }
+
+    private fun onImagePickerDismissed() = withViewModelScope {
+        _uiState.update { state -> state.copy(isImagePickerVisible = false) }
     }
 
     private fun goToHome() {

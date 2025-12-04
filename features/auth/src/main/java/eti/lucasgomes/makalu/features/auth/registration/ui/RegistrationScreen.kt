@@ -1,5 +1,6 @@
 package eti.lucasgomes.makalu.features.auth.registration.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,11 +14,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,11 +31,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.rememberAsyncImagePainter
 import eti.lucasgomes.makalu.components.appBars.ConfigureTopBar
+import eti.lucasgomes.makalu.components.pickers.SelectOrCaptureImagePicker
 import eti.lucasgomes.makalu.features.auth.R
 import eti.lucasgomes.makalu.features.auth.registration.model.RegistrationAction
 import eti.lucasgomes.makalu.features.auth.registration.model.RegistrationUiState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun RegistrationScreen(
     uiState: RegistrationUiState,
@@ -47,16 +54,23 @@ internal fun RegistrationScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            Box(
-                //painter = painterResource(eti.lucasgomes.makalu.components.R.drawable.profile_pic),
-                //contentDescription = "Profile picture",
+        Box {
+            val profilePicturePainter by rememberAsyncImagePainter(uiState.profileImage).state.collectAsStateWithLifecycle()
+            Image(
+                painter = if (uiState.isProfileImageLoaded) profilePicturePainter.painter
+                    ?: painterResource(
+                        R.drawable.person,
+                    ) else painterResource(
+                    R.drawable.person
+                ),
+                contentDescription = "Profile picture",
                 modifier = Modifier
                     .size(128.dp)
                     .clip(CircleShape)
-                    .background(colorScheme.primary)
+                    .background(colorScheme.secondaryContainer)
                     .clickable(
                         role = Role.Image,
                         onClick = { onAction(RegistrationAction.ProfileImageClicked) })
@@ -79,6 +93,13 @@ internal fun RegistrationScreen(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
             ),
+        )
+    }
+    if (uiState.isImagePickerVisible) {
+        SelectOrCaptureImagePicker(
+            onSelectGalleryImage = { onAction(RegistrationAction.SelectGalleryImage) },
+            onCaptureCameraImage = { onAction(RegistrationAction.CaptureCameraImage) },
+            onDismissRequest = { onAction(RegistrationAction.ImagePickerDismissed) }
         )
     }
 }
