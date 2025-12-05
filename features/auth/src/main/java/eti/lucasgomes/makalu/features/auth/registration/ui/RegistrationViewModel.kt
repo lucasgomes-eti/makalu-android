@@ -1,5 +1,8 @@
 package eti.lucasgomes.makalu.features.auth.registration.ui
 
+import android.app.Application
+import android.net.Uri
+import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
@@ -9,30 +12,37 @@ import eti.lucasgomes.makalu.shared.navigation.Destination
 import eti.lucasgomes.makalu.shared.navigation.NavOptions
 import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.shared.navigation.PopUpToOptions
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 
-class RegistrationViewModel(private val navigator: Navigator) : ViewModel() {
+class RegistrationViewModel(
+    private val navigator: Navigator,
+    private val cacheDir: File,
+    private val app: Application
+) :
+    ViewModel() {
 
     private val _uiState = MutableStateFlow(RegistrationUiState())
     val uiState = _uiState.asStateFlow()
 
-    init {
-//        withViewModelScope {
-//            delay(3_000)
-//            _uiState.update { state -> state.copy(profilePicture = "https://images.unsplash.com/photo-1764712754791-8627ebded3f6?q=80&w=690&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D") }
-//        }
-    }
+    private var cameraImageUri: Uri? = null
 
     fun onAction(action: RegistrationAction) {
         when (action) {
             is RegistrationAction.EmailChanged -> onEmailChanged(action.text)
             RegistrationAction.ProfileImageClicked -> onProfileImageClicked()
             RegistrationAction.ImagePickerDismissed -> onImagePickerDismissed()
-            RegistrationAction.SelectGalleryImage -> TODO()
-            RegistrationAction.CaptureCameraImage -> TODO()
+            is RegistrationAction.GalleryImageObtained -> onGalleryImageObtained(action.uri)
+            is RegistrationAction.CameraImageTaken -> onCameraImageTaken(action.isImageSaved)
+            is RegistrationAction.PermissionLauncherResultReceived -> onPermissionLauncherResultReceived(
+                action.isGranted,
+                action.launchCamera
+            )
         }
     }
 
@@ -42,16 +52,59 @@ class RegistrationViewModel(private val navigator: Navigator) : ViewModel() {
 
     private fun onProfileImageClicked() = withViewModelScope {
         _uiState.update { state -> state.copy(isImagePickerVisible = true) }
-//        val imageResult = navigator.navigateForResult<String>(
-//            Destination.Screen.ImagePreview,
-//            "imagePreviewResult"
-//        )
-//        _uiState.update { state -> state.copy(email = imageResult) }
     }
 
     private fun onImagePickerDismissed() = withViewModelScope {
         _uiState.update { state -> state.copy(isImagePickerVisible = false) }
     }
+
+    private fun onGalleryImageObtained(uri: Uri?) = withViewModelScope {
+        //        val imageResult = navigator.navigateForResult<String>(
+//            Destination.Screen.ImagePreview,
+//            "imagePreviewResult"
+//        )
+//        _uiState.update { state -> state.copy(email = imageResult) }
+
+        _uiState.update { state ->
+            state.copy(isImagePickerVisible = false, profileImage = uri)
+        }
+    }
+
+    private fun onCameraImageTaken(isImageSaved: Boolean) = withViewModelScope {
+        if (isImageSaved) {
+            _uiState.update { state ->
+                state.copy(isImagePickerVisible = false, profileImage = cameraImageUri)
+            }
+        }
+    }
+
+    private fun onPermissionLauncherResultReceived(
+        isGranted: Boolean,
+        launchCamera: (Uri) -> Unit
+    ) = withViewModelScope {
+        if (isGranted) {
+            withContext(Dispatchers.IO) {
+                cameraImageUri = createCameraImageUri(createTempFile())
+                withContext(Dispatchers.Main) {
+                    launchCamera(cameraImageUri!!)
+                }
+            }
+        } else {
+            //TODO: Redirect to system settings to enable permission
+        }
+    }
+
+    private suspend fun createTempFile() = File.createTempFile(
+        IMAGE_TEMP_FILE_PREFIX,
+        IMAGE_TEMP_FILE_SUFFIX,
+        cacheDir
+    )
+
+    private fun createCameraImageUri(tempFile: File) = FileProvider.getUriForFile(
+        app,
+        FILE_PROVIDER_AUTHORITY, /* needs to match the provider information in the manifest */
+        tempFile
+    )
 
     private fun goToHome() {
         viewModelScope.launch {
@@ -60,5 +113,11 @@ class RegistrationViewModel(private val navigator: Navigator) : ViewModel() {
                 NavOptions(popUpTo = PopUpToOptions(Destination.Graph.Auth, inclusive = true))
             )
         }
+    }
+
+    companion object {
+        private const val IMAGE_TEMP_FILE_PREFIX = "profile_pic_"
+        private const val IMAGE_TEMP_FILE_SUFFIX = ".jpg"
+        private const val FILE_PROVIDER_AUTHORITY = "eti.lucasgomes.makalu.provider"
     }
 }

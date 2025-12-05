@@ -1,5 +1,9 @@
 package eti.lucasgomes.makalu.features.auth.registration.ui
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -45,6 +49,28 @@ internal fun RegistrationScreen(
     uiState: RegistrationUiState,
     onAction: (RegistrationAction) -> Unit
 ) {
+    val pickImageFromGalleryLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            onAction(RegistrationAction.GalleryImageObtained(uri))
+        }
+
+    val cameraLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { isImageSaved ->
+            onAction(RegistrationAction.CameraImageTaken(isImageSaved))
+        }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { permissionGranted ->
+        onAction(
+            RegistrationAction.PermissionLauncherResultReceived(
+                isGranted = permissionGranted,
+                launchCamera = { uri ->
+                    cameraLauncher.launch(uri)
+                })
+        )
+    }
+
     ConfigureTopBar(
         title = stringResource(R.string.registration),
         navigationActions = listOf(),
@@ -97,8 +123,14 @@ internal fun RegistrationScreen(
     }
     if (uiState.isImagePickerVisible) {
         SelectOrCaptureImagePicker(
-            onSelectGalleryImage = { onAction(RegistrationAction.SelectGalleryImage) },
-            onCaptureCameraImage = { onAction(RegistrationAction.CaptureCameraImage) },
+            onSelectGalleryImage = {
+                val mediaRequest =
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                pickImageFromGalleryLauncher.launch(mediaRequest)
+            },
+            onCaptureCameraImage = {
+                permissionLauncher.launch(Manifest.permission.CAMERA)
+            },
             onDismissRequest = { onAction(RegistrationAction.ImagePickerDismissed) }
         )
     }
