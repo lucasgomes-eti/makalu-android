@@ -12,4 +12,7 @@ sealed interface RegistrationAction {
         val isGranted: Boolean,
         val launchCamera: (Uri) -> Unit
     ) : RegistrationAction
+
+    data object GoToSystemSettingsClicked : RegistrationAction
+    data object PermissionDeniedDialogDismissed : RegistrationAction
 }

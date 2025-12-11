@@ -18,10 +18,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -134,6 +137,44 @@ internal fun RegistrationScreen(
             onDismissRequest = { onAction(RegistrationAction.ImagePickerDismissed) }
         )
     }
+    if (uiState.isPermissionDeniedDialogVisible) {
+        PermissionDeniedDialog(
+            onDismissRequest = { onAction(RegistrationAction.PermissionDeniedDialogDismissed) },
+            onGoToSystemSettings = {
+                onAction(
+                    RegistrationAction.GoToSystemSettingsClicked
+                )
+            })
+    }
+}
+
+@Composable
+private fun PermissionDeniedDialog(onDismissRequest: () -> Unit, onGoToSystemSettings: () -> Unit) {
+    AlertDialog(
+        icon = {
+            Icon(painterResource(R.drawable.close), null)
+        },
+        title = {
+            Text("Camera permission denied")
+        },
+        text = {
+            Text("Please grant the camera permission to use this feature.")
+        },
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            TextButton(onClick = onGoToSystemSettings) {
+                Text("Go to system settings")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismissRequest,
+                colors = ButtonDefaults.textButtonColors(contentColor = colorScheme.onSurface)
+            ) {
+                Text("Dismiss")
+            }
+        }
+    )
 }
 
 @Preview(showBackground = true)

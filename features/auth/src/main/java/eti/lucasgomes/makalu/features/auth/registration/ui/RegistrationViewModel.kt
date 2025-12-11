@@ -1,7 +1,10 @@
 package eti.lucasgomes.makalu.features.auth.registration.ui
 
 import android.app.Application
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
+import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -43,6 +46,9 @@ class RegistrationViewModel(
                 action.isGranted,
                 action.launchCamera
             )
+
+            RegistrationAction.GoToSystemSettingsClicked -> onGoToSystemSettingsClicked()
+            RegistrationAction.PermissionDeniedDialogDismissed -> onPermissionDeniedDialogDismissed()
         }
     }
 
@@ -90,11 +96,11 @@ class RegistrationViewModel(
                 }
             }
         } else {
-            //TODO: Redirect to system settings to enable permission
+            _uiState.update { state -> state.copy(isPermissionDeniedDialogVisible = true) }
         }
     }
 
-    private suspend fun createTempFile() = File.createTempFile(
+    private fun createTempFile() = File.createTempFile(
         IMAGE_TEMP_FILE_PREFIX,
         IMAGE_TEMP_FILE_SUFFIX,
         cacheDir
@@ -105,6 +111,20 @@ class RegistrationViewModel(
         FILE_PROVIDER_AUTHORITY, /* needs to match the provider information in the manifest */
         tempFile
     )
+
+    private fun onGoToSystemSettingsClicked() = withViewModelScope {
+        _uiState.update { state -> state.copy(isPermissionDeniedDialogVisible = false) }
+        app.startActivity(
+            Intent(
+                ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", app.packageName, null)
+            ).addFlags(FLAG_ACTIVITY_NEW_TASK)
+        )
+    }
+
+    private fun onPermissionDeniedDialogDismissed() = withViewModelScope {
+        _uiState.update { state -> state.copy(isPermissionDeniedDialogVisible = false) }
+    }
 
     private fun goToHome() {
         viewModelScope.launch {
