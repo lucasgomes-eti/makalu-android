@@ -12,15 +12,11 @@ import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -35,12 +31,21 @@ import eti.lucasgomes.makalu.components.R
 import eti.lucasgomes.makalu.components.appBars.ConfigureTopBar
 import eti.lucasgomes.makalu.components.appBars.TopBarAction
 import eti.lucasgomes.makalu.components.imagePreview.model.ImagePreviewAction
+import eti.lucasgomes.makalu.components.imagePreview.model.ImagePreviewUiState
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun ImagePreviewScreen(onAction: (ImagePreviewAction) -> Unit) {
-    var imageBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
-    imageBitmapState = ImageBitmap.imageResource(R.drawable.profile_pic)
+internal fun ImagePreviewScreen(
+    uiState: ImagePreviewUiState,
+    onAction: (ImagePreviewAction) -> Unit
+) {
+    //var imageBitmapState by remember { mutableStateOf<ImageBitmap?>(null) }
+    //imageBitmapState = ImageBitmap.imageResource(R.drawable.profile_pic)
+
+    DisposableEffect(Unit) {
+        onAction(ImagePreviewAction.ScreenCreated)
+        onDispose { onAction(ImagePreviewAction.ScreenDestroyed) }
+    }
 
     ConfigureTopBar(
         title = "Image preview", navigationActions = listOf(
@@ -53,7 +58,9 @@ internal fun ImagePreviewScreen(onAction: (ImagePreviewAction) -> Unit) {
     )
 
     val cropController = rememberCropController(
-        bitmap = imageBitmapState!!.asAndroidBitmap(),
+        bitmap = uiState.bitmap
+            ?: ImageBitmap.imageResource(R.drawable.placeholder)
+                .asAndroidBitmap(),
         cropOptions = CropDefaults.cropOptions(
             cropShape = CropShape.AspectRatio(CropRatio.SQUARE),
             gridLinesType = GridLinesType.GRID_AND_CIRCLE
@@ -106,7 +113,7 @@ internal fun ImagePreviewScreen(onAction: (ImagePreviewAction) -> Unit) {
                     onClick = {
                         onAction(
                             ImagePreviewAction.ImageCropped(
-                                cropController.crop().asImageBitmap()
+                                cropController.crop()
                             )
                         )
                     },

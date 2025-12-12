@@ -22,12 +22,13 @@ fun bindNavigationEvents(concreteNavigator: NavHostController): (NavigationActio
 
             is NavigationAction.NavigateForResult -> {
                 concreteNavigator.currentBackStackEntry?.savedStateHandle?.let { savedStateHandle ->
-                    savedStateHandle.getLiveData<Any?>(action.requestKey).observe(owner) {
-                        scope.launch {
-                            action.onResult(it)
-                            savedStateHandle.remove<Any?>(action.requestKey)
+                    savedStateHandle.getLiveData<Any?>(action.requestKey.toString())
+                        .observe(owner) {
+                            scope.launch {
+                                action.onResult(it)
+                                savedStateHandle.remove<Any?>(action.requestKey.toString())
+                            }
                         }
-                    }
                 }
                 concreteNavigator.navigate(action.destination)
             }
@@ -36,7 +37,7 @@ fun bindNavigationEvents(concreteNavigator: NavHostController): (NavigationActio
 
             is NavigationAction.NavigateUpWithResult<*> -> {
                 concreteNavigator.previousBackStackEntry?.savedStateHandle?.set(
-                    action.requestKey,
+                    action.requestKey.toString(),
                     action.result
                 )
                 concreteNavigator.navigateUp()

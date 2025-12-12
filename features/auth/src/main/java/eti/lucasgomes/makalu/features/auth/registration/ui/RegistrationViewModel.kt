@@ -6,15 +6,19 @@ import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
 import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
 import eti.lucasgomes.makalu.features.auth.registration.model.RegistrationAction
 import eti.lucasgomes.makalu.features.auth.registration.model.RegistrationUiState
+import eti.lucasgomes.makalu.shared.FILE_PROVIDER_AUTHORITY
+import eti.lucasgomes.makalu.shared.IMAGE_TEMP_FILE_SUFFIX
 import eti.lucasgomes.makalu.shared.navigation.Destination
 import eti.lucasgomes.makalu.shared.navigation.NavOptions
 import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.shared.navigation.PopUpToOptions
+import eti.lucasgomes.makalu.shared.navigation.RequestKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -65,14 +69,13 @@ class RegistrationViewModel(
     }
 
     private fun onGalleryImageObtained(uri: Uri?) = withViewModelScope {
-        //        val imageResult = navigator.navigateForResult<String>(
-//            Destination.Screen.ImagePreview,
-//            "imagePreviewResult"
-//        )
-//        _uiState.update { state -> state.copy(email = imageResult) }
+        val outUri = navigator.navigateForResult<String>(
+            Destination.Screen.ImagePreview(uri.toString()),
+            RequestKey.ImageCroppedUriOutput
+        ).toUri()
 
         _uiState.update { state ->
-            state.copy(isImagePickerVisible = false, profileImage = uri)
+            state.copy(isImagePickerVisible = false, profileImage = outUri)
         }
     }
 
@@ -117,7 +120,7 @@ class RegistrationViewModel(
         app.startActivity(
             Intent(
                 ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.fromParts("package", app.packageName, null)
+                Uri.fromParts(APP_SETTINGS_URI_SCHEME, app.packageName, null)
             ).addFlags(FLAG_ACTIVITY_NEW_TASK)
         )
     }
@@ -137,7 +140,6 @@ class RegistrationViewModel(
 
     companion object {
         private const val IMAGE_TEMP_FILE_PREFIX = "profile_pic_"
-        private const val IMAGE_TEMP_FILE_SUFFIX = ".jpg"
-        private const val FILE_PROVIDER_AUTHORITY = "eti.lucasgomes.makalu.provider"
+        private const val APP_SETTINGS_URI_SCHEME = "package"
     }
 }

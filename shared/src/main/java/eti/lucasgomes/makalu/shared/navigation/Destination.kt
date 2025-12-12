@@ -29,6 +29,6 @@ sealed interface Destination {
         data object Profile : Destination
 
         @Serializable
-        data object ImagePreview : Destination
+        data class ImagePreview(val uri: String) : Destination
     }
 }
