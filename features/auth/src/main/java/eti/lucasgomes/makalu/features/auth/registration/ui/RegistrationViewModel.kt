@@ -81,8 +81,13 @@ class RegistrationViewModel(
 
     private fun onCameraImageTaken(isImageSaved: Boolean) = withViewModelScope {
         if (isImageSaved) {
+            val outUri = navigator.navigateForResult<String>(
+                Destination.Screen.ImagePreview(cameraImageUri.toString()),
+                RequestKey.ImageCroppedUriOutput
+            ).toUri()
+            
             _uiState.update { state ->
-                state.copy(isImagePickerVisible = false, profileImage = cameraImageUri)
+                state.copy(isImagePickerVisible = false, profileImage = outUri)
             }
         }
     }
