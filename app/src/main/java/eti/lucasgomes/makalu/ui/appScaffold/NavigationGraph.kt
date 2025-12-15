@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
-import eti.lucasgomes.makalu.components.imagePreview.ImagePreviewEntry
+import eti.lucasgomes.makalu.components.imageCropper.ImageCropperEntry
 import eti.lucasgomes.makalu.features.auth.login.LoginEntry
 import eti.lucasgomes.makalu.features.auth.registration.RegistrationEntry
 import eti.lucasgomes.makalu.features.home.HomeEntry
@@ -30,7 +30,7 @@ fun NavigationGraph(
             composable<Destination.Screen.Login> { LoginEntry(innerPadding) }
             composable<Destination.Screen.Registration> { RegistrationEntry(innerPadding) }
             composable<Destination.Screen.ImagePreview> {
-                ImagePreviewEntry(innerPadding, it.toRoute<Destination.Screen.ImagePreview>().uri)
+                ImageCropperEntry(innerPadding, it.toRoute<Destination.Screen.ImagePreview>().uri)
             }
         }
 

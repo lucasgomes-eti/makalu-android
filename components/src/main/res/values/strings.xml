@@ -2,4 +2,15 @@
 <resources>
     <string name="select_image_from_gallery">Select image from gallery</string>
     <string name="capture_image_with_camera">Capture image with camera</string>
+    <string name="select_image_area">Select image area</string>
+    <string name="accessibility_add_image_icon">Add image icon</string>
+    <string name="rotate_left">Rotate left</string>
+    <string name="rotate_right">Rotate right</string>
+    <string name="mirror_vertically">Mirror vertically</string>
+    <string name="mirror_horizontally">Mirror horizontally</string>
+    <string name="accessibility_crop_button">Crop button</string>
+    <string name="camera_permission_denied">Camera permission denied</string>
+    <string name="please_grant_the_camera_permission">Please grant the camera permission to use this feature.</string>
+    <string name="go_to_system_settings">Go to system settings</string>
+    <string name="dismiss">Dismiss</string>
 </resources>

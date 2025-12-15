@@ -1,5 +1,9 @@
 package eti.lucasgomes.makalu.components.pickers
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,9 +20,48 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import eti.lucasgomes.makalu.components.R
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectOrCaptureImagePicker(
+    onGalleryImageObtained: (uri: Uri?) -> Unit,
+    onCameraImageTaken: (isImageSaved: Boolean) -> Unit,
+    onPermissionLauncherResultReceived: (permissionGranted: Boolean, launchCamera: (Uri) -> Unit) -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    val pickImageFromGalleryLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            onGalleryImageObtained(uri)
+        }
+
+    val cameraLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { isImageSaved ->
+            onCameraImageTaken(isImageSaved)
+        }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { permissionGranted ->
+        onPermissionLauncherResultReceived(permissionGranted) {
+            cameraLauncher.launch(it)
+        }
+    }
+
+    SelectOrCaptureImagePickerComponent(
+        onSelectGalleryImage = {
+            val mediaRequest =
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            pickImageFromGalleryLauncher.launch(mediaRequest)
+        },
+        onCaptureCameraImage = {
+            permissionLauncher.launch(android.Manifest.permission.CAMERA)
+        },
+        onDismissRequest = onDismissRequest
+    )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SelectOrCaptureImagePickerComponent(
     onSelectGalleryImage: () -> Unit = {},
     onCaptureCameraImage: () -> Unit = {},
     onDismissRequest: () -> Unit = {}
@@ -56,5 +99,4 @@ fun SelectOrCaptureImagePicker(
             )
         }
     }
-
 }

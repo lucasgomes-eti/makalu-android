@@ -1,9 +1,5 @@
 package eti.lucasgomes.makalu.features.auth.registration.ui
 
-import android.Manifest
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,13 +14,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
+import eti.lucasgomes.makalu.components.CameraPermissionDeniedDialog
 import eti.lucasgomes.makalu.components.appBars.ConfigureTopBar
 import eti.lucasgomes.makalu.components.pickers.SelectOrCaptureImagePicker
 import eti.lucasgomes.makalu.features.auth.R
@@ -52,28 +46,6 @@ internal fun RegistrationScreen(
     uiState: RegistrationUiState,
     onAction: (RegistrationAction) -> Unit
 ) {
-    val pickImageFromGalleryLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-            onAction(RegistrationAction.GalleryImageObtained(uri))
-        }
-
-    val cameraLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { isImageSaved ->
-            onAction(RegistrationAction.CameraImageTaken(isImageSaved))
-        }
-
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { permissionGranted ->
-        onAction(
-            RegistrationAction.PermissionLauncherResultReceived(
-                isGranted = permissionGranted,
-                launchCamera = { uri ->
-                    cameraLauncher.launch(uri)
-                })
-        )
-    }
-
     ConfigureTopBar(
         title = stringResource(R.string.registration),
         navigationActions = listOf(),
@@ -126,19 +98,27 @@ internal fun RegistrationScreen(
     }
     if (uiState.isImagePickerVisible) {
         SelectOrCaptureImagePicker(
-            onSelectGalleryImage = {
-                val mediaRequest =
-                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                pickImageFromGalleryLauncher.launch(mediaRequest)
+            onGalleryImageObtained = {
+                onAction(RegistrationAction.GalleryImageObtained(it))
             },
-            onCaptureCameraImage = {
-                permissionLauncher.launch(Manifest.permission.CAMERA)
+            onCameraImageTaken = {
+                onAction(RegistrationAction.CameraImageTaken(it))
+
+            },
+            onPermissionLauncherResultReceived = { permissionGranted, launchCamera ->
+                onAction(
+                    RegistrationAction.PermissionLauncherResultReceived(
+                        isGranted = permissionGranted,
+                        launchCamera = { uri ->
+                            launchCamera(uri)
+                        })
+                )
             },
             onDismissRequest = { onAction(RegistrationAction.ImagePickerDismissed) }
         )
     }
     if (uiState.isPermissionDeniedDialogVisible) {
-        PermissionDeniedDialog(
+        CameraPermissionDeniedDialog(
             onDismissRequest = { onAction(RegistrationAction.PermissionDeniedDialogDismissed) },
             onGoToSystemSettings = {
                 onAction(
@@ -146,35 +126,6 @@ internal fun RegistrationScreen(
                 )
             })
     }
-}
-
-@Composable
-private fun PermissionDeniedDialog(onDismissRequest: () -> Unit, onGoToSystemSettings: () -> Unit) {
-    AlertDialog(
-        icon = {
-            Icon(painterResource(R.drawable.close), null)
-        },
-        title = {
-            Text("Camera permission denied")
-        },
-        text = {
-            Text("Please grant the camera permission to use this feature.")
-        },
-        onDismissRequest = onDismissRequest,
-        confirmButton = {
-            TextButton(onClick = onGoToSystemSettings) {
-                Text("Go to system settings")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismissRequest,
-                colors = ButtonDefaults.textButtonColors(contentColor = colorScheme.onSurface)
-            ) {
-                Text("Dismiss")
-            }
-        }
-    )
 }
 
 @Preview(showBackground = true)
