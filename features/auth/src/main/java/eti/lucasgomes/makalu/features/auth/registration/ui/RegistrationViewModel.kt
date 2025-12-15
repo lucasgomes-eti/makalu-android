@@ -4,7 +4,6 @@ import android.app.Application
 import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import eti.lucasgomes.makalu.components.CameraCaptureManager
 import eti.lucasgomes.makalu.components.ext.openApplicationSettings
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
@@ -15,10 +14,10 @@ import eti.lucasgomes.makalu.shared.navigation.NavOptions
 import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.shared.navigation.PopUpToOptions
 import eti.lucasgomes.makalu.shared.navigation.RequestKey
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class RegistrationViewModel(
     private val navigator: Navigator,
@@ -32,7 +31,6 @@ class RegistrationViewModel(
 
     fun onAction(action: RegistrationAction) {
         when (action) {
-            is RegistrationAction.EmailChanged -> onEmailChanged(action.text)
             RegistrationAction.ProfileImageClicked -> onProfileImageClicked()
             RegistrationAction.ImagePickerDismissed -> onImagePickerDismissed()
             is RegistrationAction.GalleryImageObtained -> onGalleryImageObtained(action.uri)
@@ -44,11 +42,17 @@ class RegistrationViewModel(
 
             RegistrationAction.GoToSystemSettingsClicked -> onGoToSystemSettingsClicked()
             RegistrationAction.PermissionDeniedDialogDismissed -> onPermissionDeniedDialogDismissed()
-        }
-    }
+            is RegistrationAction.EmailChanged -> onEmailChanged(action.text)
+            is RegistrationAction.NameChanged -> onNameChanged(action.text)
+            is RegistrationAction.PhoneNumberChanged -> onPhoneNumberChanged(action.text)
+            is RegistrationAction.PasswordChanged -> onPasswordChanged(action.text)
+            RegistrationAction.ShowPasswordClicked -> onShowPasswordClicked()
+            is RegistrationAction.PasswordConfirmationChanged -> onPasswordConfirmationChanged(
+                action.text
+            )
 
-    private fun onEmailChanged(text: String) = withViewModelScope {
-        _uiState.update { state -> state.copy(email = text) }
+            RegistrationAction.CreateAccountClicked -> onCreateAccountClicked()
+        }
     }
 
     private fun onProfileImageClicked() = withViewModelScope {
@@ -56,7 +60,7 @@ class RegistrationViewModel(
     }
 
     private fun onImagePickerDismissed() = withViewModelScope {
-        _uiState.update { state -> state.copy(isImagePickerVisible = false) }
+        _uiState.update { state -> state.copy() }
     }
 
     private fun onGalleryImageObtained(uri: Uri?) = withViewModelScope {
@@ -66,7 +70,7 @@ class RegistrationViewModel(
         ).toUri()
 
         _uiState.update { state ->
-            state.copy(isImagePickerVisible = false, profileImage = outUri)
+            state.copy(profileImage = outUri)
         }
     }
 
@@ -78,7 +82,7 @@ class RegistrationViewModel(
             ).toUri()
 
             _uiState.update { state ->
-                state.copy(isImagePickerVisible = false, profileImage = outUri)
+                state.copy(profileImage = outUri)
             }
         }
     }
@@ -97,21 +101,45 @@ class RegistrationViewModel(
     }
 
     private fun onGoToSystemSettingsClicked() = withViewModelScope {
-        _uiState.update { state -> state.copy(isPermissionDeniedDialogVisible = false) }
+        _uiState.update { state -> state.copy() }
         app.openApplicationSettings()
     }
 
     private fun onPermissionDeniedDialogDismissed() = withViewModelScope {
-        _uiState.update { state -> state.copy(isPermissionDeniedDialogVisible = false) }
+        _uiState.update { state -> state.copy() }
     }
 
-    private fun goToHome() {
-        viewModelScope.launch {
-            navigator.navigate(
-                Destination.Graph.Home,
-                NavOptions(popUpTo = PopUpToOptions(Destination.Graph.Auth, inclusive = true))
-            )
-        }
+    private fun onNameChanged(text: String) = withViewModelScope {
+        _uiState.update { state -> state.copy(name = text) }
+    }
+
+    private fun onEmailChanged(text: String) = withViewModelScope {
+        _uiState.update { state -> state.copy(email = text) }
+    }
+
+    private fun onPhoneNumberChanged(text: String) = withViewModelScope {
+        _uiState.update { state -> state.copy(phoneNumber = text) }
+    }
+
+    private fun onPasswordChanged(text: String) = withViewModelScope {
+        _uiState.update { state -> state.copy(password = text) }
+    }
+
+    private fun onShowPasswordClicked() = withViewModelScope {
+        _uiState.update { state -> state.copy(isPasswordVisible = state.isPasswordVisible.not()) }
+    }
+
+    private fun onPasswordConfirmationChanged(text: String) = withViewModelScope {
+        _uiState.update { state -> state.copy(passwordConfirmation = text) }
+    }
+
+    private fun onCreateAccountClicked() = withViewModelScope {
+        _uiState.update { state -> state.copy(isLoading = true) }
+        delay(2_000L)
+        navigator.navigate(
+            Destination.Graph.Home,
+            NavOptions(popUpTo = PopUpToOptions(Destination.Graph.Auth, inclusive = true))
+        )
     }
 
     companion object {

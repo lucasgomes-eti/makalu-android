@@ -12,4 +12,10 @@
     <string name="don_t_have_an_account_yet">Don\'t have an account yet?</string>
     <string name="create_an_account">Create an account</string>
     <string name="registration">Registration</string>
+    <string name="accessibility_name_icon">Name icon</string>
+    <string name="accessibility_phone_number_icon">Phone number icon</string>
+    <string name="phone_number">Phone number</string>
+    <string name="accessibility_profile_picture">Profile picture</string>
+    <string name="name">Name</string>
+    <string name="confirm_password">Confirm password</string>
 </resources>

@@ -3,7 +3,6 @@ package eti.lucasgomes.makalu.features.auth.registration.model
 import android.net.Uri
 
 sealed interface RegistrationAction {
-    data class EmailChanged(val text: String) : RegistrationAction
     data object ProfileImageClicked : RegistrationAction
     data object ImagePickerDismissed : RegistrationAction
     data class GalleryImageObtained(val uri: Uri?) : RegistrationAction
@@ -15,4 +14,11 @@ sealed interface RegistrationAction {
 
     data object GoToSystemSettingsClicked : RegistrationAction
     data object PermissionDeniedDialogDismissed : RegistrationAction
+    data class NameChanged(val text: String) : RegistrationAction
+    data class EmailChanged(val text: String) : RegistrationAction
+    data class PhoneNumberChanged(val text: String) : RegistrationAction
+    data class PasswordChanged(val text: String) : RegistrationAction
+    data object ShowPasswordClicked : RegistrationAction
+    data class PasswordConfirmationChanged(val text: String) : RegistrationAction
+    data object CreateAccountClicked : RegistrationAction
 }
