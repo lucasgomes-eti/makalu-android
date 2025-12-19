@@ -18,4 +18,12 @@
     <string name="accessibility_profile_picture">Profile picture</string>
     <string name="name">Name</string>
     <string name="confirm_password">Confirm password</string>
+    <string name="name_is_required">Name is required</string>
+    <string name="email_is_required">Email is required</string>
+    <string name="email_must_have_valid_format">Email must have valid format</string>
+    <string name="password_is_required">Password is required</string>
+    <string name="password_must_have_at_least_characters">Password must have at least %1$d characters</string>
+    <string name="password_must_have_letters_and_numbers">Password must have letters and numbers</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+    <string name="phone_number_is_required">Phone number is required</string>
 </resources>

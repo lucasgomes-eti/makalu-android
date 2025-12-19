@@ -92,6 +92,12 @@ internal fun RegistrationScreen(
         TextField(
             label = { Text(stringResource(R.string.name)) },
             enabled = uiState.isLoading.not(),
+            isError = uiState.nameError.asString().isNotBlank(),
+            supportingText = if (uiState.nameError.asString().isNotBlank()) {
+                { Text(uiState.nameError.asString()) }
+            } else {
+                null
+            },
             modifier = Modifier.fillMaxWidth(),
             value = uiState.name,
             onValueChange = { onAction(RegistrationAction.NameChanged(it)) },
@@ -111,6 +117,12 @@ internal fun RegistrationScreen(
         TextField(
             label = { Text(stringResource(R.string.email)) },
             enabled = uiState.isLoading.not(),
+            isError = uiState.emailError.asString().isNotBlank(),
+            supportingText = if (uiState.emailError.asString().isNotBlank()) {
+                { Text(uiState.emailError.asString()) }
+            } else {
+                null
+            },
             modifier = Modifier.fillMaxWidth(),
             value = uiState.email,
             onValueChange = { onAction(RegistrationAction.EmailChanged(it)) },
@@ -130,6 +142,12 @@ internal fun RegistrationScreen(
         TextField(
             label = { Text(stringResource(R.string.phone_number)) },
             enabled = uiState.isLoading.not(),
+            isError = uiState.phoneNumberError.asString().isNotBlank(),
+            supportingText = if (uiState.phoneNumberError.asString().isNotBlank()) {
+                { Text(uiState.phoneNumberError.asString()) }
+            } else {
+                null
+            },
             modifier = Modifier.fillMaxWidth(),
             value = uiState.phoneNumber,
             onValueChange = { onAction(RegistrationAction.PhoneNumberChanged(it)) },
@@ -148,6 +166,12 @@ internal fun RegistrationScreen(
         TextField(
             label = { Text(stringResource(R.string.password)) },
             enabled = uiState.isLoading.not(),
+            isError = uiState.passwordError.asString().isNotBlank(),
+            supportingText = if (uiState.passwordError.asString().isNotBlank()) {
+                { Text(uiState.passwordError.asString()) }
+            } else {
+                null
+            },
             modifier = Modifier.fillMaxWidth(),
             value = uiState.password,
             onValueChange = { onAction(RegistrationAction.PasswordChanged(it)) },
@@ -184,6 +208,12 @@ internal fun RegistrationScreen(
         TextField(
             label = { Text(stringResource(R.string.confirm_password)) },
             enabled = uiState.isLoading.not(),
+            isError = uiState.passwordConfirmationError.asString().isNotBlank(),
+            supportingText = if (uiState.passwordConfirmationError.asString().isNotBlank()) {
+                { Text(uiState.passwordConfirmationError.asString()) }
+            } else {
+                null
+            },
             modifier = Modifier.fillMaxWidth(),
             value = uiState.passwordConfirmation,
             onValueChange = { onAction(RegistrationAction.PasswordConfirmationChanged(it)) },
