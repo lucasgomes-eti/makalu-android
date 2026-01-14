@@ -64,17 +64,19 @@ class RegistrationViewModel(
     }
 
     private fun onImagePickerDismissed() = withViewModelScope {
-        _uiState.update { state -> state.copy() }
+        _uiState.update { state -> state.copy(isImagePickerVisible = false) }
     }
 
     private fun onGalleryImageObtained(uri: Uri?) = withViewModelScope {
-        val outUri = navigator.navigateForResult<String>(
-            Destination.Screen.ImagePreview(uri.toString()),
-            RequestKey.ImageCroppedUriOutput
-        ).toUri()
+        if (uri != null) {
+            val outUri = navigator.navigateForResult<String>(
+                Destination.Screen.ImagePreview(uri.toString()),
+                RequestKey.ImageCroppedUriOutput
+            ).toUri()
 
-        _uiState.update { state ->
-            state.copy(profileImage = outUri)
+            _uiState.update { state ->
+                state.copy(profileImage = outUri)
+            }
         }
     }
 

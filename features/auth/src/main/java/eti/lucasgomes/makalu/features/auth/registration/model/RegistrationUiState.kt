@@ -1,9 +1,10 @@
 package eti.lucasgomes.makalu.features.auth.registration.model
 
+import android.net.Uri
 import eti.lucasgomes.makalu.components.dsl.UiText
 
 data class RegistrationUiState(
-    val profileImage: Any? = null,
+    val profileImage: Uri? = null,
     val isImagePickerVisible: Boolean = false,
     val isPermissionDeniedDialogVisible: Boolean = false,
     val name: String = "",

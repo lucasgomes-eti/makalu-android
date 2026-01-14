@@ -1,7 +1,6 @@
 package eti.lucasgomes.makalu.features.auth.login.ui
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
 import eti.lucasgomes.makalu.features.auth.login.model.LoginAction
 import eti.lucasgomes.makalu.features.auth.login.model.LoginUiState
@@ -13,7 +12,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class LoginViewModel(private val navigator: Navigator) : ViewModel() {
 
@@ -46,18 +44,13 @@ class LoginViewModel(private val navigator: Navigator) : ViewModel() {
         _uiState.update { state -> state.copy(isLoading = true) }
         delay(2000)
         _uiState.update { state -> state.copy(isLoading = false) }
+        navigator.navigate(
+            Destination.Graph.Home,
+            NavOptions(popUpTo = PopUpToOptions(Destination.Graph.Auth, inclusive = true))
+        )
     }
 
     private fun onRegistrationClicked() = withViewModelScope {
         navigator.navigate(Destination.Screen.Registration)
-    }
-
-    private fun goToHome() {
-        viewModelScope.launch {
-            navigator.navigate(
-                Destination.Graph.Home,
-                NavOptions(popUpTo = PopUpToOptions(Destination.Graph.Auth, inclusive = true))
-            )
-        }
     }
 }
