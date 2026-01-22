@@ -12,12 +12,13 @@ lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.12.2"
 composeBom = "2026.01.00"
 kotlinxCoroutinesCore = "1.10.2"
-kotlinxSerialization = "1.9.0"
+kotlinxSerialization = "1.10.0"
 navigationCompose = "2.9.6"
 koin = "4.1.1"
 coilCompose = "3.3.0"
 material3 = "1.5.0-alpha12"
 cropKit = "1.1.0"
+ktor = "3.4.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,6 +40,11 @@ koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin"
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coilCompose" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coilCompose" }
 crop-kit = { group = "com.github.Tanish-Ranjan", name = "crop-kit", version.ref = "cropKit" }
+ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktor" }
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -58,4 +64,11 @@ compose = [
 coil = [
     "coil-compose",
     "coil-network-okhttp"
+]
+ktor = [
+    "ktor-client-android",
+    "ktor-client-core",
+    "ktor-serialization-kotlinx-json",
+    "ktor-client-content-negotiation",
+    "ktor-client-logging"
 ]

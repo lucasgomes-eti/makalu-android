@@ -19,4 +19,6 @@ dependencies {
     api(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.koin.core)
+    // Ktor
+    api(libs.bundles.ktor)
 }
