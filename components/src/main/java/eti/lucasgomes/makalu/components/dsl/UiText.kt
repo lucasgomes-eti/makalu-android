@@ -12,11 +12,14 @@ sealed interface UiText {
 
     data object Empty : UiText
 
+    data class PlainText(val text: String) : UiText
+
     @Composable
     fun asString(): String {
         return when (this) {
             is StringResource -> stringResource(id, *args.toTypedArray())
             Empty -> ""
+            is PlainText -> text
         }
     }
 }

@@ -1,33 +1,33 @@
 package eti.lucasgomes.makalu.features.auth.registration.ui
 
-import android.app.Application
 import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import eti.lucasgomes.makalu.components.CameraCaptureManager
 import eti.lucasgomes.makalu.components.dsl.UiText
-import eti.lucasgomes.makalu.components.ext.openApplicationSettings
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
+import eti.lucasgomes.makalu.features.auth.AuthClient
 import eti.lucasgomes.makalu.features.auth.R
-import eti.lucasgomes.makalu.features.auth.registration.model.CreateAccountRequest
+import eti.lucasgomes.makalu.features.auth.registration.model.RegisterRequest
 import eti.lucasgomes.makalu.features.auth.registration.model.RegistrationAction
 import eti.lucasgomes.makalu.features.auth.registration.model.RegistrationUiState
 import eti.lucasgomes.makalu.shared.REGEX_EMAIL
 import eti.lucasgomes.makalu.shared.REGEX_PASSWORD
 import eti.lucasgomes.makalu.shared.navigation.Destination
-import eti.lucasgomes.makalu.shared.navigation.NavOptions
 import eti.lucasgomes.makalu.shared.navigation.Navigator
-import eti.lucasgomes.makalu.shared.navigation.PopUpToOptions
+import eti.lucasgomes.makalu.shared.navigation.OSNavigation
 import eti.lucasgomes.makalu.shared.navigation.RequestKey
-import kotlinx.coroutines.delay
+import eti.lucasgomes.makalu.shared.network.onError
+import eti.lucasgomes.makalu.shared.network.onSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class RegistrationViewModel(
     private val navigator: Navigator,
-    private val app: Application,
-    private val cameraCaptureManager: CameraCaptureManager
+    private val cameraCaptureManager: CameraCaptureManager,
+    private val osNavigation: OSNavigation,
+    private val authClient: AuthClient
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegistrationUiState())
@@ -108,7 +108,7 @@ class RegistrationViewModel(
 
     private fun onGoToSystemSettingsClicked() = withViewModelScope {
         _uiState.update { state -> state.copy() }
-        app.openApplicationSettings()
+        osNavigation.openApplicationSettings()
     }
 
     private fun onPermissionDeniedDialogDismissed() = withViewModelScope {
@@ -119,21 +119,35 @@ class RegistrationViewModel(
         if (text.length > MAX_NAME_LENGTH)
             return@withViewModelScope
 
-        _uiState.update { state -> state.copy(name = text, nameError = UiText.Empty) }
+        _uiState.update { state -> state.copy(name = state.name.copy(text, error = UiText.Empty)) }
     }
 
     private fun onEmailChanged(text: String) = withViewModelScope {
         if (text.length > MAX_EMAIL_LENGTH)
             return@withViewModelScope
 
-        _uiState.update { state -> state.copy(email = text, emailError = UiText.Empty) }
+        _uiState.update { state ->
+            state.copy(
+                email = state.email.copy(
+                    text,
+                    error = UiText.Empty
+                )
+            )
+        }
     }
 
     private fun onPhoneNumberChanged(text: String) = withViewModelScope {
         if (text.length > MAX_PHONE_NUMBER_LENGTH)
             return@withViewModelScope
 
-        _uiState.update { state -> state.copy(phoneNumber = text, phoneNumberError = UiText.Empty) }
+        _uiState.update { state ->
+            state.copy(
+                phoneNumber = state.phoneNumber.copy(
+                    text,
+                    error = UiText.Empty
+                )
+            )
+        }
     }
 
     private fun onPasswordChanged(text: String) = withViewModelScope {
@@ -142,9 +156,11 @@ class RegistrationViewModel(
 
         _uiState.update { state ->
             state.copy(
-                password = text,
-                passwordError = UiText.Empty,
-                passwordConfirmationError = UiText.Empty
+                password = state.password.copy(
+                    text,
+                    error = UiText.Empty
+                ),
+                passwordConfirmation = state.passwordConfirmation.copy(error = UiText.Empty)
             )
         }
     }
@@ -159,9 +175,11 @@ class RegistrationViewModel(
 
         _uiState.update { state ->
             state.copy(
-                passwordConfirmation = text,
-                passwordConfirmationError = UiText.Empty,
-                passwordError = UiText.Empty
+                passwordConfirmation = state.passwordConfirmation.copy(
+                    text,
+                    error = UiText.Empty
+                ),
+                password = state.password.copy(error = UiText.Empty)
             )
         }
     }
@@ -169,27 +187,39 @@ class RegistrationViewModel(
     private fun onCreateAccountClicked() = withViewModelScope {
         _uiState.update { state -> state.copy(isLoading = true) }
         withValidUiState {
-            delay(2_000L)
-            navigator.navigate(
-                Destination.Graph.Home,
-                NavOptions(popUpTo = PopUpToOptions(Destination.Graph.Auth, inclusive = true))
-            )
+            register(it)
+//            navigator.navigate(
+//                Destination.Graph.Home,
+//                NavOptions(popUpTo = PopUpToOptions(Destination.Graph.Auth, inclusive = true))
+//            )
         }
     }
 
-    private suspend fun withValidUiState(block: suspend (CreateAccountRequest) -> Unit) {
+    private suspend fun register(request: RegisterRequest) {
+        authClient.register(request).onError {
+            _uiState.update { state ->
+                state.assignFieldErrors(it.fieldErrors)
+                    .copy(generalError = it.formatedMessage, isLoading = false)
+            }
+        }.onSuccess {
+            _uiState.update { state -> state.copy(generalError = "", isLoading = false) }
+            // TODO: call login
+        }
+    }
+
+    private suspend fun withValidUiState(block: suspend (RegisterRequest) -> Unit) {
         val state = uiState.value
         val isStateValid =
-            isNameValid(state.name) and
-                    isEmailValid(state.email) and
-                    isPhoneNumberValid(state.phoneNumber) and
+            isNameValid(state.name.text) and
+                    isEmailValid(state.email.text) and
+                    isPhoneNumberValid(state.phoneNumber.text) and
                     isPasswordValid(
-                        state.password,
-                        state.passwordConfirmation
+                        state.password.text,
+                        state.passwordConfirmation.text
                     )
 
         if (isStateValid)
-            block(buildCreateAccountRequest(state))
+            block(buildRegisterRequest(state))
     }
 
     private fun isNameValid(name: String): Boolean {
@@ -197,7 +227,7 @@ class RegistrationViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    nameError = UiText.StringResource(R.string.name_is_required)
+                    name = state.name.copy(error = UiText.StringResource(R.string.name_is_required))
                 )
             }
             return false
@@ -210,7 +240,7 @@ class RegistrationViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    emailError = UiText.StringResource(R.string.email_is_required)
+                    email = state.email.copy(error = UiText.StringResource(R.string.email_is_required))
                 )
             }
             return false
@@ -219,7 +249,7 @@ class RegistrationViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    emailError = UiText.StringResource(R.string.email_must_have_valid_format)
+                    email = state.email.copy(error = UiText.StringResource(R.string.email_must_have_valid_format))
                 )
             }
             return false
@@ -232,7 +262,7 @@ class RegistrationViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    phoneNumberError = UiText.StringResource(R.string.phone_number_is_required)
+                    phoneNumber = state.phoneNumber.copy(error = UiText.StringResource(R.string.phone_number_is_required))
                 )
             }
             return false
@@ -246,7 +276,7 @@ class RegistrationViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    passwordError = UiText.StringResource(R.string.password_is_required)
+                    password = state.password.copy(error = UiText.StringResource(R.string.password_is_required))
                 )
             }
             return false
@@ -255,9 +285,11 @@ class RegistrationViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    passwordError = UiText.StringResource(
-                        R.string.password_must_have_at_least_characters,
-                        listOf(MIN_PASSWORD_LENGTH)
+                    password = state.password.copy(
+                        error = UiText.StringResource(
+                            R.string.password_must_have_at_least_characters,
+                            listOf(MIN_PASSWORD_LENGTH)
+                        )
                     )
                 )
             }
@@ -267,7 +299,7 @@ class RegistrationViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    passwordError = UiText.StringResource(R.string.password_must_have_letters_and_numbers)
+                    password = state.password.copy(error = UiText.StringResource(R.string.password_must_have_letters_and_numbers))
                 )
             }
             return false
@@ -278,8 +310,8 @@ class RegistrationViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    passwordError = error,
-                    passwordConfirmationError = error
+                    password = state.password.copy(error = error),
+                    passwordConfirmation = state.passwordConfirmation.copy(error = error)
                 )
             }
             return false
@@ -288,12 +320,12 @@ class RegistrationViewModel(
         return true
     }
 
-    private fun buildCreateAccountRequest(state: RegistrationUiState): CreateAccountRequest {
-        return CreateAccountRequest(
-            name = state.name,
-            email = state.email,
-            phoneNumber = state.phoneNumber,
-            password = state.password
+    private fun buildRegisterRequest(state: RegistrationUiState): RegisterRequest {
+        return RegisterRequest(
+            name = state.name.text,
+            email = state.email.text,
+            phoneNumber = state.phoneNumber.text,
+            password = state.password.text
         )
     }
 

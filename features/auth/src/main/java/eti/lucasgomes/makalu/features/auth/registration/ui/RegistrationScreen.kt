@@ -1,5 +1,6 @@
 package eti.lucasgomes.makalu.features.auth.registration.ui
 
+import android.widget.Toast
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,10 +25,12 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -56,6 +59,13 @@ internal fun RegistrationScreen(
     onAction: (RegistrationAction) -> Unit
 ) {
     val keyBoardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
+
+    LaunchedEffect(uiState.generalError) {
+        if (uiState.generalError.isNotBlank()) {
+            Toast.makeText(context, uiState.generalError, Toast.LENGTH_LONG).show()
+        }
+    }
 
     ConfigureTopBar(
         title = stringResource(R.string.registration),
@@ -92,14 +102,14 @@ internal fun RegistrationScreen(
         TextField(
             label = { Text(stringResource(R.string.name)) },
             enabled = uiState.isLoading.not(),
-            isError = uiState.nameError.asString().isNotBlank(),
-            supportingText = if (uiState.nameError.asString().isNotBlank()) {
-                { Text(uiState.nameError.asString()) }
+            isError = uiState.name.hasError,
+            supportingText = if (uiState.name.hasError) {
+                { Text(uiState.name.error.asString()) }
             } else {
                 null
             },
             modifier = Modifier.fillMaxWidth(),
-            value = uiState.name,
+            value = uiState.name.text,
             onValueChange = { onAction(RegistrationAction.NameChanged(it)) },
             leadingIcon = {
                 Icon(
@@ -117,14 +127,14 @@ internal fun RegistrationScreen(
         TextField(
             label = { Text(stringResource(R.string.email)) },
             enabled = uiState.isLoading.not(),
-            isError = uiState.emailError.asString().isNotBlank(),
-            supportingText = if (uiState.emailError.asString().isNotBlank()) {
-                { Text(uiState.emailError.asString()) }
+            isError = uiState.email.hasError,
+            supportingText = if (uiState.email.hasError) {
+                { Text(uiState.email.error.asString()) }
             } else {
                 null
             },
             modifier = Modifier.fillMaxWidth(),
-            value = uiState.email,
+            value = uiState.email.text,
             onValueChange = { onAction(RegistrationAction.EmailChanged(it)) },
             leadingIcon = {
                 Icon(
@@ -142,14 +152,14 @@ internal fun RegistrationScreen(
         TextField(
             label = { Text(stringResource(R.string.phone_number)) },
             enabled = uiState.isLoading.not(),
-            isError = uiState.phoneNumberError.asString().isNotBlank(),
-            supportingText = if (uiState.phoneNumberError.asString().isNotBlank()) {
-                { Text(uiState.phoneNumberError.asString()) }
+            isError = uiState.phoneNumber.hasError,
+            supportingText = if (uiState.phoneNumber.hasError) {
+                { Text(uiState.phoneNumber.error.asString()) }
             } else {
                 null
             },
             modifier = Modifier.fillMaxWidth(),
-            value = uiState.phoneNumber,
+            value = uiState.phoneNumber.text,
             onValueChange = { onAction(RegistrationAction.PhoneNumberChanged(it)) },
             leadingIcon = {
                 Icon(
@@ -166,14 +176,14 @@ internal fun RegistrationScreen(
         TextField(
             label = { Text(stringResource(R.string.password)) },
             enabled = uiState.isLoading.not(),
-            isError = uiState.passwordError.asString().isNotBlank(),
-            supportingText = if (uiState.passwordError.asString().isNotBlank()) {
-                { Text(uiState.passwordError.asString()) }
+            isError = uiState.password.hasError,
+            supportingText = if (uiState.password.hasError) {
+                { Text(uiState.password.error.asString()) }
             } else {
                 null
             },
             modifier = Modifier.fillMaxWidth(),
-            value = uiState.password,
+            value = uiState.password.text,
             onValueChange = { onAction(RegistrationAction.PasswordChanged(it)) },
             leadingIcon = {
                 Icon(
@@ -208,14 +218,14 @@ internal fun RegistrationScreen(
         TextField(
             label = { Text(stringResource(R.string.confirm_password)) },
             enabled = uiState.isLoading.not(),
-            isError = uiState.passwordConfirmationError.asString().isNotBlank(),
-            supportingText = if (uiState.passwordConfirmationError.asString().isNotBlank()) {
-                { Text(uiState.passwordConfirmationError.asString()) }
+            isError = uiState.passwordConfirmation.hasError,
+            supportingText = if (uiState.passwordConfirmation.hasError) {
+                { Text(uiState.passwordConfirmation.error.asString()) }
             } else {
                 null
             },
             modifier = Modifier.fillMaxWidth(),
-            value = uiState.passwordConfirmation,
+            value = uiState.passwordConfirmation.text,
             onValueChange = { onAction(RegistrationAction.PasswordConfirmationChanged(it)) },
             leadingIcon = {
                 Icon(
