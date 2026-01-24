@@ -14,17 +14,16 @@ import eti.lucasgomes.makalu.features.home.HomeEntry
 import eti.lucasgomes.makalu.features.orders.OrdersEntry
 import eti.lucasgomes.makalu.features.profile.ProfileEntry
 import eti.lucasgomes.makalu.shared.navigation.Destination
-import eti.lucasgomes.makalu.shared.navigation.Navigator
 
 @Composable
 fun NavigationGraph(
-    concreteNavigator: NavHostController,
-    abstractNavigator: Navigator,
-    innerPadding: PaddingValues
+    navHostController: NavHostController,
+    innerPadding: PaddingValues,
+    hasAccessToken: Boolean
 ) {
     NavHost(
-        navController = concreteNavigator,
-        startDestination = abstractNavigator.startDestination
+        navController = navHostController,
+        startDestination = if (hasAccessToken) Destination.Graph.Home else Destination.Graph.Auth
     ) {
         navigation<Destination.Graph.Auth>(startDestination = Destination.Screen.Login) {
             composable<Destination.Screen.Login> { LoginEntry(innerPadding) }

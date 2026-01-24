@@ -3,7 +3,7 @@ package eti.lucasgomes.makalu.shared.navigation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 
-class DefaultNavigator(override val startDestination: Destination) : Navigator {
+class DefaultNavigator : Navigator {
     private val _navigationActions = Channel<NavigationAction>()
     override val navigationActions = _navigationActions.receiveAsFlow()
 

@@ -24,7 +24,7 @@ import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainComposable() {
+fun MainComposable(hasAccessToken: Boolean) {
     MakaluTheme {
         val abstractNavigator = koinInject<Navigator>()
         val concreteNavigator = rememberNavController()
@@ -48,7 +48,11 @@ fun MainComposable() {
                 LocalTopBarUiController provides topBarUiController,
                 LocalFabUiController provides fabUiController
             ) {
-                NavigationGraph(concreteNavigator, abstractNavigator, innerPadding)
+                NavigationGraph(
+                    navHostController = concreteNavigator,
+                    innerPadding = innerPadding,
+                    hasAccessToken = hasAccessToken
+                )
             }
         }
     }
