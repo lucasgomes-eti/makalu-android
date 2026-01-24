@@ -1,6 +1,8 @@
 package eti.lucasgomes.makalu.shared.network
 
+import androidx.datastore.core.DataStore
 import eti.lucasgomes.makalu.shared.MkLogger
+import eti.lucasgomes.makalu.shared.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
@@ -19,7 +21,8 @@ import kotlinx.serialization.json.Json
 import kotlin.coroutines.cancellation.CancellationException
 
 class HttpClientManager(
-    private val mkLogger: MkLogger
+    private val mkLogger: MkLogger,
+    private val dataStore: DataStore<Settings>
 ) {
 
     private var _httpClient: HttpClient? = null

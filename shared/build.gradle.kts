@@ -21,4 +21,6 @@ dependencies {
     implementation(libs.koin.core)
     // Ktor
     api(libs.bundles.ktor)
+    // DataStore
+    api(libs.datastore)
 }
