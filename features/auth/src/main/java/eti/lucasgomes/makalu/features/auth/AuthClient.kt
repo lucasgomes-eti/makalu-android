@@ -1,5 +1,6 @@
 package eti.lucasgomes.makalu.features.auth
 
+import eti.lucasgomes.makalu.features.auth.login.model.LoginRequest
 import eti.lucasgomes.makalu.features.auth.registration.model.RegisterRequest
 import eti.lucasgomes.makalu.features.auth.registration.model.RegisterResponse
 import eti.lucasgomes.makalu.shared.network.HttpClientManager
@@ -12,5 +13,12 @@ class AuthClient(private val httpClientManager: HttpClientManager) {
     suspend fun register(request: RegisterRequest): Resource<RegisterResponse> =
         httpClientManager.withApiResource {
             post("auth/register") { setBody(request) }
+        }
+
+    suspend fun login(request: LoginRequest): Resource<TokenPairResponse> =
+        httpClientManager.withApiResource(onSuccess = {
+            httpClientManager.installAuth()
+        }) {
+            post("auth/login") { setBody(request) }
         }
 }

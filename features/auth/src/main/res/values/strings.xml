@@ -26,4 +26,5 @@
     <string name="password_must_have_letters_and_numbers">Password must have letters and numbers</string>
     <string name="passwords_do_not_match">Passwords do not match</string>
     <string name="phone_number_is_required">Phone number is required</string>
+    <string name="account_created_but_login_failed">Account created but login failed. Redirecting to login page...</string>
 </resources>

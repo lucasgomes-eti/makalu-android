@@ -8,20 +8,25 @@ import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
 import eti.lucasgomes.makalu.features.auth.AuthClient
 import eti.lucasgomes.makalu.features.auth.R
+import eti.lucasgomes.makalu.features.auth.login.model.LoginRequest
 import eti.lucasgomes.makalu.features.auth.registration.model.RegisterRequest
 import eti.lucasgomes.makalu.features.auth.registration.model.RegistrationAction
 import eti.lucasgomes.makalu.features.auth.registration.model.RegistrationUiState
 import eti.lucasgomes.makalu.shared.REGEX_EMAIL
 import eti.lucasgomes.makalu.shared.REGEX_PASSWORD
 import eti.lucasgomes.makalu.shared.navigation.Destination
+import eti.lucasgomes.makalu.shared.navigation.NavOptions
 import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.shared.navigation.OSNavigation
+import eti.lucasgomes.makalu.shared.navigation.PopUpToOptions
 import eti.lucasgomes.makalu.shared.navigation.RequestKey
 import eti.lucasgomes.makalu.shared.network.onError
 import eti.lucasgomes.makalu.shared.network.onSuccess
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlin.time.Duration.Companion.seconds
 
 class RegistrationViewModel(
     private val navigator: Navigator,
@@ -56,6 +61,7 @@ class RegistrationViewModel(
             )
 
             RegistrationAction.CreateAccountClicked -> onCreateAccountClicked()
+            RegistrationAction.DismissError -> onDismissError()
         }
     }
 
@@ -188,22 +194,45 @@ class RegistrationViewModel(
         _uiState.update { state -> state.copy(isLoading = true) }
         withValidUiState {
             register(it)
-//            navigator.navigate(
-//                Destination.Graph.Home,
-//                NavOptions(popUpTo = PopUpToOptions(Destination.Graph.Auth, inclusive = true))
-//            )
         }
+    }
+
+    private fun onDismissError() = withViewModelScope {
+        _uiState.update { state -> state.copy(generalError = UiText.Empty) }
     }
 
     private suspend fun register(request: RegisterRequest) {
         authClient.register(request).onError {
             _uiState.update { state ->
                 state.assignFieldErrors(it.fieldErrors)
-                    .copy(generalError = it.formatedMessage, isLoading = false)
+                    .copy(generalError = UiText.PlainText(it.formatedMessage), isLoading = false)
             }
         }.onSuccess {
-            _uiState.update { state -> state.copy(generalError = "", isLoading = false) }
-            // TODO: call login
+            onRegisterSuccess(request)
+        }
+    }
+
+    private suspend fun onRegisterSuccess(request: RegisterRequest) {
+        authClient.login(LoginRequest(request.email, request.password)).onError {
+            _uiState.update { state ->
+                state.copy(
+                    generalError = UiText.StringResource(R.string.account_created_but_login_failed),
+                    isLoading = false
+                )
+            }
+            delay(5.seconds)
+            navigator.navigateUp()
+        }.onSuccess {
+            _uiState.update { state -> state.copy(generalError = UiText.Empty, isLoading = false) }
+            navigator.navigate(
+                Destination.Graph.Home,
+                NavOptions(
+                    popUpTo = PopUpToOptions(
+                        Destination.Graph.Auth,
+                        inclusive = true
+                    )
+                )
+            )
         }
     }
 

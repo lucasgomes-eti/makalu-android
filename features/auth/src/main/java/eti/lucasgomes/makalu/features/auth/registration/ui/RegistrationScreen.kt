@@ -1,6 +1,6 @@
 package eti.lucasgomes.makalu.features.auth.registration.ui
 
-import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,12 +25,10 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -46,7 +44,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
 import eti.lucasgomes.makalu.components.CameraPermissionDeniedDialog
 import eti.lucasgomes.makalu.components.appBars.ConfigureTopBar
+import eti.lucasgomes.makalu.components.banners.ErrorBanner
 import eti.lucasgomes.makalu.components.buttons.ExpressiveLoadingButton
+import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.pickers.SelectOrCaptureImagePicker
 import eti.lucasgomes.makalu.features.auth.R
 import eti.lucasgomes.makalu.features.auth.registration.model.RegistrationAction
@@ -59,13 +59,6 @@ internal fun RegistrationScreen(
     onAction: (RegistrationAction) -> Unit
 ) {
     val keyBoardController = LocalSoftwareKeyboardController.current
-    val context = LocalContext.current
-
-    LaunchedEffect(uiState.generalError) {
-        if (uiState.generalError.isNotBlank()) {
-            Toast.makeText(context, uiState.generalError, Toast.LENGTH_LONG).show()
-        }
-    }
 
     ConfigureTopBar(
         title = stringResource(R.string.registration),
@@ -79,6 +72,11 @@ internal fun RegistrationScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        AnimatedVisibility(uiState.generalError != UiText.Empty) {
+            ErrorBanner(uiState.generalError.asString()) {
+                onAction(RegistrationAction.DismissError)
+            }
+        }
         Box {
             val profilePicturePainter by rememberAsyncImagePainter(uiState.profileImage).state.collectAsStateWithLifecycle()
             Image(

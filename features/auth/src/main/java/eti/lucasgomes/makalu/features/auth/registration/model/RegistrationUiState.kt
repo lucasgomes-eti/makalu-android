@@ -18,7 +18,7 @@ data class RegistrationUiState(
     val isPasswordVisible: Boolean = false,
     val passwordConfirmation: TextFieldState = TextFieldState(),
     val isLoading: Boolean = false,
-    val generalError: String = "",
+    val generalError: UiText = UiText.Empty,
 ) : TextFieldErrorsAssignable {
     val isProfileImageLoaded get() = profileImage != null
 
