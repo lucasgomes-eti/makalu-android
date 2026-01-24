@@ -68,7 +68,7 @@ internal fun LoginScreen(uiState: LoginUiState, onAction: (LoginAction) -> Unit)
         )
         Text("Makalu", style = typography.displayLarge)
         TextField(
-            label = { Text(stringResource(R.string.email)) },
+            label = { Text(stringResource(eti.lucasgomes.makalu.components.R.string.email)) },
             modifier = Modifier.fillMaxWidth(),
             enabled = uiState.isLoading.not(),
             isError = uiState.email.hasError,

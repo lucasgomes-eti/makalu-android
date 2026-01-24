@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="email">Email</string>
     <string name="accessibility_makalu_logo">Makalu logo</string>
     <string name="accessibility_email_icon">Email icon</string>
     <string name="accessibility_password_icon">Password icon</string>
@@ -14,8 +13,6 @@
     <string name="registration">Registration</string>
     <string name="accessibility_name_icon">Name icon</string>
     <string name="accessibility_phone_number_icon">Phone number icon</string>
-    <string name="phone_number">Phone number</string>
-    <string name="accessibility_profile_picture">Profile picture</string>
     <string name="name">Name</string>
     <string name="confirm_password">Confirm password</string>
     <string name="name_is_required">Name is required</string>

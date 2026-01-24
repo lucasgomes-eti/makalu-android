@@ -82,11 +82,11 @@ internal fun RegistrationScreen(
             Image(
                 painter = if (uiState.isProfileImageLoaded) profilePicturePainter.painter
                     ?: painterResource(
-                        R.drawable.person,
+                        eti.lucasgomes.makalu.components.R.drawable.person,
                     ) else painterResource(
-                    R.drawable.person
+                    eti.lucasgomes.makalu.components.R.drawable.person
                 ),
-                contentDescription = stringResource(R.string.accessibility_profile_picture),
+                contentDescription = stringResource(eti.lucasgomes.makalu.components.R.string.accessibility_profile_picture),
                 modifier = Modifier
                     .size(128.dp)
                     .clip(CircleShape)
@@ -123,7 +123,7 @@ internal fun RegistrationScreen(
             ),
         )
         TextField(
-            label = { Text(stringResource(R.string.email)) },
+            label = { Text(stringResource(eti.lucasgomes.makalu.components.R.string.email)) },
             enabled = uiState.isLoading.not(),
             isError = uiState.email.hasError,
             supportingText = if (uiState.email.hasError) {
@@ -148,7 +148,7 @@ internal fun RegistrationScreen(
             ),
         )
         TextField(
-            label = { Text(stringResource(R.string.phone_number)) },
+            label = { Text(stringResource(eti.lucasgomes.makalu.components.R.string.email)) },
             enabled = uiState.isLoading.not(),
             isError = uiState.phoneNumber.hasError,
             supportingText = if (uiState.phoneNumber.hasError) {

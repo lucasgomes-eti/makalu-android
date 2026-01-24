@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="logout">Logout</string>
+    <string name="logout_double_check_header">Logout?</string>
+    <string name="logout_double_check_confirmation">If you logout, you will be taken to the login page and will have to authenticate again to use the app.</string>
 </resources>

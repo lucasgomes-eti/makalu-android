@@ -13,4 +13,7 @@
     <string name="please_grant_the_camera_permission">Please grant the camera permission to use this feature.</string>
     <string name="go_to_system_settings">Go to system settings</string>
     <string name="dismiss">Dismiss</string>
+    <string name="accessibility_profile_picture">Profile picture</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Phone number</string>
 </resources>
