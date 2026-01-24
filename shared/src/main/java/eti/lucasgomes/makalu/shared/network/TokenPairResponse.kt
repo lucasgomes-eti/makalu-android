@@ -1,4 +1,4 @@
-package eti.lucasgomes.makalu.features.auth
+package eti.lucasgomes.makalu.shared.network
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

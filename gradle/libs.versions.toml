@@ -46,6 +46,7 @@ ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref =
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
+ktor-client-auth = { group = "io.ktor", name = "ktor-client-auth", version.ref = "ktor" }
 datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
 
 [plugins]
@@ -72,5 +73,6 @@ ktor = [
     "ktor-client-core",
     "ktor-serialization-kotlinx-json",
     "ktor-client-content-negotiation",
-    "ktor-client-logging"
+    "ktor-client-logging",
+    "ktor-client-auth"
 ]

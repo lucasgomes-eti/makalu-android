@@ -2,36 +2,47 @@ package eti.lucasgomes.makalu.shared.network
 
 import androidx.datastore.core.DataStore
 import eti.lucasgomes.makalu.shared.MkLogger
+import eti.lucasgomes.makalu.shared.navigation.Destination
+import eti.lucasgomes.makalu.shared.navigation.NavOptions
+import eti.lucasgomes.makalu.shared.navigation.Navigator
+import eti.lucasgomes.makalu.shared.navigation.PopUpToOptions
 import eti.lucasgomes.makalu.shared.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BearerTokens
+import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.observer.ResponseObserver
 import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 import kotlin.coroutines.cancellation.CancellationException
 
 class HttpClientManager(
     private val mkLogger: MkLogger,
-    private val dataStore: DataStore<Settings>
+    private val dataStore: DataStore<Settings>,
+    private val navigator: Navigator
 ) {
 
     private var _httpClient: HttpClient? = null
 
-    suspend fun getClient(): HttpClient {
+    fun getClient(): HttpClient {
         return _httpClient ?: createHttpClient().also { _httpClient = it }
     }
 
-    private suspend fun createHttpClient(): HttpClient {
+    private fun createHttpClient(): HttpClient {
         return HttpClient(Android) {
             defaultRequest {
                 url(BASE_URL)
@@ -63,16 +74,67 @@ class HttpClientManager(
             install(DefaultRequest) {
                 header(HttpHeaders.ContentType, ContentType.Application.Json)
             }
+            install(Auth) {
+                bearer {
+                    loadTokens {
+                        val (accessToken, refreshToken) = dataStore.data.first()
+                        accessToken?.let { BearerTokens(it, refreshToken) }
+                    }
+                    refreshTokens {
+                        val refreshToken = oldTokens?.refreshToken ?: run {
+                            logOut()
+                            return@refreshTokens null
+                        }
+                        val response = client.post("auth/refresh") {
+                            setBody(RefreshTokenRequest(refreshToken))
+                        }
+
+                        val auth = when (response.status.value) {
+                            in 200..299 -> {
+                                response.body<TokenPairResponse>().also { auth ->
+                                    dataStore.updateData { settings ->
+                                        settings.copy(
+                                            accessToken = auth.accessToken,
+                                            refreshToken = auth.refreshToken
+                                        )
+                                    }
+                                }
+                            }
+
+                            else -> {
+                                logOut()
+                                null
+                            }
+                        }
+
+                        auth?.let {
+                            BearerTokens(it.accessToken, it.refreshToken)
+                        }
+                    }
+                }
+            }
         }
     }
 
-    suspend fun installAuth() {
+    fun installAuth() {
         refreshHttpClient()
     }
 
-    private suspend fun refreshHttpClient() {
+    private fun refreshHttpClient() {
         _httpClient?.close()
         _httpClient = createHttpClient()
+    }
+
+    private suspend fun logOut() {
+        dataStore.updateData { settings -> settings.copy(accessToken = null, refreshToken = null) }
+        navigator.navigate(
+            Destination.Graph.Auth, NavOptions(
+                popUpTo = PopUpToOptions(
+                    Destination.Graph.Auth,
+                    inclusive = false
+                )
+            )
+        )
     }
 
     suspend inline fun <reified T> withApiResource(
