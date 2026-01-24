@@ -5,6 +5,7 @@ import eti.lucasgomes.makalu.shared.navigation.DefaultNavigator
 import eti.lucasgomes.makalu.shared.navigation.Destination
 import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.shared.network.HttpClientManager
+import eti.lucasgomes.makalu.shared.network.LogoutUseCase
 import eti.lucasgomes.makalu.shared.settings.Settings
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -20,4 +21,5 @@ val sharedModule = module {
         DefaultNavigator(startDestination = if (accessToken != null) Destination.Graph.Home else Destination.Graph.Auth)
     }
     singleOf(::HttpClientManager)
+    singleOf(::LogoutUseCase)
 }

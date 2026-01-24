@@ -2,10 +2,6 @@ package eti.lucasgomes.makalu.shared.network
 
 import androidx.datastore.core.DataStore
 import eti.lucasgomes.makalu.shared.MkLogger
-import eti.lucasgomes.makalu.shared.navigation.Destination
-import eti.lucasgomes.makalu.shared.navigation.NavOptions
-import eti.lucasgomes.makalu.shared.navigation.Navigator
-import eti.lucasgomes.makalu.shared.navigation.PopUpToOptions
 import eti.lucasgomes.makalu.shared.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -33,7 +29,7 @@ import kotlin.coroutines.cancellation.CancellationException
 class HttpClientManager(
     private val mkLogger: MkLogger,
     private val dataStore: DataStore<Settings>,
-    private val navigator: Navigator
+    private val logoutUseCase: LogoutUseCase
 ) {
 
     private var _httpClient: HttpClient? = null
@@ -82,7 +78,7 @@ class HttpClientManager(
                     }
                     refreshTokens {
                         val refreshToken = oldTokens?.refreshToken ?: run {
-                            logOut()
+                            logoutUseCase()
                             return@refreshTokens null
                         }
                         val response = client.post("auth/refresh") {
@@ -102,7 +98,7 @@ class HttpClientManager(
                             }
 
                             else -> {
-                                logOut()
+                                logoutUseCase()
                                 null
                             }
                         }
@@ -123,18 +119,6 @@ class HttpClientManager(
     private fun refreshHttpClient() {
         _httpClient?.close()
         _httpClient = createHttpClient()
-    }
-
-    private suspend fun logOut() {
-        dataStore.updateData { settings -> settings.copy(accessToken = null, refreshToken = null) }
-        navigator.navigate(
-            Destination.Graph.Auth, NavOptions(
-                popUpTo = PopUpToOptions(
-                    Destination.Graph.Auth,
-                    inclusive = false
-                )
-            )
-        )
     }
 
     suspend inline fun <reified T> withApiResource(
