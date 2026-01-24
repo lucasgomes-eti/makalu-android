@@ -41,11 +41,25 @@ class LoginViewModel(
     }
 
     private fun onLoginChanged(text: String) = withViewModelScope {
-        _uiState.update { state -> state.copy(email = state.email.copy(text = text)) }
+        _uiState.update { state ->
+            state.copy(
+                email = state.email.copy(
+                    text = text,
+                    error = UiText.Empty
+                )
+            )
+        }
     }
 
     private fun onPasswordChanged(text: String) = withViewModelScope {
-        _uiState.update { state -> state.copy(password = state.password.copy(text = text)) }
+        _uiState.update { state ->
+            state.copy(
+                password = state.password.copy(
+                    text = text,
+                    UiText.Empty
+                )
+            )
+        }
     }
 
     private fun onShowPasswordClicked() = withViewModelScope {

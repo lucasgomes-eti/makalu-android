@@ -10,18 +10,18 @@ import eti.lucasgomes.makalu.shared.navigation.NavigationAction
 import kotlinx.coroutines.launch
 
 @Composable
-fun bindNavigationEvents(concreteNavigator: NavHostController): (NavigationAction) -> Unit {
+fun bindNavigationEvents(navHostController: NavHostController): (NavigationAction) -> Unit {
     val scope = rememberCoroutineScope()
     val owner = LocalLifecycleOwner.current
     return { action ->
         when (action) {
-            is NavigationAction.Navigate -> concreteNavigator.navigate(
+            is NavigationAction.Navigate -> navHostController.navigate(
                 action.destination,
                 bindNavigateOptions(action.navOptions)
             )
 
             is NavigationAction.NavigateForResult -> {
-                concreteNavigator.currentBackStackEntry?.savedStateHandle?.let { savedStateHandle ->
+                navHostController.currentBackStackEntry?.savedStateHandle?.let { savedStateHandle ->
                     savedStateHandle.getLiveData<Any?>(action.requestKey.toString())
                         .observe(owner) {
                             scope.launch {
@@ -30,17 +30,17 @@ fun bindNavigationEvents(concreteNavigator: NavHostController): (NavigationActio
                             }
                         }
                 }
-                concreteNavigator.navigate(action.destination)
+                navHostController.navigate(action.destination)
             }
 
-            NavigationAction.NavigateUp -> concreteNavigator.navigateUp()
+            NavigationAction.NavigateUp -> navHostController.navigateUp()
 
             is NavigationAction.NavigateUpWithResult<*> -> {
-                concreteNavigator.previousBackStackEntry?.savedStateHandle?.set(
+                navHostController.previousBackStackEntry?.savedStateHandle?.set(
                     action.requestKey.toString(),
                     action.result
                 )
-                concreteNavigator.navigateUp()
+                navHostController.navigateUp()
             }
         }
     }
