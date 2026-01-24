@@ -1,5 +1,6 @@
 package eti.lucasgomes.makalu.features.auth.login.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,8 +33,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import eti.lucasgomes.makalu.components.banners.ErrorBanner
 import eti.lucasgomes.makalu.components.buttons.ExpressiveLoadingButton
 import eti.lucasgomes.makalu.components.buttons.ExpressiveTextButton
+import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.features.auth.R
 import eti.lucasgomes.makalu.features.auth.login.model.LoginAction
 import eti.lucasgomes.makalu.features.auth.login.model.LoginUiState
@@ -52,6 +55,11 @@ internal fun LoginScreen(uiState: LoginUiState, onAction: (LoginAction) -> Unit)
         verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        AnimatedVisibility(uiState.generalError != UiText.Empty) {
+            ErrorBanner(uiState.generalError.asString()) {
+                onAction(LoginAction.DismissError)
+            }
+        }
         Icon(
             modifier = Modifier.size(128.dp),
             painter = painterResource(R.drawable.storefront),
@@ -63,7 +71,13 @@ internal fun LoginScreen(uiState: LoginUiState, onAction: (LoginAction) -> Unit)
             label = { Text(stringResource(R.string.email)) },
             modifier = Modifier.fillMaxWidth(),
             enabled = uiState.isLoading.not(),
-            value = uiState.email,
+            isError = uiState.email.hasError,
+            supportingText = if (uiState.email.hasError) {
+                { Text(uiState.email.error.asString()) }
+            } else {
+                null
+            },
+            value = uiState.email.text,
             onValueChange = { onAction(LoginAction.EmailChanged(it)) },
             leadingIcon = {
                 Icon(
@@ -82,7 +96,13 @@ internal fun LoginScreen(uiState: LoginUiState, onAction: (LoginAction) -> Unit)
             label = { Text(stringResource(R.string.password)) },
             modifier = Modifier.fillMaxWidth(),
             enabled = uiState.isLoading.not(),
-            value = uiState.password,
+            isError = uiState.password.hasError,
+            supportingText = if (uiState.password.hasError) {
+                { Text(uiState.password.error.asString()) }
+            } else {
+                null
+            },
+            value = uiState.password.text,
             onValueChange = { onAction(LoginAction.PasswordChanged(it)) },
             leadingIcon = {
                 Icon(

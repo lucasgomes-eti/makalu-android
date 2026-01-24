@@ -12,6 +12,8 @@ import eti.lucasgomes.makalu.features.auth.login.model.LoginRequest
 import eti.lucasgomes.makalu.features.auth.registration.model.RegisterRequest
 import eti.lucasgomes.makalu.features.auth.registration.model.RegistrationAction
 import eti.lucasgomes.makalu.features.auth.registration.model.RegistrationUiState
+import eti.lucasgomes.makalu.shared.MAX_PASSWORD_LENGTH
+import eti.lucasgomes.makalu.shared.MIN_PASSWORD_LENGTH
 import eti.lucasgomes.makalu.shared.REGEX_EMAIL
 import eti.lucasgomes.makalu.shared.REGEX_PASSWORD
 import eti.lucasgomes.makalu.shared.navigation.Destination
@@ -247,8 +249,11 @@ class RegistrationViewModel(
                         state.passwordConfirmation.text
                     )
 
-        if (isStateValid)
+        if (isStateValid) {
             block(buildRegisterRequest(state))
+        } else {
+            _uiState.update { state -> state.copy(isLoading = false) }
+        }
     }
 
     private fun isNameValid(name: String): Boolean {
@@ -363,7 +368,5 @@ class RegistrationViewModel(
         private const val MAX_NAME_LENGTH = 120
         private const val MAX_EMAIL_LENGTH = 120
         private const val MAX_PHONE_NUMBER_LENGTH = 15
-        private const val MAX_PASSWORD_LENGTH = 25
-        private const val MIN_PASSWORD_LENGTH = 8
     }
 }

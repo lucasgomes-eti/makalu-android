@@ -6,4 +6,5 @@ sealed interface LoginAction {
     data object ShowPasswordClicked : LoginAction
     data object LoginClicked : LoginAction
     data object RegistrationClicked : LoginAction
+    data object DismissError : LoginAction
 }
