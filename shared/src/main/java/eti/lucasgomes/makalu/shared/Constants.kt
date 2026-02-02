@@ -8,3 +8,5 @@ val REGEX_PASSWORD = "^(?=.*[A-Za-z])(?=.*\\d).+$".toRegex()
 const val MAX_PASSWORD_LENGTH = 25
 
 const val MIN_PASSWORD_LENGTH = 8
+
+const val PROFILE_PIC_TEMP_FILE_PREFIX = "profile_pic_"

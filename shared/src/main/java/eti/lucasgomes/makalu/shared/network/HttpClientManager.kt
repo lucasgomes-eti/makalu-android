@@ -161,7 +161,7 @@ class HttpClientManager(
     }
 
     companion object {
-        private const val BASE_URL: String = "https://makalu-development.up.railway.app/"
+        const val BASE_URL: String = "https://makalu-development.up.railway.app/"
         private const val TIME_OUT = 6000
     }
 }

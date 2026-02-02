@@ -14,6 +14,7 @@ import eti.lucasgomes.makalu.features.auth.registration.model.RegistrationAction
 import eti.lucasgomes.makalu.features.auth.registration.model.RegistrationUiState
 import eti.lucasgomes.makalu.shared.MAX_PASSWORD_LENGTH
 import eti.lucasgomes.makalu.shared.MIN_PASSWORD_LENGTH
+import eti.lucasgomes.makalu.shared.PROFILE_PIC_TEMP_FILE_PREFIX
 import eti.lucasgomes.makalu.shared.REGEX_EMAIL
 import eti.lucasgomes.makalu.shared.REGEX_PASSWORD
 import eti.lucasgomes.makalu.shared.navigation.Destination
@@ -34,7 +35,7 @@ class RegistrationViewModel(
     private val navigator: Navigator,
     private val cameraCaptureManager: CameraCaptureManager,
     private val osNavigation: OSNavigation,
-    private val authClient: AuthClient
+    private val authClient: AuthClient,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegistrationUiState())
@@ -83,7 +84,7 @@ class RegistrationViewModel(
             ).toUri()
 
             _uiState.update { state ->
-                state.copy(profileImage = outUri)
+                state.copy(profileImage = outUri, isImagePickerVisible = false)
             }
         }
     }
@@ -96,7 +97,7 @@ class RegistrationViewModel(
             ).toUri()
 
             _uiState.update { state ->
-                state.copy(profileImage = outUri)
+                state.copy(profileImage = outUri, isImagePickerVisible = false)
             }
         }
     }
@@ -106,7 +107,7 @@ class RegistrationViewModel(
         launchCamera: (Uri) -> Unit
     ) = withViewModelScope {
         if (isGranted) {
-            cameraCaptureManager.capture(IMAGE_TEMP_FILE_PREFIX) {
+            cameraCaptureManager.capture(PROFILE_PIC_TEMP_FILE_PREFIX) {
                 launchCamera(it)
             }
         } else {
@@ -115,7 +116,6 @@ class RegistrationViewModel(
     }
 
     private fun onGoToSystemSettingsClicked() = withViewModelScope {
-        _uiState.update { state -> state.copy() }
         osNavigation.openApplicationSettings()
     }
 
@@ -225,17 +225,37 @@ class RegistrationViewModel(
             delay(5.seconds)
             navigator.navigateUp()
         }.onSuccess {
-            _uiState.update { state -> state.copy(generalError = UiText.Empty, isLoading = false) }
-            navigator.navigate(
-                Destination.Graph.Home,
-                NavOptions(
-                    popUpTo = PopUpToOptions(
-                        Destination.Graph.Auth,
-                        inclusive = true
-                    )
+            _uiState.value.profileImage?.let { uri ->
+                _uiState.update { state -> state.copy(imageUploadLoading = true) }
+                authClient.uploadImage(uri).onError {
+                    _uiState.update { state ->
+                        state.copy(
+                            generalError = UiText.StringResource(
+                                R.string.profile_image_upload_failed, listOf(it.formatedMessage)
+                            ), imageUploadLoading = false
+                        )
+                    }
+                    delay(5.seconds)
+                    navigateToHome()
+                }.onSuccess {
+                    _uiState.update { state -> state.copy(imageUploadLoading = false) }
+                    navigateToHome()
+                }
+            } ?: navigateToHome()
+        }
+    }
+
+    private suspend fun navigateToHome() {
+        _uiState.update { state -> state.copy(generalError = UiText.Empty, isLoading = false) }
+        navigator.navigate(
+            Destination.Graph.Home,
+            NavOptions(
+                popUpTo = PopUpToOptions(
+                    Destination.Graph.Auth,
+                    inclusive = true
                 )
             )
-        }
+        )
     }
 
     private suspend fun withValidUiState(block: suspend (RegisterRequest) -> Unit) {
@@ -364,7 +384,6 @@ class RegistrationViewModel(
     }
 
     companion object {
-        private const val IMAGE_TEMP_FILE_PREFIX = "profile_pic_"
         private const val MAX_NAME_LENGTH = 120
         private const val MAX_EMAIL_LENGTH = 120
         private const val MAX_PHONE_NUMBER_LENGTH = 15

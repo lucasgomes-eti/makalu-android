@@ -24,4 +24,5 @@
     <string name="passwords_do_not_match">Passwords do not match</string>
     <string name="phone_number_is_required">Phone number is required</string>
     <string name="account_created_but_login_failed">Account created but login failed. Redirecting to login page...</string>
+    <string name="profile_image_upload_failed">Profile image upload failed. Try again later from the profile menu. Redirecting to home in 5s. Detailed error: %1$s</string>
 </resources>

@@ -8,6 +8,10 @@ data class ProfileResponse(
     val id: Long,
     val name: String,
     val email: String,
+
     @SerialName("phone_number")
     val phoneNumber: String,
+
+    @SerialName("profile_image_id")
+    val profileImageId: Long?
 )

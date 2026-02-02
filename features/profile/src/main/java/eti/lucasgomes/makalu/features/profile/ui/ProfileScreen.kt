@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +27,7 @@ import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,9 +36,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.rememberAsyncImagePainter
+import eti.lucasgomes.makalu.components.CameraPermissionDeniedDialog
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
 import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 import eti.lucasgomes.makalu.components.dsl.UiText
+import eti.lucasgomes.makalu.components.pickers.SelectOrCaptureImagePicker
 import eti.lucasgomes.makalu.features.profile.R
 import eti.lucasgomes.makalu.features.profile.model.ProfileAction
 import eti.lucasgomes.makalu.features.profile.model.ProfileUiState
@@ -66,14 +72,29 @@ internal fun ProfileScreen(uiState: ProfileUiState, onAction: (ProfileAction) ->
                 if (isLoading) {
                     LoadingIndicator()
                 } else {
-                    Image(
-                        painter = painterResource(eti.lucasgomes.makalu.components.R.drawable.person),
-                        contentDescription = stringResource(eti.lucasgomes.makalu.components.R.string.accessibility_profile_picture),
-                        modifier = Modifier
-                            .size(128.dp)
-                            .clip(CircleShape)
-                            .background(colorScheme.secondaryContainer)
-                    )
+                    Box(contentAlignment = Alignment.Center) {
+                        val profilePicturePainter by rememberAsyncImagePainter(uiState.imageUrlString).state.collectAsStateWithLifecycle()
+                        Image(
+                            painter = if (uiState.isProfileImageLoaded) profilePicturePainter.painter
+                                ?: painterResource(
+                                    eti.lucasgomes.makalu.components.R.drawable.person,
+                                ) else painterResource(
+                                eti.lucasgomes.makalu.components.R.drawable.person
+                            ),
+                            contentDescription = stringResource(eti.lucasgomes.makalu.components.R.string.accessibility_profile_picture),
+                            modifier = Modifier
+                                .size(128.dp)
+                                .clip(CircleShape)
+                                .background(colorScheme.secondaryContainer)
+                                .clickable(
+                                    enabled = uiState.isLoading.not(),
+                                    role = Role.Image,
+                                    onClick = { onAction(ProfileAction.ProfileImageClicked) })
+                        )
+                        if (uiState.imageUploadLoading) {
+                            LoadingIndicator()
+                        }
+                    }
                     Text(uiState.name, style = typography.titleLarge)
                     Column {
                         Text(
@@ -123,6 +144,37 @@ internal fun ProfileScreen(uiState: ProfileUiState, onAction: (ProfileAction) ->
         LogoutDoubleCheckDialog(
             onDismissRequest = { onAction(ProfileAction.LogoutDialogDismissed) },
             onLogout = { onAction(ProfileAction.LogoutConfirmed) })
+    }
+
+    if (uiState.isImagePickerVisible) {
+        SelectOrCaptureImagePicker(
+            onGalleryImageObtained = {
+                onAction(ProfileAction.GalleryImageObtained(it))
+            },
+            onCameraImageTaken = {
+                onAction(ProfileAction.CameraImageTaken(it))
+
+            },
+            onPermissionLauncherResultReceived = { permissionGranted, launchCamera ->
+                onAction(
+                    ProfileAction.PermissionLauncherResultReceived(
+                        isGranted = permissionGranted,
+                        launchCamera = { uri ->
+                            launchCamera(uri)
+                        })
+                )
+            },
+            onDismissRequest = { onAction(ProfileAction.ImagePickerDismissed) }
+        )
+    }
+    if (uiState.isPermissionDeniedDialogVisible) {
+        CameraPermissionDeniedDialog(
+            onDismissRequest = { onAction(ProfileAction.PermissionDeniedDialogDismissed) },
+            onGoToSystemSettings = {
+                onAction(
+                    ProfileAction.GoToSystemSettingsClicked
+                )
+            })
     }
 }
 

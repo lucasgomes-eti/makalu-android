@@ -8,5 +8,11 @@ data class ProfileUiState(
     val name: String = "",
     val email: String = "",
     val phoneNumber: String = "",
-    val isLogoutDialogVisible: Boolean = false
-)
+    val isLogoutDialogVisible: Boolean = false,
+    val imageUrlString: String? = null,
+    val isImagePickerVisible: Boolean = false,
+    val isPermissionDeniedDialogVisible: Boolean = false,
+    val imageUploadLoading: Boolean = false,
+) {
+    val isProfileImageLoaded get() = imageUrlString != null
+}

@@ -19,8 +19,10 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -52,7 +54,7 @@ import eti.lucasgomes.makalu.features.auth.R
 import eti.lucasgomes.makalu.features.auth.registration.model.RegistrationAction
 import eti.lucasgomes.makalu.features.auth.registration.model.RegistrationUiState
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun RegistrationScreen(
     uiState: RegistrationUiState,
@@ -77,7 +79,7 @@ internal fun RegistrationScreen(
                 onAction(RegistrationAction.DismissError)
             }
         }
-        Box {
+        Box(contentAlignment = Alignment.Center) {
             val profilePicturePainter by rememberAsyncImagePainter(uiState.profileImage).state.collectAsStateWithLifecycle()
             Image(
                 painter = if (uiState.isProfileImageLoaded) profilePicturePainter.painter
@@ -96,6 +98,9 @@ internal fun RegistrationScreen(
                         role = Role.Image,
                         onClick = { onAction(RegistrationAction.ProfileImageClicked) })
             )
+            if (uiState.imageUploadLoading) {
+                LoadingIndicator()
+            }
         }
         TextField(
             label = { Text(stringResource(R.string.name)) },
@@ -148,7 +153,7 @@ internal fun RegistrationScreen(
             ),
         )
         TextField(
-            label = { Text(stringResource(eti.lucasgomes.makalu.components.R.string.email)) },
+            label = { Text(stringResource(eti.lucasgomes.makalu.components.R.string.phone_number)) },
             enabled = uiState.isLoading.not(),
             isError = uiState.phoneNumber.hasError,
             supportingText = if (uiState.phoneNumber.hasError) {
