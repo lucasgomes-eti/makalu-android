@@ -12,4 +12,5 @@
     <string name="login">Login</string>
     <string name="dismiss">Dismiss</string>
     <string name="loading_address">Loading Address…</string>
+    <string name="all">All</string>
 </resources>

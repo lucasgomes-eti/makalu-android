@@ -1,19 +1,25 @@
 package eti.lucasgomes.makalu.features.home.ui
 
 import androidx.lifecycle.ViewModel
+import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
-import eti.lucasgomes.makalu.features.home.ui.model.FilterUiState
+import eti.lucasgomes.makalu.features.home.HomeClient
+import eti.lucasgomes.makalu.features.home.ui.model.CategoryUiState
 import eti.lucasgomes.makalu.features.home.ui.model.HomeAction
 import eti.lucasgomes.makalu.features.home.ui.model.HomeUiState
 import eti.lucasgomes.makalu.features.home.ui.model.StoreUiState
 import eti.lucasgomes.makalu.shared.navigation.Destination
 import eti.lucasgomes.makalu.shared.navigation.Navigator
+import eti.lucasgomes.makalu.shared.network.onSuccess
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-internal class HomeViewModel(private val navigator: Navigator) : ViewModel() {
+internal class HomeViewModel(
+    private val navigator: Navigator,
+    private val homeClient: HomeClient
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
@@ -25,6 +31,7 @@ internal class HomeViewModel(private val navigator: Navigator) : ViewModel() {
             HomeAction.StoreClicked -> onStoreClicked()
             HomeAction.AuthClicked -> onAuthClicked()
             HomeAction.AuthDialogDismissed -> onAuthDialogDismissed()
+            is HomeAction.CategoryClicked -> onCategoryClicked(action.index)
         }
     }
 
@@ -37,23 +44,25 @@ internal class HomeViewModel(private val navigator: Navigator) : ViewModel() {
                 stores = listOf(StoreUiState.Loading)
             )
         }
+
+        homeClient.getCategories().onSuccess {
+            _uiState.update { state ->
+                state.copy(
+                    isFiltersLoading = false,
+                    categories = it.map { category ->
+                        CategoryUiState(
+                            category.id,
+                            UiText.PlainText(category.description),
+                            false
+                        )
+                    },
+                )
+            }
+        }
+
         delay(1_000L)
         _uiState.update { state ->
             state.copy(address = "4140 Parker Rd. Allentown", isAddressLoading = false)
-        }
-        delay(1_000L)
-        _uiState.update { state ->
-            state.copy(
-                filters = listOf(
-                    FilterUiState("All", true),
-                    FilterUiState("Burgers", false),
-                    FilterUiState("Pizza", false),
-                    FilterUiState("Sushi", false),
-                    FilterUiState("Italian", false),
-                    FilterUiState("Chinese", false),
-                ),
-                isFiltersLoading = false
-            )
         }
         delay(1_000L)
         _uiState.update { state ->
@@ -99,5 +108,13 @@ internal class HomeViewModel(private val navigator: Navigator) : ViewModel() {
 
     private fun onAuthDialogDismissed() = withViewModelScope {
         _uiState.update { state -> state.copy(isAuthDialogVisible = false) }
+    }
+
+    private fun onCategoryClicked(index: Int) = withViewModelScope {
+        _uiState.update { state ->
+            val list = state.categories.toMutableList()
+            list[index] = list[index].copy(isSelected = list[index].isSelected.not())
+            state.copy(categories = list)
+        }
     }
 }

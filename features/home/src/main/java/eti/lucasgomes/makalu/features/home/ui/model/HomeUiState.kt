@@ -2,7 +2,7 @@ package eti.lucasgomes.makalu.features.home.ui.model
 
 internal data class HomeUiState(
     val address: String = "",
-    val filters: List<FilterUiState> = emptyList(),
+    val categories: List<CategoryUiState> = emptyList(),
     val stores: List<StoreUiState> = emptyList(),
     val isAuthDialogVisible: Boolean = false,
     val isAddressLoading: Boolean = false,

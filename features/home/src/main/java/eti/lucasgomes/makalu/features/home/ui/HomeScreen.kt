@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
@@ -50,12 +51,13 @@ import eti.lucasgomes.makalu.components.ExpressivePullToRefreshIndicator
 import eti.lucasgomes.makalu.components.buttons.ConfigureFab
 import eti.lucasgomes.makalu.components.buttons.ExpressiveTextButton
 import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
+import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.features.home.R
 import eti.lucasgomes.makalu.features.home.ui.components.LoadingStoresListItem
 import eti.lucasgomes.makalu.features.home.ui.components.NoStoresListItem
 import eti.lucasgomes.makalu.features.home.ui.components.RequireAuthDialog
 import eti.lucasgomes.makalu.features.home.ui.components.StoreListItem
-import eti.lucasgomes.makalu.features.home.ui.model.FilterUiState
+import eti.lucasgomes.makalu.features.home.ui.model.CategoryUiState
 import eti.lucasgomes.makalu.features.home.ui.model.HomeAction
 import eti.lucasgomes.makalu.features.home.ui.model.HomeUiState
 import eti.lucasgomes.makalu.features.home.ui.model.StoreUiState
@@ -150,11 +152,14 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp)
                 ) {
-                    items(uiState.filters) { category ->
+                    itemsIndexed(
+                        uiState.categories,
+                        key = { _, category -> category.id }) { i, category ->
                         FilterChip(
                             selected = category.isSelected,
-                            label = { Text(category.label) },
-                            onClick = {})
+                            label = { Text(category.label.asString()) },
+                            onClick = { onAction(HomeAction.CategoryClicked(i)) },
+                        )
                     }
                 }
             }
@@ -198,10 +203,10 @@ private fun HomePreview() {
     HomeScreen(
         HomeUiState(
             address = "123 Main St",
-            filters = listOf(
-                FilterUiState("All", true),
-                FilterUiState("Coffee", false),
-                FilterUiState("Pizza", false),
+            categories = listOf(
+                CategoryUiState(1, UiText.PlainText("All"), true),
+                CategoryUiState(2, UiText.PlainText("Coffee"), false),
+                CategoryUiState(3, UiText.PlainText("Pizza"), false),
             ),
             stores = listOf(
                 StoreUiState.Data(
