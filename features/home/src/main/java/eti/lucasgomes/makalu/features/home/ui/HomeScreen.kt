@@ -210,6 +210,7 @@ private fun HomePreview() {
             ),
             stores = listOf(
                 StoreUiState.Data(
+                    id = 1,
                     name = "Scary's",
                     category = "Burger",
                     logoUrl = "https://picsum.photos/200",

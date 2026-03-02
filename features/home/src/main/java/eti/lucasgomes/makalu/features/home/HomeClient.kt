@@ -9,7 +9,8 @@ class HomeClient(
 ) {
 
     suspend fun getCategories(): Resource<List<CategoryResponse>> =
-        httpClientManager.withApiResource {
-            get("/categories")
-        }
+        httpClientManager.withApiResource { get("/categories") }
+
+    suspend fun getStores(): Resource<List<StoreResponse>> =
+        httpClientManager.withApiResource { get("/stores") }
 }

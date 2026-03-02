@@ -10,6 +10,8 @@ import eti.lucasgomes.makalu.features.home.ui.model.HomeUiState
 import eti.lucasgomes.makalu.features.home.ui.model.StoreUiState
 import eti.lucasgomes.makalu.shared.navigation.Destination
 import eti.lucasgomes.makalu.shared.navigation.Navigator
+import eti.lucasgomes.makalu.shared.network.HttpClientManager.Companion.BASE_URL
+import eti.lucasgomes.makalu.shared.network.onError
 import eti.lucasgomes.makalu.shared.network.onSuccess
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,41 +66,51 @@ internal class HomeViewModel(
         _uiState.update { state ->
             state.copy(address = "4140 Parker Rd. Allentown", isAddressLoading = false)
         }
-        delay(1_000L)
-        _uiState.update { state ->
-            state.copy(
-                stores = listOf(StoreUiState.NoContent),
-                isStoresLoading = false,
-            )
+
+        fetchStores()
+    }
+
+    private fun fetchStores() = withViewModelScope {
+        homeClient.getStores().onError {
+            _uiState.update { state ->
+                state.copy(
+                    stores = listOf(StoreUiState.NoContent),
+                    isStoresLoading = false,
+                )
+            }
+        }.onSuccess {
+            _uiState.update { state ->
+                state.copy(
+                    stores = it.map { store ->
+                        StoreUiState.Data(
+                            store.id,
+                            store.name,
+                            store.categories.joinToString(", ") { category -> category.description },
+                            logoUrl = mapLogoImageIdToUrl(store.logoImageId),
+                            coverUrl = mapCoverImageIdToUrl(store.coverImageId)
+                        )
+                    },
+                    isStoresLoading = false,
+                )
+            }
         }
+    }
+
+    private fun mapLogoImageIdToUrl(imageId: Long?): String? = imageId?.let { id ->
+        "${BASE_URL}stores/logo-image/$id"
+    }
+
+    private fun mapCoverImageIdToUrl(imageId: Long?): String? = imageId?.let { id ->
+        "${BASE_URL}stores/cover-image/$id"
     }
 
     private fun onRefreshStores() = withViewModelScope {
         _uiState.update { state -> state.copy(isStoresLoading = true) }
-        delay(2_000L)
-        _uiState.update { state ->
-            state.copy(
-                stores = listOf(
-                    StoreUiState.Data(
-                        "McDonald's",
-                        "Burgers",
-                        logoUrl = "https://logodix.com/logo/35948.jpg",
-                        coverUrl = "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=999&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    ),
-                    StoreUiState.Data(
-                        "Domino's",
-                        "Pizza",
-                        logoUrl = "https://logodix.com/logo/1066761.png",
-                        coverUrl = "https://images.unsplash.com/photo-1579751626657-72bc17010498?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    ),
-                ),
-                isStoresLoading = false
-            )
-        }
+        fetchStores()
     }
 
     private fun onStoreClicked() = withViewModelScope {
-        _uiState.update { state -> state.copy(isAuthDialogVisible = true) }
+        // TODO: Open store menu
     }
 
     private fun onAuthClicked() = withViewModelScope {
