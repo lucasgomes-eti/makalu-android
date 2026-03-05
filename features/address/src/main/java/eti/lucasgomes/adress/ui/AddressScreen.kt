@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import eti.lucasgomes.adress.ui.model.AddressAction
 import eti.lucasgomes.adress.ui.model.AddressUiState
 import eti.lucasgomes.makalu.components.appBars.ConfigureTopBar
+import eti.lucasgomes.makalu.components.buttons.ExpressiveLoadingButton
 import eti.lucasgomes.makalu.features.adress.R
 
 @Composable
@@ -51,8 +53,15 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
         TextField(
             label = { Text("Zip code") },
             modifier = Modifier.fillMaxWidth(),
-            value = uiState.zipCode,
+            value = uiState.zipCode.text,
             onValueChange = { onAction(AddressAction.ZipCodeChanged(it)) },
+            enabled = uiState.isLoading.not(),
+            isError = uiState.zipCode.hasError,
+            supportingText = if (uiState.zipCode.hasError) {
+                { Text(uiState.zipCode.error.asString()) }
+            } else {
+                null
+            },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.NumberPassword,
                 imeAction = ImeAction.Next,
@@ -62,8 +71,15 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
         TextField(
             label = { Text("Street") },
             modifier = Modifier.fillMaxWidth(),
-            value = uiState.street,
+            value = uiState.street.text,
             onValueChange = { onAction(AddressAction.StreetChanged(it)) },
+            enabled = uiState.isLoading.not(),
+            isError = uiState.street.hasError,
+            supportingText = if (uiState.street.hasError) {
+                { Text(uiState.street.error.asString()) }
+            } else {
+                null
+            },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next,
@@ -73,8 +89,9 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
         TextField(
             label = { Text("Number") },
             modifier = Modifier.fillMaxWidth(),
-            value = uiState.number,
+            value = uiState.number.text,
             onValueChange = { onAction(AddressAction.NumberChanged(it)) },
+            enabled = uiState.isLoading.not(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Next,
@@ -84,13 +101,22 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
         TextField(
             label = { Text("Complement") },
             modifier = Modifier.fillMaxWidth(),
-            value = uiState.complement,
+            value = uiState.complement.text,
             onValueChange = { onAction(AddressAction.ComplementChanged(it)) },
+            enabled = uiState.isLoading.not(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Done,
                 capitalization = KeyboardCapitalization.Words
-            )
+            ),
+            keyboardActions = KeyboardActions(onDone = { onAction(AddressAction.SaveAddressClicked) })
         )
+        ExpressiveLoadingButton(
+            isLoading = uiState.isLoading,
+            onClick = { onAction(AddressAction.SaveAddressClicked) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Save address")
+        }
     }
 }

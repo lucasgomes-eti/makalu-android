@@ -8,4 +8,6 @@ sealed interface AddressAction {
     data class NumberChanged(val text: String) : AddressAction
 
     data class ComplementChanged(val text: String) : AddressAction
+
+    data object SaveAddressClicked : AddressAction
 }
