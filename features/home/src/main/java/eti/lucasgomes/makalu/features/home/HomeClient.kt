@@ -1,5 +1,7 @@
 package eti.lucasgomes.makalu.features.home
 
+import eti.lucasgomes.makalu.features.home.model.CategoryResponse
+import eti.lucasgomes.makalu.features.home.model.StoreResponse
 import eti.lucasgomes.makalu.shared.network.HttpClientManager
 import eti.lucasgomes.makalu.shared.network.Resource
 import io.ktor.client.request.get

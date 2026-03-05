@@ -7,4 +7,6 @@ internal sealed interface HomeAction {
     data object AuthDialogDismissed : HomeAction
     data object AuthClicked : HomeAction
     data class CategoryClicked(val index: Int) : HomeAction
+
+    data object AddressClicked : HomeAction
 }

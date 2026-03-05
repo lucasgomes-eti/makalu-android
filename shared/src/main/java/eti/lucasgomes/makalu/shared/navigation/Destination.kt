@@ -30,5 +30,8 @@ sealed interface Destination {
 
         @Serializable
         data class ImagePreview(val uri: String) : Destination
+
+        @Serializable
+        data class Address(val id: Long? = null) : Destination
     }
 }

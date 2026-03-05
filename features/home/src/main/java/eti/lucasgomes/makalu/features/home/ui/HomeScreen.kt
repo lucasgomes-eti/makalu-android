@@ -90,7 +90,7 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             ExpressiveTextButton(
-                onClick = {},
+                onClick = { onAction(HomeAction.AddressClicked) },
                 modifier = Modifier.widthIn(
                     ButtonDefaults.MinWidth,
                     with(LocalDensity.current) {

@@ -1,4 +1,4 @@
-package eti.lucasgomes.makalu.ui.appScaffold
+package eti.lucasgomes.makalu.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
+import eti.lucasgomes.adress.AddressEntry
 import eti.lucasgomes.makalu.components.imageCropper.ImageCropperEntry
 import eti.lucasgomes.makalu.features.auth.login.LoginEntry
 import eti.lucasgomes.makalu.features.auth.registration.RegistrationEntry
@@ -37,6 +38,7 @@ fun NavigationGraph(
             composable<Destination.Screen.Home> { HomeEntry(innerPadding) }
             composable<Destination.Screen.Orders> { OrdersEntry(innerPadding) }
             composable<Destination.Screen.Profile> { ProfileEntry(innerPadding) }
+            composable<Destination.Screen.Address> { AddressEntry(innerPadding) }
         }
     }
 }

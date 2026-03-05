@@ -12,12 +12,12 @@ import eti.lucasgomes.makalu.components.appBars.LocalTopBarUiController
 import eti.lucasgomes.makalu.components.appBars.TopBarUiController
 import eti.lucasgomes.makalu.components.buttons.FabUiController
 import eti.lucasgomes.makalu.components.buttons.LocalFabUiController
+import eti.lucasgomes.makalu.navigation.NavigationGraph
 import eti.lucasgomes.makalu.navigation.ObserveAsEvents
 import eti.lucasgomes.makalu.navigation.bindNavigationEvents
 import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.ui.appScaffold.BottomBar
 import eti.lucasgomes.makalu.ui.appScaffold.FloatingActionButton
-import eti.lucasgomes.makalu.ui.appScaffold.NavigationGraph
 import eti.lucasgomes.makalu.ui.appScaffold.TopBar
 import eti.lucasgomes.makalu.ui.theme.MakaluTheme
 import org.koin.compose.koinInject

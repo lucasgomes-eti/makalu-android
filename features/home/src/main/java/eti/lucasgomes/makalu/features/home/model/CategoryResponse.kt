@@ -1,4 +1,4 @@
-package eti.lucasgomes.makalu.features.home
+package eti.lucasgomes.makalu.features.home.model
 
 import kotlinx.serialization.Serializable
 

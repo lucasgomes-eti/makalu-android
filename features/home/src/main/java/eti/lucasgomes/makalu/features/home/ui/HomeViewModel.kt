@@ -34,6 +34,7 @@ internal class HomeViewModel(
             HomeAction.AuthClicked -> onAuthClicked()
             HomeAction.AuthDialogDismissed -> onAuthDialogDismissed()
             is HomeAction.CategoryClicked -> onCategoryClicked(action.index)
+            HomeAction.AddressClicked -> onAddressClicked()
         }
     }
 
@@ -79,6 +80,15 @@ internal class HomeViewModel(
                 )
             }
         }.onSuccess {
+            if (it.isEmpty()) {
+                _uiState.update { state ->
+                    state.copy(
+                        stores = listOf(StoreUiState.NoContent),
+                        isStoresLoading = false,
+                    )
+                }
+                return@onSuccess
+            }
             _uiState.update { state ->
                 state.copy(
                     stores = it.map { store ->
@@ -128,5 +138,9 @@ internal class HomeViewModel(
             list[index] = list[index].copy(isSelected = list[index].isSelected.not())
             state.copy(categories = list)
         }
+    }
+
+    private fun onAddressClicked() = withViewModelScope {
+        navigator.navigate(Destination.Screen.Address())
     }
 }

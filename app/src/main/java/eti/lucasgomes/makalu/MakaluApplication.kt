@@ -1,6 +1,7 @@
 package eti.lucasgomes.makalu
 
 import android.app.Application
+import eti.lucasgomes.adress.di.addressModule
 import eti.lucasgomes.makalu.components.componentsModule
 import eti.lucasgomes.makalu.di.appModule
 import eti.lucasgomes.makalu.features.auth.di.authModule
@@ -26,7 +27,8 @@ class MakaluApplication : Application() {
                 authModule,
                 homeModule,
                 profileModule,
-                ordersModule
+                ordersModule,
+                addressModule
             )
         }
     }
