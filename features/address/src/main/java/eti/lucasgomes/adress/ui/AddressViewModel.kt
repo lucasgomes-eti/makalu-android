@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
+import eti.lucasgomes.adress.AddressClient
 import eti.lucasgomes.adress.model.AddressRequest
 import eti.lucasgomes.adress.ui.model.AddressAction
 import eti.lucasgomes.adress.ui.model.AddressUiState
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.update
 class AddressViewModel(
     private val fusedClient: FusedLocationProviderClient,
     private val app: Application,
+    private val addressClient: AddressClient
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddressUiState())
@@ -161,6 +163,7 @@ class AddressViewModel(
                         )
                     )
                 }
+                reverseGeocodeLocation(location.latitude, location.longitude)
             }.addOnFailureListener {
                 _uiState.update { state ->
                     state.copy(
@@ -172,6 +175,20 @@ class AddressViewModel(
             }
         } else {
             _uiState.update { state -> state.copy(isPermissionDeniedDialogVisible = true) }
+        }
+    }
+
+    private fun reverseGeocodeLocation(latitude: Double, longitude: Double) = withViewModelScope {
+        _uiState.update { state -> state.copy(isLoading = true) }
+        val response = addressClient.reverseGeocode(latitude, longitude)
+        _uiState.update { state ->
+            state.copy(
+                isLoading = false,
+                zipCode = state.zipCode.copy(text = response.zipCode),
+                street = state.street.copy(text = response.street),
+                number = state.number.copy(text = response.number),
+                complement = state.complement.copy(text = response.complement)
+            )
         }
     }
 
