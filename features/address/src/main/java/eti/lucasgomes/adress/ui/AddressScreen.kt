@@ -19,11 +19,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
@@ -76,7 +81,7 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         AnimatedVisibility(visible = uiState.isLocationProvided) {
-            Text("Tap do get current location")
+            Text(stringResource(R.string.tap_do_get_current_location))
         }
         Card(
             modifier = Modifier
@@ -109,7 +114,7 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
                             Marker(state = uiState.marker)
                         }
                     } else {
-                        Text("Tap do get current location")
+                        Text(stringResource(R.string.tap_do_get_current_location))
                     }
                 }
                 val overlayColor by animateColorAsState(
@@ -137,7 +142,7 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
             Text(uiState.locationError.asString(), color = colorScheme.error)
         }
         TextField(
-            label = { Text("Zip code") },
+            label = { Text(stringResource(R.string.zip_code)) },
             modifier = Modifier.fillMaxWidth(),
             value = uiState.zipCode.text,
             onValueChange = { onAction(AddressAction.ZipCodeChanged(it)) },
@@ -155,7 +160,7 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
             )
         )
         TextField(
-            label = { Text("Street") },
+            label = { Text(stringResource(R.string.street)) },
             modifier = Modifier.fillMaxWidth(),
             value = uiState.street.text,
             onValueChange = { onAction(AddressAction.StreetChanged(it)) },
@@ -173,7 +178,7 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
             )
         )
         TextField(
-            label = { Text("Number") },
+            label = { Text(stringResource(R.string.number)) },
             modifier = Modifier.fillMaxWidth(),
             value = uiState.number.text,
             onValueChange = { onAction(AddressAction.NumberChanged(it)) },
@@ -185,7 +190,7 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
             )
         )
         TextField(
-            label = { Text("Complement") },
+            label = { Text(stringResource(R.string.complement)) },
             modifier = Modifier.fillMaxWidth(),
             value = uiState.complement.text,
             onValueChange = { onAction(AddressAction.ComplementChanged(it)) },
@@ -202,7 +207,43 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
             onClick = { onAction(AddressAction.SaveAddressClicked) },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Save address")
+            Text(stringResource(R.string.save_address))
         }
     }
+
+    if (uiState.isPermissionDeniedDialogVisible) {
+        LocationPermissionDeniedDialog(
+            onDismissRequest = { onAction(AddressAction.PermissionDeniedDismissed) },
+            onGoToSystemSettings = { onAction(AddressAction.GoToSystemSettingsClicked) },
+        )
+    }
+}
+
+@Composable
+fun LocationPermissionDeniedDialog(onDismissRequest: () -> Unit, onGoToSystemSettings: () -> Unit) {
+    AlertDialog(
+        icon = {
+            Icon(painterResource(eti.lucasgomes.makalu.components.R.drawable.close), null)
+        },
+        title = {
+            Text("Location permission denied")
+        },
+        text = {
+            Text("Please grant the location permission to use this feature.")
+        },
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            TextButton(onClick = onGoToSystemSettings) {
+                Text(stringResource(eti.lucasgomes.makalu.components.R.string.go_to_system_settings))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismissRequest,
+                colors = ButtonDefaults.textButtonColors(contentColor = colorScheme.onSurface)
+            ) {
+                Text(stringResource(eti.lucasgomes.makalu.components.R.string.dismiss))
+            }
+        }
+    )
 }

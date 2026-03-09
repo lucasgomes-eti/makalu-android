@@ -16,7 +16,8 @@ data class AddressUiState(
     val complement: TextFieldState = TextFieldState(),
     val location: LatLng = LatLng(.0, .0),
     val isLocationLoading: Boolean = false,
-    val locationError: UiText = UiText.Empty
+    val locationError: UiText = UiText.Empty,
+    val isPermissionDeniedDialogVisible: Boolean = false
 ) : TextFieldErrorsAssignable {
 
     val marker: MarkerState

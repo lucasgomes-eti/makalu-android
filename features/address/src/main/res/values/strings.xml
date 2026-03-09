@@ -4,4 +4,10 @@
     <string name="zip_code_is_required">Zip code is required</string>
     <string name="street_name_is_required">Street name is required</string>
     <string name="location_is_required">Location is required</string>
+    <string name="tap_do_get_current_location">Tap do get current location</string>
+    <string name="zip_code">Zip code</string>
+    <string name="street">Street</string>
+    <string name="number">Number</string>
+    <string name="complement">Complement</string>
+    <string name="save_address">Save address</string>
 </resources>

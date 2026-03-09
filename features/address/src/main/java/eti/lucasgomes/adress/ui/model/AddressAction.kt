@@ -12,4 +12,8 @@ sealed interface AddressAction {
     data object SaveAddressClicked : AddressAction
 
     data class GetCurrentLocationClicked(val permissionGranted: Boolean) : AddressAction
+
+    data object PermissionDeniedDismissed : AddressAction
+
+    data object GoToSystemSettingsClicked : AddressAction
 }

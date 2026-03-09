@@ -1,6 +1,7 @@
 package eti.lucasgomes.adress.ui
 
 import android.annotation.SuppressLint
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
@@ -9,6 +10,7 @@ import eti.lucasgomes.adress.model.AddressRequest
 import eti.lucasgomes.adress.ui.model.AddressAction
 import eti.lucasgomes.adress.ui.model.AddressUiState
 import eti.lucasgomes.makalu.components.dsl.UiText
+import eti.lucasgomes.makalu.components.ext.openApplicationSettings
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
 import eti.lucasgomes.makalu.features.adress.R
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +19,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class AddressViewModel(
-    private val fusedClient: FusedLocationProviderClient
+    private val fusedClient: FusedLocationProviderClient,
+    private val app: Application,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddressUiState())
@@ -31,6 +34,8 @@ class AddressViewModel(
             is AddressAction.ComplementChanged -> onComplementChanged(action.text)
             AddressAction.SaveAddressClicked -> onSaveAddressClicked()
             is AddressAction.GetCurrentLocationClicked -> onGetCurrentLocationClicked(action.permissionGranted)
+            AddressAction.PermissionDeniedDismissed -> onPermissionDeniedDismissed()
+            AddressAction.GoToSystemSettingsClicked -> onGoToSystemSettingsClicked()
         }
     }
 
@@ -153,14 +158,33 @@ class AddressViewModel(
                         location = LatLng(
                             location.latitude,
                             location.longitude
-                        ),
-                        isLocationLoading = false
+                        )
                     )
                 }
-            } // TODO: handle error
-        } // TODO: handle permissions denied
+            }.addOnFailureListener {
+                _uiState.update { state ->
+                    state.copy(
+                        locationError = UiText.PlainText("Error getting location, location might be disabled or unavailable")
+                    )
+                }
+            }.addOnCompleteListener {
+                _uiState.update { state -> state.copy(isLocationLoading = false) }
+            }
+        } else {
+            _uiState.update { state -> state.copy(isPermissionDeniedDialogVisible = true) }
+        }
     }
 
+    private fun onPermissionDeniedDismissed() = withViewModelScope {
+        _uiState.update { state ->
+            state.copy(isPermissionDeniedDialogVisible = false)
+        }
+    }
+
+    private fun onGoToSystemSettingsClicked() = withViewModelScope {
+        _uiState.update { state -> state.copy(isPermissionDeniedDialogVisible = false) }
+        app.openApplicationSettings()
+    }
 
     companion object {
         private const val MAX_ZIP_CODE_LENGTH = 8
