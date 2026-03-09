@@ -1,5 +1,7 @@
 package eti.lucasgomes.adress.ui.model
 
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.MarkerState
 import eti.lucasgomes.makalu.components.dsl.TextFieldErrorsAssignable
 import eti.lucasgomes.makalu.components.dsl.TextFieldState
 import eti.lucasgomes.makalu.components.dsl.UiText
@@ -12,9 +14,17 @@ data class AddressUiState(
     val street: TextFieldState = TextFieldState(),
     val number: TextFieldState = TextFieldState(),
     val complement: TextFieldState = TextFieldState(),
-    val longitude: Double = .0,
-    val latitude: Double = .0
+    val location: LatLng = LatLng(.0, .0),
+    val isLocationLoading: Boolean = false,
+    val locationError: UiText = UiText.Empty
 ) : TextFieldErrorsAssignable {
+
+    val marker: MarkerState
+        get() = MarkerState(position = location)
+
+    val isLocationProvided: Boolean
+        get() = location.latitude != .0
+
     override fun assignFieldErrors(fieldErrors: List<MakaluError.FieldError>): TextFieldErrorsAssignable {
         return fieldErrors.withFieldErrorsAsMap {
             copy(

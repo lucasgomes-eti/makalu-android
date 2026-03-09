@@ -5,6 +5,8 @@ import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import eti.lucasgomes.makalu.components.ext.openApplicationSettings
 import eti.lucasgomes.makalu.shared.MkLogger
 import eti.lucasgomes.makalu.shared.navigation.OSNavigation
@@ -38,5 +40,8 @@ val appModule = module {
     }
     single<DataStore<Settings>> {
         androidApplication().dataStore
+    }
+    single<FusedLocationProviderClient> {
+        LocationServices.getFusedLocationProviderClient(androidApplication())
     }
 }

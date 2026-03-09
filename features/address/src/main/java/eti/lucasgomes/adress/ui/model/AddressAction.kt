@@ -10,4 +10,6 @@ sealed interface AddressAction {
     data class ComplementChanged(val text: String) : AddressAction
 
     data object SaveAddressClicked : AddressAction
+
+    data class GetCurrentLocationClicked(val permissionGranted: Boolean) : AddressAction
 }

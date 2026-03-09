@@ -3,4 +3,5 @@
     <string name="delivery_address">Delivery address</string>
     <string name="zip_code_is_required">Zip code is required</string>
     <string name="street_name_is_required">Street name is required</string>
+    <string name="location_is_required">Location is required</string>
 </resources>

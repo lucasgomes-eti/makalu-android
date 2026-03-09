@@ -1,6 +1,10 @@
 package eti.lucasgomes.adress.ui
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.Priority
+import com.google.android.gms.maps.model.LatLng
 import eti.lucasgomes.adress.model.AddressRequest
 import eti.lucasgomes.adress.ui.model.AddressAction
 import eti.lucasgomes.adress.ui.model.AddressUiState
@@ -12,7 +16,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class AddressViewModel : ViewModel() {
+class AddressViewModel(
+    private val fusedClient: FusedLocationProviderClient
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddressUiState())
     val uiState: StateFlow<AddressUiState> = _uiState.asStateFlow()
@@ -24,6 +30,7 @@ class AddressViewModel : ViewModel() {
             is AddressAction.NumberChanged -> onNumberChanged(action.text)
             is AddressAction.ComplementChanged -> onComplementChanged(action.text)
             AddressAction.SaveAddressClicked -> onSaveAddressClicked()
+            is AddressAction.GetCurrentLocationClicked -> onGetCurrentLocationClicked(action.permissionGranted)
         }
     }
 
@@ -66,7 +73,10 @@ class AddressViewModel : ViewModel() {
 
     private suspend fun withValidUiState(block: suspend (AddressRequest) -> Unit) {
         val state = uiState.value
-        val isStateValid = isZipCodeValid(state.zipCode.text) and isStreetValid(state.street.text)
+        val isStateValid =
+            isZipCodeValid(state.zipCode.text) and isStreetValid(state.street.text) and isLocationValid(
+                state.location
+            )
 
         if (isStateValid) {
             block(buildAddressRequest(state))
@@ -101,16 +111,56 @@ class AddressViewModel : ViewModel() {
         return true
     }
 
+    private fun isLocationValid(location: LatLng): Boolean {
+        if (location.latitude == .0 || location.longitude == .0) {
+            _uiState.update { state ->
+                state.copy(
+                    isLoading = false,
+                    locationError = UiText.StringResource(R.string.location_is_required)
+                )
+            }
+            return false
+        }
+        return true
+    }
+
     private fun buildAddressRequest(state: AddressUiState): AddressRequest = state.run {
         AddressRequest(
             zipCode = zipCode.text,
             street = street.text,
             number = number.text,
             complement = complement.text,
-            longitude = .0,
-            latitude = .0
+            longitude = location.longitude,
+            latitude = location.latitude
         )
     }
+
+    @SuppressLint("MissingPermission")
+    private fun onGetCurrentLocationClicked(permissionGranted: Boolean) = withViewModelScope {
+        if (permissionGranted) {
+            _uiState.update { state ->
+                state.copy(
+                    isLocationLoading = true,
+                    locationError = UiText.Empty
+                )
+            }
+            fusedClient.getCurrentLocation(
+                Priority.PRIORITY_HIGH_ACCURACY,
+                null
+            ).addOnSuccessListener { location ->
+                _uiState.update { state ->
+                    state.copy(
+                        location = LatLng(
+                            location.latitude,
+                            location.longitude
+                        ),
+                        isLocationLoading = false
+                    )
+                }
+            } // TODO: handle error
+        } // TODO: handle permissions denied
+    }
+
 
     companion object {
         private const val MAX_ZIP_CODE_LENGTH = 8
