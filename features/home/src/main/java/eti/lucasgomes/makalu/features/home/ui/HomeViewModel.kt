@@ -1,9 +1,12 @@
 package eti.lucasgomes.makalu.features.home.ui
 
+import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
 import eti.lucasgomes.makalu.features.home.HomeClient
+import eti.lucasgomes.makalu.features.home.R
 import eti.lucasgomes.makalu.features.home.ui.model.CategoryUiState
 import eti.lucasgomes.makalu.features.home.ui.model.HomeAction
 import eti.lucasgomes.makalu.features.home.ui.model.HomeUiState
@@ -13,14 +16,16 @@ import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.shared.network.HttpClientManager.Companion.BASE_URL
 import eti.lucasgomes.makalu.shared.network.onError
 import eti.lucasgomes.makalu.shared.network.onSuccess
-import kotlinx.coroutines.delay
+import eti.lucasgomes.makalu.shared.settings.Settings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 internal class HomeViewModel(
     private val navigator: Navigator,
-    private val homeClient: HomeClient
+    private val homeClient: HomeClient,
+    private val dataStore: DataStore<Settings>,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -38,16 +43,29 @@ internal class HomeViewModel(
         }
     }
 
-    private fun onInitialFetch() = withViewModelScope {
-        _uiState.update { state ->
-            state.copy(
-                isAddressLoading = true,
-                isFiltersLoading = true,
-                isStoresLoading = true,
-                stores = listOf(StoreUiState.Loading)
-            )
-        }
+    private fun onInitialFetch() {
+        startLoading()
+        viewModelScope.launch { fetchAddress() }
+        viewModelScope.launch { fetchCategories() }
+        viewModelScope.launch { fetchStores() }
+    }
 
+    private suspend fun fetchAddress() {
+        dataStore.data.collect { settings ->
+            settings.addressName?.let { addressName ->
+                _uiState.update { state ->
+                    state.copy(isAddressLoading = false, address = UiText.PlainText(addressName))
+                }
+            } ?: _uiState.update { state ->
+                state.copy(
+                    address = UiText.StringResource(R.string.add_a_delivery_address),
+                    isAddressLoading = false
+                )
+            }
+        }
+    }
+
+    private suspend fun fetchCategories() {
         homeClient.getCategories().onSuccess {
             _uiState.update { state ->
                 state.copy(
@@ -62,16 +80,20 @@ internal class HomeViewModel(
                 )
             }
         }
-
-        delay(1_000L)
-        _uiState.update { state ->
-            state.copy(address = "4140 Parker Rd. Allentown", isAddressLoading = false)
-        }
-
-        fetchStores()
     }
 
-    private fun fetchStores() = withViewModelScope {
+    private fun startLoading() {
+        _uiState.update { state ->
+            state.copy(
+                isAddressLoading = true,
+                isFiltersLoading = true,
+                isStoresLoading = true,
+                stores = listOf(StoreUiState.Loading)
+            )
+        }
+    }
+
+    private suspend fun fetchStores() {
         homeClient.getStores().onError {
             _uiState.update { state ->
                 state.copy(

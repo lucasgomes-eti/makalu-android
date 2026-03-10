@@ -13,4 +13,5 @@
     <string name="dismiss">Dismiss</string>
     <string name="loading_address">Loading Address…</string>
     <string name="all">All</string>
+    <string name="add_a_delivery_address">Add a delivery address</string>
 </resources>

@@ -1,11 +1,16 @@
 package eti.lucasgomes.adress
 
+import eti.lucasgomes.adress.model.AddressRequest
+import eti.lucasgomes.adress.model.AddressResponse
 import eti.lucasgomes.adress.model.ReverseGeocodeResponse
 import eti.lucasgomes.makalu.features.adress.BuildConfig
 import eti.lucasgomes.makalu.shared.network.HttpClientManager
+import eti.lucasgomes.makalu.shared.network.Resource
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.http.HttpHeaders
 import kotlinx.serialization.SerialName
@@ -33,11 +38,18 @@ class AddressClient(private val httpClientManager: HttpClientManager) {
                 number = find("street_number") ?: "",
                 complement = find("subpremise") ?: ""
             )
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             ReverseGeocodeResponse()
         }
 
     }
+
+    suspend fun saveAddress(request: AddressRequest): Resource<AddressResponse> =
+        httpClientManager.withApiResource {
+            post("/addresses") {
+                setBody(request)
+            }
+        }
 
     @Serializable
     data class GeocodeResponse(

@@ -99,7 +99,7 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
                 )
             ) {
                 Row(modifier = Modifier.width(IntrinsicSize.Max)) {
-                    val loadingAddressText = stringResource(R.string.loading_address)
+                    val loadingAddressText = UiText.StringResource(R.string.loading_address)
                     var address by remember { mutableStateOf(uiState.address) }
                     LaunchedEffect(uiState.isAddressLoading) {
                         address = if (uiState.isAddressLoading) {
@@ -110,7 +110,7 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
                     }
                     AnimatedContent(
                         modifier = Modifier.weight(1f),
-                        targetState = address
+                        targetState = address.asString()
                     ) { value ->
                         Text(value, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
@@ -202,7 +202,7 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
 private fun HomePreview() {
     HomeScreen(
         HomeUiState(
-            address = "123 Main St",
+            address = UiText.PlainText("123 Main St"),
             categories = listOf(
                 CategoryUiState(1, UiText.PlainText("All"), true),
                 CategoryUiState(2, UiText.PlainText("Coffee"), false),

@@ -1,7 +1,9 @@
 package eti.lucasgomes.makalu.features.home.ui.model
 
+import eti.lucasgomes.makalu.components.dsl.UiText
+
 internal data class HomeUiState(
-    val address: String = "",
+    val address: UiText = UiText.Empty,
     val categories: List<CategoryUiState> = emptyList(),
     val stores: List<StoreUiState> = emptyList(),
     val isAuthDialogVisible: Boolean = false,

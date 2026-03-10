@@ -17,7 +17,8 @@ data class AddressUiState(
     val location: LatLng = LatLng(.0, .0),
     val isLocationLoading: Boolean = false,
     val locationError: UiText = UiText.Empty,
-    val isPermissionDeniedDialogVisible: Boolean = false
+    val isPermissionDeniedDialogVisible: Boolean = false,
+    val generalError: UiText = UiText.Empty,
 ) : TextFieldErrorsAssignable {
 
     val marker: MarkerState

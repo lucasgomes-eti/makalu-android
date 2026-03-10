@@ -2,6 +2,7 @@ package eti.lucasgomes.adress.ui
 
 import android.annotation.SuppressLint
 import android.app.Application
+import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
@@ -14,6 +15,10 @@ import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.ext.openApplicationSettings
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
 import eti.lucasgomes.makalu.features.adress.R
+import eti.lucasgomes.makalu.shared.navigation.Navigator
+import eti.lucasgomes.makalu.shared.network.onError
+import eti.lucasgomes.makalu.shared.network.onSuccess
+import eti.lucasgomes.makalu.shared.settings.Settings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +27,9 @@ import kotlinx.coroutines.flow.update
 class AddressViewModel(
     private val fusedClient: FusedLocationProviderClient,
     private val app: Application,
-    private val addressClient: AddressClient
+    private val addressClient: AddressClient,
+    private val navigator: Navigator,
+    private val dataStore: DataStore<Settings>,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddressUiState())
@@ -75,7 +82,25 @@ class AddressViewModel(
 
     private fun onSaveAddressClicked() = withViewModelScope {
         _uiState.update { state -> state.copy(isLoading = true) }
-        withValidUiState { }
+        withValidUiState { request ->
+            addressClient.saveAddress(request).onError {
+                _uiState.update { state ->
+                    state.copy(
+                        isLoading = false,
+                        generalError = UiText.PlainText(it.formatedMessage)
+                    )
+                }
+            }.onSuccess { response ->
+                dataStore.updateData { settings ->
+                    settings.copy(
+                        addressId = response.id,
+                        addressName = "${response.street}, ${response.number}"
+                    )
+                }
+                _uiState.update { state -> state.copy(isLoading = false) }
+                navigator.navigateUp()
+            }
+        }
     }
 
     private suspend fun withValidUiState(block: suspend (AddressRequest) -> Unit) {
