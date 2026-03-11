@@ -4,12 +4,14 @@ import eti.lucasgomes.adress.model.AddressRequest
 import eti.lucasgomes.adress.model.AddressResponse
 import eti.lucasgomes.adress.model.ReverseGeocodeResponse
 import eti.lucasgomes.makalu.features.adress.BuildConfig
+import eti.lucasgomes.makalu.shared.network.EmptyResult
 import eti.lucasgomes.makalu.shared.network.HttpClientManager
 import eti.lucasgomes.makalu.shared.network.Resource
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.http.HttpHeaders
@@ -50,6 +52,17 @@ class AddressClient(private val httpClientManager: HttpClientManager) {
                 setBody(request)
             }
         }
+
+    suspend fun updateAddress(request: AddressRequest, addressId: Long): EmptyResult =
+        httpClientManager.withApiResource {
+            put("/addresses/$addressId") {
+                setBody(request)
+            }
+        }
+
+    suspend fun getSelfAddress(): Resource<AddressResponse> = httpClientManager.withApiResource {
+        get("/addresses")
+    }
 
     @Serializable
     data class GeocodeResponse(

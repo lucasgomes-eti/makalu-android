@@ -52,6 +52,7 @@ import eti.lucasgomes.adress.ui.model.AddressAction
 import eti.lucasgomes.adress.ui.model.AddressUiState
 import eti.lucasgomes.makalu.components.appBars.ConfigureTopBar
 import eti.lucasgomes.makalu.components.buttons.ExpressiveLoadingButton
+import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.features.adress.R
 
@@ -66,6 +67,10 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
         }
 
     val cameraPositionState = rememberCameraPositionState()
+
+    OnFirstComposition {
+        onAction(AddressAction.InitialFetch)
+    }
 
     LaunchedEffect(uiState.location) {
         cameraPositionState.position =

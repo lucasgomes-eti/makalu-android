@@ -35,8 +35,11 @@ class AddressViewModel(
     private val _uiState = MutableStateFlow(AddressUiState())
     val uiState: StateFlow<AddressUiState> = _uiState.asStateFlow()
 
+    private var addressId: Long? = null
+
     fun onAction(action: AddressAction) {
         when (action) {
+            AddressAction.InitialFetch -> onInitialFetch()
             is AddressAction.ZipCodeChanged -> onZipCodeChanged(action.text)
             is AddressAction.StreetChanged -> onStreetChanged(action.text)
             is AddressAction.NumberChanged -> onNumberChanged(action.text)
@@ -45,6 +48,34 @@ class AddressViewModel(
             is AddressAction.GetCurrentLocationClicked -> onGetCurrentLocationClicked(action.permissionGranted)
             AddressAction.PermissionDeniedDismissed -> onPermissionDeniedDismissed()
             AddressAction.GoToSystemSettingsClicked -> onGoToSystemSettingsClicked()
+        }
+    }
+
+    private fun onInitialFetch() = withViewModelScope {
+        _uiState.update { state -> state.copy(isLoading = true, isLocationLoading = true) }
+        addressClient.getSelfAddress().onError { error ->
+            _uiState.update { state ->
+                state.copy(
+                    isLoading = false,
+                    isLocationLoading = false,
+                    generalError = if (error.httpCode == 404) UiText.Empty else UiText.PlainText(
+                        error.formatedMessage
+                    )
+                )
+            }
+        }.onSuccess { response ->
+            addressId = response.id
+            _uiState.update { state ->
+                state.copy(
+                    isLoading = false,
+                    isLocationLoading = false,
+                    location = LatLng(response.latitude, response.longitude),
+                    zipCode = state.zipCode.copy(text = response.zipCode),
+                    street = state.street.copy(text = response.street),
+                    number = state.number.copy(text = response.number ?: ""),
+                    complement = state.complement.copy(text = response.complement ?: "")
+                )
+            }
         }
     }
 
@@ -83,23 +114,48 @@ class AddressViewModel(
     private fun onSaveAddressClicked() = withViewModelScope {
         _uiState.update { state -> state.copy(isLoading = true) }
         withValidUiState { request ->
-            addressClient.saveAddress(request).onError {
-                _uiState.update { state ->
-                    state.copy(
-                        isLoading = false,
-                        generalError = UiText.PlainText(it.formatedMessage)
-                    )
-                }
-            }.onSuccess { response ->
-                dataStore.updateData { settings ->
-                    settings.copy(
-                        addressId = response.id,
-                        addressName = "${response.street}, ${response.number}"
-                    )
-                }
-                _uiState.update { state -> state.copy(isLoading = false) }
-                navigator.navigateUp()
+            addressId?.let { id ->
+                updateAddress(request, id)
+            } ?: saveAddress(request)
+        }
+    }
+
+    private suspend fun saveAddress(request: AddressRequest) {
+        addressClient.saveAddress(request).onError {
+            _uiState.update { state ->
+                state.copy(
+                    isLoading = false,
+                    generalError = UiText.PlainText(it.formatedMessage)
+                )
             }
+        }.onSuccess { response ->
+            dataStore.updateData { settings ->
+                settings.copy(
+                    addressId = response.id,
+                    addressName = "${response.street}, ${response.number}"
+                )
+            }
+            _uiState.update { state -> state.copy(isLoading = false) }
+            navigator.navigateUp()
+        }
+    }
+
+    private suspend fun updateAddress(request: AddressRequest, addressId: Long) {
+        addressClient.updateAddress(request, addressId).onError {
+            _uiState.update { state ->
+                state.copy(
+                    isLoading = false,
+                    generalError = UiText.PlainText(it.formatedMessage)
+                )
+            }
+        }.onSuccess { response ->
+            dataStore.updateData { settings ->
+                settings.copy(
+                    addressName = "${request.street}, ${request.number}"
+                )
+            }
+            _uiState.update { state -> state.copy(isLoading = false) }
+            navigator.navigateUp()
         }
     }
 
