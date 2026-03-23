@@ -1,9 +1,9 @@
 package eti.lucasgomes.adress
 
 import eti.lucasgomes.adress.model.AddressRequest
-import eti.lucasgomes.adress.model.AddressResponse
 import eti.lucasgomes.adress.model.ReverseGeocodeResponse
 import eti.lucasgomes.makalu.features.adress.BuildConfig
+import eti.lucasgomes.makalu.shared.model.AddressResponse
 import eti.lucasgomes.makalu.shared.network.EmptyResult
 import eti.lucasgomes.makalu.shared.network.HttpClientManager
 import eti.lucasgomes.makalu.shared.network.Resource

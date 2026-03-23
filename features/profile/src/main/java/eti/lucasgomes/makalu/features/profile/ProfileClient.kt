@@ -3,7 +3,7 @@ package eti.lucasgomes.makalu.features.profile
 import android.content.ContentResolver
 import android.net.Uri
 import eti.lucasgomes.makalu.features.profile.model.ProfileResponse
-import eti.lucasgomes.makalu.shared.ImageUploadResponse
+import eti.lucasgomes.makalu.shared.model.ImageUploadResponse
 import eti.lucasgomes.makalu.shared.network.HttpClientManager
 import eti.lucasgomes.makalu.shared.network.Resource
 import io.ktor.client.request.forms.formData

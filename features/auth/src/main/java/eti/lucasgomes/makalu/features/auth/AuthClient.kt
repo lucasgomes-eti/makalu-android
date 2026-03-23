@@ -6,7 +6,7 @@ import androidx.datastore.core.DataStore
 import eti.lucasgomes.makalu.features.auth.login.model.LoginRequest
 import eti.lucasgomes.makalu.features.auth.registration.model.RegisterRequest
 import eti.lucasgomes.makalu.features.auth.registration.model.RegisterResponse
-import eti.lucasgomes.makalu.shared.ImageUploadResponse
+import eti.lucasgomes.makalu.shared.model.ImageUploadResponse
 import eti.lucasgomes.makalu.shared.network.HttpClientManager
 import eti.lucasgomes.makalu.shared.network.Resource
 import eti.lucasgomes.makalu.shared.network.TokenPairResponse

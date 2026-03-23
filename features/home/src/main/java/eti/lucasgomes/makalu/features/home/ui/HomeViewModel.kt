@@ -51,16 +51,27 @@ internal class HomeViewModel(
     }
 
     private suspend fun fetchAddress() {
-        dataStore.data.collect { settings ->
-            settings.addressName?.let { addressName ->
-                _uiState.update { state ->
-                    state.copy(isAddressLoading = false, address = UiText.PlainText(addressName))
-                }
-            } ?: _uiState.update { state ->
-                state.copy(
-                    address = UiText.StringResource(R.string.add_a_delivery_address),
-                    isAddressLoading = false
+        homeClient.getSelfAddress().onSuccess { response ->
+            dataStore.updateData { settings ->
+                settings.copy(
+                    addressId = response.id,
+                    addressName = "${response.street}, ${response.number}"
                 )
+            }
+        }
+        dataStore.data.collect { settings ->
+            val address = settings.addressName
+            if (address.isNullOrBlank()) {
+                _uiState.update { state ->
+                    state.copy(
+                        address = UiText.StringResource(R.string.add_a_delivery_address),
+                        isAddressLoading = false
+                    )
+                }
+            } else {
+                _uiState.update { state ->
+                    state.copy(isAddressLoading = false, address = UiText.PlainText(address))
+                }
             }
         }
     }

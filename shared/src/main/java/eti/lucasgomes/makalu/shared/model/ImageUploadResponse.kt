@@ -1,4 +1,4 @@
-package eti.lucasgomes.makalu.shared
+package eti.lucasgomes.makalu.shared.model
 
 import kotlinx.serialization.Serializable
 
