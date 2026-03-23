@@ -105,7 +105,7 @@ internal class HomeViewModel(
     }
 
     private suspend fun fetchStores() {
-        homeClient.getStores().onError {
+        homeClient.getStores(_uiState.value.selectedCategoriesIds).onError {
             _uiState.update { state ->
                 state.copy(
                     stores = listOf(StoreUiState.NoContent),
@@ -166,11 +166,10 @@ internal class HomeViewModel(
     }
 
     private fun onCategoryClicked(index: Int) = withViewModelScope {
-        _uiState.update { state ->
-            val list = state.categories.toMutableList()
-            list[index] = list[index].copy(isSelected = list[index].isSelected.not())
-            state.copy(categories = list)
-        }
+        val list = _uiState.value.categories.toMutableList()
+        list[index] = list[index].copy(isSelected = list[index].isSelected.not())
+        _uiState.update { state -> state.copy(categories = list) }
+        fetchStores()
     }
 
     private fun onAddressClicked() = withViewModelScope {
