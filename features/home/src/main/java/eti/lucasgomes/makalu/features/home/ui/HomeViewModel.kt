@@ -35,7 +35,7 @@ internal class HomeViewModel(
         when (action) {
             HomeAction.InitialFetch -> onInitialFetch()
             HomeAction.RefreshStores -> onRefreshStores()
-            HomeAction.StoreClicked -> onStoreClicked()
+            is HomeAction.StoreClicked -> onStoreClicked(action.id)
             HomeAction.AuthClicked -> onAuthClicked()
             HomeAction.AuthDialogDismissed -> onAuthDialogDismissed()
             is HomeAction.CategoryClicked -> onCategoryClicked(action.index)
@@ -152,8 +152,8 @@ internal class HomeViewModel(
         fetchStores()
     }
 
-    private fun onStoreClicked() = withViewModelScope {
-        // TODO: Open store menu
+    private fun onStoreClicked(id: Long) = withViewModelScope {
+        navigator.navigate(Destination.Screen.Store(id))
     }
 
     private fun onAuthClicked() = withViewModelScope {

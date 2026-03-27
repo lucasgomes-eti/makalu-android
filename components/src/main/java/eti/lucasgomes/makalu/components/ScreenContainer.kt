@@ -1,6 +1,7 @@
 package eti.lucasgomes.makalu.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -17,7 +18,7 @@ fun ScreenContainer(
     hasBottomBar: Boolean = true,
     hasTopBar: Boolean = false,
     hasFab: Boolean = false,
-    content: @Composable () -> Unit
+    content: @Composable BoxScope.() -> Unit
 ) {
     val bottomBar = LocalBottomBarUiController.current
     val topBar = LocalTopBarUiController.current

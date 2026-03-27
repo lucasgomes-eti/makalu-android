@@ -33,5 +33,8 @@ sealed interface Destination {
 
         @Serializable
         data class Address(val id: Long? = null) : Destination
+
+        @Serializable
+        data class Store(val id: Long) : Destination
     }
 }

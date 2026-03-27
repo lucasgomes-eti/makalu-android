@@ -180,7 +180,7 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
                     key = { it.key },
                 ) { store ->
                     when (store) {
-                        is StoreUiState.Data -> StoreListItem(store) { onAction(HomeAction.StoreClicked) }
+                        is StoreUiState.Data -> StoreListItem(store) { onAction(HomeAction.StoreClicked(store.id)) }
                         StoreUiState.Loading -> LoadingStoresListItem()
                         StoreUiState.NoContent -> NoStoresListItem()
                     }
