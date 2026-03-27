@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearWavyProgressIndicator
@@ -119,12 +118,6 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
                         stringResource(R.string.accessibility_arrow_right_icon)
                     )
                 }
-            }
-            FilledTonalIconButton(onClick = {}) {
-                Icon(
-                    painterResource(R.drawable.sort),
-                    stringResource(R.string.accessibility_sort_icon)
-                )
             }
         }
         Column(Modifier.height(32.dp)) {
