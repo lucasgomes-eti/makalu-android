@@ -9,7 +9,7 @@ fun ConfigureTopBar(
     navigationActions: List<TopBarAction> = emptyList(),
 ) {
     val topBar = LocalTopBarUiController.current
-    LaunchedEffect(Unit) {
+    LaunchedEffect(title, navigationActions) {
         topBar.setTitle(title)
         topBar.setNavigationActions(navigationActions)
     }

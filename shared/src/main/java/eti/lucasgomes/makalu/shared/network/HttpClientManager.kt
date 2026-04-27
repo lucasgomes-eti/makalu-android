@@ -85,6 +85,7 @@ class HttpClientManager(
                             setBody(RefreshTokenRequest(refreshToken))
                         }
 
+                        // TODO: possible bug not handling response from api
                         val auth = when (response.status.value) {
                             in 200..299 -> {
                                 response.body<TokenPairResponse>().also { auth ->
