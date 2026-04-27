@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
-import eti.lucasgomes.makalu.R
 import eti.lucasgomes.makalu.components.appBars.TopBarUiController
 import eti.lucasgomes.makalu.shared.navigation.Navigator
 import kotlinx.coroutines.launch
@@ -54,7 +53,10 @@ fun TopBar(topBarUiController: TopBarUiController) {
             },
             navigationIcon = {
                 IconButton(onClick = { scope.launch { navigator.navigateUp() } }) {
-                    Icon(painterResource(R.drawable.arrow_back), "Back")
+                    Icon(
+                        painterResource(eti.lucasgomes.makalu.components.R.drawable.arrow_back),
+                        "Back"
+                    )
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(

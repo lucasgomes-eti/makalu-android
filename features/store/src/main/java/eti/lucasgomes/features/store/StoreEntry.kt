@@ -14,7 +14,7 @@ import org.koin.core.parameter.parametersOf
 fun StoreEntry(innerPadding: PaddingValues, id: Long) {
     val viewModel = koinViewModel<StoreViewModel> { parametersOf(id) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    ScreenContainer(innerPadding, hasBottomBar = false, hasTopBar = true) {
+    ScreenContainer(innerPadding, hasBottomBar = false, hasTopBar = false) {
         StoreScreen(
             uiState,
             viewModel::onAction

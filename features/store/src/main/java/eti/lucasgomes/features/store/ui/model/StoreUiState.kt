@@ -8,5 +8,6 @@ internal data class StoreUiState(
     val isLoading: Boolean = false,
     val generalError: UiText = UiText.Empty,
     val name: UiText = UiText.Empty,
+    val coverImageUrl: String? = null,
     val menuItems: Map<String, List<MenuItemResponse>> = emptyMap()
 )

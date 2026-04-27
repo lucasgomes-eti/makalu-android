@@ -6,6 +6,8 @@ import eti.lucasgomes.features.store.ui.model.StoreAction
 import eti.lucasgomes.features.store.ui.model.StoreUiState
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
+import eti.lucasgomes.makalu.shared.navigation.Navigator
+import eti.lucasgomes.makalu.shared.network.HttpClientManager.Companion.BASE_URL
 import eti.lucasgomes.makalu.shared.network.MakaluError
 import eti.lucasgomes.makalu.shared.network.onError
 import eti.lucasgomes.makalu.shared.network.onSuccess
@@ -16,7 +18,8 @@ import kotlinx.coroutines.flow.update
 
 internal class StoreViewModel(
     private val id: Long,
-    private val client: StoreClient
+    private val client: StoreClient,
+    private val navigator: Navigator
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(StoreUiState(id))
@@ -26,6 +29,7 @@ internal class StoreViewModel(
         when (action) {
             StoreAction.OnInitialFetch -> onInitialFetch()
             StoreAction.OnDismissError -> onDismissError()
+            StoreAction.NavigateBackClicked -> onNavigateBackClicked()
         }
     }
 
@@ -40,7 +44,10 @@ internal class StoreViewModel(
             handleGeneralError(it)
         }.onSuccess { response ->
             _uiState.update { state ->
-                state.copy(name = UiText.PlainText(response.name))
+                state.copy(
+                    name = UiText.PlainText(response.name),
+                    coverImageUrl = mapCoverImageIdToUrl(response.coverImageId)
+                )
             }
         }
 
@@ -51,6 +58,10 @@ internal class StoreViewModel(
                 state.copy(isLoading = false, menuItems = response.groupBy { it.category })
             }
         }
+    }
+
+    private fun mapCoverImageIdToUrl(imageId: Long?): String? = imageId?.let { id ->
+        "${BASE_URL}stores/cover-image/$id"
     }
 
     private fun handleGeneralError(mkError: MakaluError) {
@@ -64,5 +75,9 @@ internal class StoreViewModel(
 
     private fun onDismissError() = withViewModelScope {
         _uiState.update { state -> state.copy(generalError = UiText.Empty) }
+    }
+
+    private fun onNavigateBackClicked() = withViewModelScope {
+        navigator.navigateUp()
     }
 }
