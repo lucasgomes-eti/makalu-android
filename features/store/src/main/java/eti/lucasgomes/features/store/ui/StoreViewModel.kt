@@ -6,6 +6,7 @@ import eti.lucasgomes.features.store.ui.model.StoreAction
 import eti.lucasgomes.features.store.ui.model.StoreUiState
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
+import eti.lucasgomes.makalu.shared.network.MakaluError
 import eti.lucasgomes.makalu.shared.network.onError
 import eti.lucasgomes.makalu.shared.network.onSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,16 +37,28 @@ internal class StoreViewModel(
             )
         }
         client.getStore(id).onError {
-            _uiState.update { state ->
-                state.copy(
-                    isLoading = false,
-                    generalError = UiText.PlainText(it.formatedMessage)
-                )
-            }
+            handleGeneralError(it)
         }.onSuccess { response ->
             _uiState.update { state ->
-                state.copy(isLoading = false, name = UiText.PlainText(response.name))
+                state.copy(name = UiText.PlainText(response.name))
             }
+        }
+
+        client.getMenuItems(id).onError {
+            handleGeneralError(it)
+        }.onSuccess { response ->
+            _uiState.update { state ->
+                state.copy(isLoading = false, menuItems = response.groupBy { it.category })
+            }
+        }
+    }
+
+    private fun handleGeneralError(mkError: MakaluError) {
+        _uiState.update { state ->
+            state.copy(
+                isLoading = false,
+                generalError = UiText.PlainText(mkError.formatedMessage)
+            )
         }
     }
 

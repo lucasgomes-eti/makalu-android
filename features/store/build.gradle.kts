@@ -53,4 +53,7 @@ dependencies {
     // Tooling
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Image Loading
+    implementation(libs.bundles.coil)
 }
