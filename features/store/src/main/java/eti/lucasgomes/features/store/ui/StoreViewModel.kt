@@ -46,7 +46,8 @@ internal class StoreViewModel(
             _uiState.update { state ->
                 state.copy(
                     name = UiText.PlainText(response.name),
-                    coverImageUrl = mapCoverImageIdToUrl(response.coverImageId)
+                    coverImageUrl = mapCoverImageIdToUrl(response.coverImageId),
+                    deliveryFee = response.deliveryFee
                 )
             }
         }

@@ -43,13 +43,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import eti.lucasgomes.features.store.R
 import eti.lucasgomes.features.store.model.MenuItemResponse
 import eti.lucasgomes.features.store.ui.model.StoreAction
 import eti.lucasgomes.features.store.ui.model.StoreUiState
+import eti.lucasgomes.makalu.components.CardItem
 import eti.lucasgomes.makalu.components.appBars.LocalTopBarUiController
 import eti.lucasgomes.makalu.components.appBars.TopBarUiController
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
@@ -119,7 +122,7 @@ internal fun BoxScope.StoreScreen(uiState: StoreUiState, onAction: (StoreAction)
                         IconButton(onClick = { onAction(StoreAction.NavigateBackClicked) }) {
                             Icon(
                                 painterResource(eti.lucasgomes.makalu.components.R.drawable.arrow_back),
-                                "Back",
+                                stringResource(eti.lucasgomes.makalu.components.R.string.accessibility_back_button),
                                 tint = topAppBarTitleContentColor
                             )
                         }
@@ -140,6 +143,28 @@ internal fun BoxScope.StoreScreen(uiState: StoreUiState, onAction: (StoreAction)
             verticalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(16.dp)
         ) {
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    CardItem(
+                        Modifier.height(80.dp),
+                        headlineContent = {
+                            Text(
+                                stringResource(R.string.delivery_fee),
+                                style = typography.bodyMedium
+                            )
+                        },
+                        supportingContent = {
+                            Text(
+                                "${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${uiState.deliveryFee}",
+                                style = typography.titleMedium
+                            )
+                        },
+                    )
+                }
+            }
             uiState.menuItems.forEach { (category, items) ->
                 item {
                     Text(
@@ -182,7 +207,7 @@ private fun LazyItemScope.MenuListItem(item: MenuItemResponse, onClick: () -> Un
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    "R$ ${item.price}",
+                    "${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${item.price}",
                     style = typography.labelMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
