@@ -17,7 +17,10 @@ data class MenuItemResponse(
     @Serializable(with = BigDecimalSerializer::class)
     val price: BigDecimal,
     val ingredients: String?,
-    val configurations: List<Configuration>
+    val configurations: List<Configuration>,
+
+    @SerialName("image_id")
+    val imageId: Long?
 ) {
     @Serializable
     data class Configuration(

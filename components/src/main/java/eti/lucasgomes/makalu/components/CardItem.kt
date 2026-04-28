@@ -21,11 +21,12 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun CardItem(
     modifier: Modifier,
+    contentWeight: Float? = null,
     onClick: (() -> Unit)? = null,
     headlineContent: @Composable () -> Unit,
     supportingContent: @Composable () -> Unit = {},
-    trailingContent: @Composable () -> Unit = {},
-    leadingContent: @Composable () -> Unit = {},
+    trailingContent: @Composable (() -> Unit)? = null,
+    leadingContent: @Composable (() -> Unit)? = null,
     ) {
     SurfaceWithOptionalClick(
         onClick = onClick
@@ -35,16 +36,25 @@ fun CardItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Spacer(Modifier.size(0.dp))
-            trailingContent()
+            if (trailingContent != null) {
+                trailingContent()
+            } else {
+                Spacer(Modifier.size(0.dp))
+            }
             Column(
-                verticalArrangement = Arrangement.spacedBy(2.dp)
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+                modifier = Modifier.then(if (contentWeight != null) {
+                    Modifier.weight(contentWeight)
+                } else Modifier)
             ) {
                 headlineContent()
                 supportingContent()
             }
-            leadingContent()
-            Spacer(Modifier.size(0.dp))
+            if (leadingContent != null) {
+                leadingContent()
+            } else {
+                Spacer(Modifier.size(0.dp))
+            }
         }
     }
 }

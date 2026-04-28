@@ -2,15 +2,12 @@ package eti.lucasgomes.features.store.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -28,7 +24,6 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.contentColorFor
@@ -36,7 +31,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -49,7 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import eti.lucasgomes.features.store.R
-import eti.lucasgomes.features.store.model.MenuItemResponse
+import eti.lucasgomes.features.store.ui.model.MenuItemUiState
 import eti.lucasgomes.features.store.ui.model.StoreAction
 import eti.lucasgomes.features.store.ui.model.StoreUiState
 import eti.lucasgomes.makalu.components.CardItem
@@ -180,41 +174,39 @@ internal fun BoxScope.StoreScreen(uiState: StoreUiState, onAction: (StoreAction)
 }
 
 @Composable
-private fun LazyItemScope.MenuListItem(item: MenuItemResponse, onClick: () -> Unit) {
-    Surface(
+private fun LazyItemScope.MenuListItem(item: MenuItemUiState, onClick: () -> Unit) {
+    CardItem(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
             .animateItem(),
-        border = BorderStroke(1.dp, colorScheme.outline),
-        shape = RoundedCornerShape(12.dp),
-        onClick = onClick
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Spacer(Modifier.size(0.dp))
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                Text(
-                    item.name,
-                    style = typography.titleMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    "${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${item.price}",
-                    style = typography.labelMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+        contentWeight = 1f,
+        onClick = onClick,
+        headlineContent = {
+            Text(
+                item.name,
+                style = typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        supportingContent = {
+            Text(
+                "${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${item.price}",
+                style = typography.labelMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        leadingContent = {
+            AsyncImage(
+                modifier = Modifier.size(80.dp),
+                model = item.imageUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop
+            )
         }
-    }
+    )
 }
 
 @Composable
@@ -230,14 +222,11 @@ private fun StoreScreenPreview() {
                     1,
                     menuItems = mapOf(
                         "Pizza" to listOf(
-                            MenuItemResponse(
-                                1,
+                            MenuItemUiState(
                                 1,
                                 "Pizza",
                                 "Margerita",
                                 10.0.toBigDecimal(),
-                                null,
-                                emptyList()
                             )
                         )
                     )

@@ -2,6 +2,7 @@ package eti.lucasgomes.features.store.ui
 
 import androidx.lifecycle.ViewModel
 import eti.lucasgomes.features.store.StoreClient
+import eti.lucasgomes.features.store.ui.model.MenuItemUiState
 import eti.lucasgomes.features.store.ui.model.StoreAction
 import eti.lucasgomes.features.store.ui.model.StoreUiState
 import eti.lucasgomes.makalu.components.dsl.UiText
@@ -56,9 +57,24 @@ internal class StoreViewModel(
             handleGeneralError(it)
         }.onSuccess { response ->
             _uiState.update { state ->
-                state.copy(isLoading = false, menuItems = response.groupBy { it.category })
+                state.copy(
+                    isLoading = false,
+                    menuItems = response.groupBy { it.category }.mapValues { (_, values) ->
+                        values.map { itemResponse ->
+                            MenuItemUiState(
+                                itemResponse.id,
+                                itemResponse.category,
+                                itemResponse.name, itemResponse.price,
+                                mapMenuImageIdToUrl(itemResponse.id, itemResponse.imageId),
+                            )
+                        }
+                    })
             }
         }
+    }
+
+    private fun mapMenuImageIdToUrl(menuId: Long, imageId: Long?): String? = imageId?.let { imageId ->
+        "${BASE_URL}stores/${id}/menu/${menuId}/image/$imageId"
     }
 
     private fun mapCoverImageIdToUrl(imageId: Long?): String? = imageId?.let { id ->
