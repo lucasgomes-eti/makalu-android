@@ -4,4 +4,6 @@ internal sealed interface MenuItemAction {
     data object OnInitialFetch : MenuItemAction
 
     data object OnDismissError : MenuItemAction
+
+    data object NavigateBackClicked : MenuItemAction
 }

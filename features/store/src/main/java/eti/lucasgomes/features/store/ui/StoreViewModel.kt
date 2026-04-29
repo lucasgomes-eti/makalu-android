@@ -77,7 +77,7 @@ internal class StoreViewModel(
 
     private fun mapMenuImageIdToUrl(menuId: Long, imageId: Long?): String? =
         imageId?.let { imageId ->
-            "${MakaluConfig.BASE_URL}stores/${id}/menu/${menuId}/image/$imageId"
+            "${MakaluConfig.BASE_URL}stores/menu/${menuId}/image/$imageId"
         }
 
     private fun mapCoverImageIdToUrl(imageId: Long?): String? = imageId?.let { id ->

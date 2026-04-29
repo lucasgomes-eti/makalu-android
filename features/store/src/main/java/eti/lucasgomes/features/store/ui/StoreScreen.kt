@@ -1,8 +1,5 @@
 package eti.lucasgomes.features.store.ui
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -18,25 +15,17 @@ import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,6 +36,7 @@ import eti.lucasgomes.features.store.ui.model.MenuItemUiState
 import eti.lucasgomes.features.store.ui.model.StoreAction
 import eti.lucasgomes.features.store.ui.model.StoreUiState
 import eti.lucasgomes.makalu.components.CardItem
+import eti.lucasgomes.makalu.components.appBars.ExpandableTopAppBar
 import eti.lucasgomes.makalu.components.appBars.LocalTopBarUiController
 import eti.lucasgomes.makalu.components.appBars.TopBarUiController
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
@@ -59,77 +49,17 @@ internal fun BoxScope.StoreScreen(uiState: StoreUiState, onAction: (StoreAction)
     OnFirstComposition { onAction(StoreAction.OnInitialFetch) }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    val maxHeight = 152.dp
-    val minHeight = 64.dp
-    val collapseFraction = scrollBehavior.state.collapsedFraction
-    val height = maxHeight - (maxHeight - minHeight) * collapseFraction
-    val isCollapsed = collapseFraction == 1f
-    val topAppBarTitleContentColor by animateColorAsState(
-        if (isCollapsed) colorScheme.contentColorFor(
-            colorScheme.surfaceContainer
-        ) else Color.White
-    )
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(height)
-            ) {
-                AsyncImage(
-                    model = uiState.coverImageUrl,
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color.Black.copy(alpha = 0.4f),
-                                    Color.Black.copy(alpha = 0.8f),
-                                )
-                            )
-                        )
-                )
-                LargeTopAppBar(
-                    title = {
-                        Text(
-                            uiState.name.asString(),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    },
-                    expandedHeight = maxHeight,
-                    collapsedHeight = minHeight,
-                    scrollBehavior = scrollBehavior,
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent,
-                        titleContentColor = topAppBarTitleContentColor
-                    ),
-                    navigationIcon = {
-                        IconButton(onClick = { onAction(StoreAction.NavigateBackClicked) }) {
-                            Icon(
-                                painterResource(eti.lucasgomes.makalu.components.R.drawable.arrow_back),
-                                stringResource(eti.lucasgomes.makalu.components.R.string.accessibility_back_button),
-                                tint = topAppBarTitleContentColor
-                            )
-                        }
-                    },
-                )
-            }
+            ExpandableTopAppBar(
+                scrollBehavior,
+                backgroundImageUrl = uiState.coverImageUrl,
+                if (uiState.isLoading) stringResource(eti.lucasgomes.makalu.components.R.string.loading) else uiState.name.asString()
+            ) { onAction(StoreAction.NavigateBackClicked) }
         }
     ) { innerPadding ->
-        AnimatedVisibility(uiState.generalError != UiText.Empty) {
-            ErrorBanner(uiState.generalError.asString()) {
-                onAction(StoreAction.OnDismissError)
-            }
-        }
         LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
@@ -137,6 +67,21 @@ internal fun BoxScope.StoreScreen(uiState: StoreUiState, onAction: (StoreAction)
             verticalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(16.dp)
         ) {
+            if (uiState.generalError != UiText.Empty) {
+                item {
+                    ErrorBanner(uiState.generalError.asString()) {
+                        onAction(StoreAction.OnDismissError)
+                    }
+                }
+            }
+            if (uiState.isLoading) {
+                item {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) { LoadingIndicator() }
+                }
+            }
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),

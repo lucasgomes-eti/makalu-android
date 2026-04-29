@@ -55,4 +55,7 @@ dependencies {
 
     // Image
     implementation(libs.crop.kit)
+
+    // Image Loading
+    implementation(libs.bundles.coil)
 }
