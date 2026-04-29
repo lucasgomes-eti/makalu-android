@@ -1,5 +1,6 @@
 package eti.lucasgomes.makalu.features.profile.ui
 
+import MakaluConfig
 import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
@@ -14,7 +15,6 @@ import eti.lucasgomes.makalu.shared.navigation.Destination
 import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.shared.navigation.OSNavigation
 import eti.lucasgomes.makalu.shared.navigation.RequestKey
-import eti.lucasgomes.makalu.shared.network.HttpClientManager.Companion.BASE_URL
 import eti.lucasgomes.makalu.shared.network.LogoutUseCase
 import eti.lucasgomes.makalu.shared.network.onError
 import eti.lucasgomes.makalu.shared.network.onSuccess
@@ -84,7 +84,7 @@ class ProfileViewModel(
     }
 
     private fun mapImageIdToUrl(imageId: Long?): String? = imageId?.let { id ->
-        "${BASE_URL}profile/image/$id"
+        "${MakaluConfig.BASE_URL}profile/image/$id"
     }
 
     private fun onLogoutDialogDismissed() = withViewModelScope {

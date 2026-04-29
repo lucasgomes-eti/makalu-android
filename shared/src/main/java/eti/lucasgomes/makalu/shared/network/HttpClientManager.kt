@@ -1,5 +1,6 @@
 package eti.lucasgomes.makalu.shared.network
 
+import MakaluConfig
 import androidx.datastore.core.DataStore
 import eti.lucasgomes.makalu.shared.MkLogger
 import eti.lucasgomes.makalu.shared.settings.Settings
@@ -8,6 +9,7 @@ import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.clearAuthTokens
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -41,7 +43,7 @@ class HttpClientManager(
     private fun createHttpClient(): HttpClient {
         return HttpClient(Android) {
             defaultRequest {
-                url(BASE_URL)
+                url(MakaluConfig.BASE_URL)
             }
             val contentSerializer = Json {
                 prettyPrint = true
@@ -78,14 +80,15 @@ class HttpClientManager(
                     }
                     refreshTokens {
                         val refreshToken = oldTokens?.refreshToken ?: run {
+                            client.clearAuthTokens()
                             logoutUseCase()
                             return@refreshTokens null
                         }
                         val response = client.post("auth/refresh") {
                             setBody(RefreshTokenRequest(refreshToken))
+                            markAsRefreshTokenRequest()
                         }
 
-                        // TODO: possible bug not handling response from api
                         val auth = when (response.status.value) {
                             in 200..299 -> {
                                 response.body<TokenPairResponse>().also { auth ->
@@ -99,6 +102,7 @@ class HttpClientManager(
                             }
 
                             else -> {
+                                client.clearAuthTokens()
                                 logoutUseCase()
                                 null
                             }
@@ -162,7 +166,6 @@ class HttpClientManager(
     }
 
     companion object {
-        const val BASE_URL: String = "https://api-makalu-development.up.railway.app/"
         private const val TIME_OUT = 6000
     }
 }

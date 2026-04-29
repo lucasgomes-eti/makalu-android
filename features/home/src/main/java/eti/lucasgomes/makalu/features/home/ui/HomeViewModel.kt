@@ -1,5 +1,6 @@
 package eti.lucasgomes.makalu.features.home.ui
 
+import MakaluConfig
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,7 +14,6 @@ import eti.lucasgomes.makalu.features.home.ui.model.HomeUiState
 import eti.lucasgomes.makalu.features.home.ui.model.StoreUiState
 import eti.lucasgomes.makalu.shared.navigation.Destination
 import eti.lucasgomes.makalu.shared.navigation.Navigator
-import eti.lucasgomes.makalu.shared.network.HttpClientManager.Companion.BASE_URL
 import eti.lucasgomes.makalu.shared.network.onError
 import eti.lucasgomes.makalu.shared.network.onSuccess
 import eti.lucasgomes.makalu.shared.settings.Settings
@@ -140,11 +140,11 @@ internal class HomeViewModel(
     }
 
     private fun mapLogoImageIdToUrl(imageId: Long?): String? = imageId?.let { id ->
-        "${BASE_URL}stores/logo-image/$id"
+        "${MakaluConfig.BASE_URL}stores/logo-image/$id"
     }
 
     private fun mapCoverImageIdToUrl(imageId: Long?): String? = imageId?.let { id ->
-        "${BASE_URL}stores/cover-image/$id"
+        "${MakaluConfig.BASE_URL}stores/cover-image/$id"
     }
 
     private fun onRefreshStores() = withViewModelScope {

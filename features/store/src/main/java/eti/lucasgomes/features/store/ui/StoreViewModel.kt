@@ -1,5 +1,6 @@
 package eti.lucasgomes.features.store.ui
 
+import MakaluConfig
 import androidx.lifecycle.ViewModel
 import eti.lucasgomes.features.store.StoreClient
 import eti.lucasgomes.features.store.ui.model.MenuItemUiState
@@ -8,7 +9,6 @@ import eti.lucasgomes.features.store.ui.model.StoreUiState
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
 import eti.lucasgomes.makalu.shared.navigation.Navigator
-import eti.lucasgomes.makalu.shared.network.HttpClientManager.Companion.BASE_URL
 import eti.lucasgomes.makalu.shared.network.MakaluError
 import eti.lucasgomes.makalu.shared.network.onError
 import eti.lucasgomes.makalu.shared.network.onSuccess
@@ -73,12 +73,13 @@ internal class StoreViewModel(
         }
     }
 
-    private fun mapMenuImageIdToUrl(menuId: Long, imageId: Long?): String? = imageId?.let { imageId ->
-        "${BASE_URL}stores/${id}/menu/${menuId}/image/$imageId"
-    }
+    private fun mapMenuImageIdToUrl(menuId: Long, imageId: Long?): String? =
+        imageId?.let { imageId ->
+            "${MakaluConfig.BASE_URL}stores/${id}/menu/${menuId}/image/$imageId"
+        }
 
     private fun mapCoverImageIdToUrl(imageId: Long?): String? = imageId?.let { id ->
-        "${BASE_URL}stores/cover-image/$id"
+        "${MakaluConfig.BASE_URL}stores/cover-image/$id"
     }
 
     private fun handleGeneralError(mkError: MakaluError) {
