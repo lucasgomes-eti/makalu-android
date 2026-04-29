@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun CardItem(
-    modifier: Modifier,
+    modifier: Modifier = Modifier.height(80.dp),
     contentWeight: Float? = null,
     onClick: (() -> Unit)? = null,
     headlineContent: @Composable () -> Unit,

@@ -167,7 +167,7 @@ internal fun BoxScope.StoreScreen(uiState: StoreUiState, onAction: (StoreAction)
                     )
                 }
 
-                items(items) { MenuListItem(it) {} }
+                items(items) { MenuListItem(it) { onAction(StoreAction.MenuItemClicked(it.id)) } }
             }
         }
     }

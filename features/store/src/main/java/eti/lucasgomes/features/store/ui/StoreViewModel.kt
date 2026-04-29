@@ -8,6 +8,7 @@ import eti.lucasgomes.features.store.ui.model.StoreAction
 import eti.lucasgomes.features.store.ui.model.StoreUiState
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
+import eti.lucasgomes.makalu.shared.navigation.Destination
 import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.shared.network.MakaluError
 import eti.lucasgomes.makalu.shared.network.onError
@@ -31,6 +32,7 @@ internal class StoreViewModel(
             StoreAction.OnInitialFetch -> onInitialFetch()
             StoreAction.OnDismissError -> onDismissError()
             StoreAction.NavigateBackClicked -> onNavigateBackClicked()
+            is StoreAction.MenuItemClicked -> onMenuItemClicked(action.id)
         }
     }
 
@@ -97,5 +99,9 @@ internal class StoreViewModel(
 
     private fun onNavigateBackClicked() = withViewModelScope {
         navigator.navigateUp()
+    }
+
+    private fun onMenuItemClicked(menuItemId: Long) = withViewModelScope {
+        navigator.navigate(Destination.Screen.MenuItem(menuItemId))
     }
 }

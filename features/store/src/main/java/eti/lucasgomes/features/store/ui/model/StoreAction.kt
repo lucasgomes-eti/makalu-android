@@ -6,4 +6,6 @@ internal sealed interface StoreAction {
     data object OnDismissError : StoreAction
 
     data object NavigateBackClicked : StoreAction
+
+    data class MenuItemClicked(val id: Long) : StoreAction
 }

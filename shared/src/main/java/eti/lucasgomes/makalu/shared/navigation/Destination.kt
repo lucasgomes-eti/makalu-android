@@ -36,5 +36,8 @@ sealed interface Destination {
 
         @Serializable
         data class Store(val id: Long) : Destination
+
+        @Serializable
+        data class MenuItem(val id: Long): Destination
     }
 }

@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import eti.lucasgomes.adress.AddressEntry
+import eti.lucasgomes.features.menuItem.MenuItemEntry
 import eti.lucasgomes.features.store.StoreEntry
 import eti.lucasgomes.makalu.components.imageCropper.ImageCropperEntry
 import eti.lucasgomes.makalu.features.auth.login.LoginEntry
@@ -44,6 +45,12 @@ fun NavigationGraph(
                 StoreEntry(
                     innerPadding,
                     it.toRoute<Destination.Screen.Store>().id
+                )
+            }
+            composable<Destination.Screen.MenuItem> {
+                MenuItemEntry(
+                    innerPadding,
+                    it.toRoute<Destination.Screen.MenuItem>().id
                 )
             }
         }
