@@ -7,6 +7,7 @@ import eti.lucasgomes.features.menuItem.model.MenuItemResponse
 import eti.lucasgomes.features.menuItem.ui.model.ConfigurationUiState
 import eti.lucasgomes.features.menuItem.ui.model.MenuItemAction
 import eti.lucasgomes.features.menuItem.ui.model.MenuItemUiState
+import eti.lucasgomes.features.menuItem.ui.model.OptionUiState
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
 import eti.lucasgomes.makalu.shared.navigation.Navigator
@@ -30,6 +31,16 @@ internal class MenuItemViewModel(
             MenuItemAction.OnInitialFetch -> onInitialFetch()
             MenuItemAction.OnDismissError -> onDismissError()
             MenuItemAction.NavigateBackClicked -> onNavigateBackClicked()
+            is MenuItemAction.OptionSelected -> onOptionSelected(
+                action.configKey,
+                action.optionIndex
+            )
+
+            is MenuItemAction.QuantityChanged -> onQuantityChanged(
+                action.configKey,
+                action.optionIndex,
+                action.amount
+            )
         }
     }
 
@@ -43,7 +54,6 @@ internal class MenuItemViewModel(
                 )
             }
         }.onSuccess { response ->
-
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
@@ -60,7 +70,21 @@ internal class MenuItemViewModel(
                                     MenuItemResponse.Configuration.Type.MULTIPLE_CHOICE -> ConfigurationUiState.Type.MULTIPLE_CHOICE
                                     MenuItemResponse.Configuration.Type.QUANTITY -> ConfigurationUiState.Type.QUANTITY
                                 },
-                            ), config.options
+                            ), config.options.map { option ->
+                                when (config.type) {
+                                    MenuItemResponse.Configuration.Type.SINGLE_CHOICE -> OptionUiState.SingleChoice(
+                                        option
+                                    )
+
+                                    MenuItemResponse.Configuration.Type.MULTIPLE_CHOICE -> OptionUiState.MultipleChoice(
+                                        option
+                                    )
+
+                                    MenuItemResponse.Configuration.Type.QUANTITY -> OptionUiState.Quantity(
+                                        option
+                                    )
+                                }
+                            }
                         )
                     }
                 )
@@ -80,4 +104,43 @@ internal class MenuItemViewModel(
     private fun onNavigateBackClicked() = withViewModelScope {
         navigator.navigateUp()
     }
+
+    private fun onOptionSelected(configKey: ConfigurationUiState, optionIndex: Int) =
+        withViewModelScope {
+            _uiState.update { state ->
+                val newConfig = state.configurations.toMutableMap()
+                val newOptions = newConfig[configKey]?.toMutableList()
+                    ?: throw RuntimeException("Invalid state configuration selected")
+                val option = newOptions[optionIndex]
+                when (option) {
+                    is OptionUiState.MultipleChoice -> {
+                        newOptions[optionIndex] = option.copy(isSelected = !option.isSelected)
+                    }
+
+                    is OptionUiState.SingleChoice -> {
+                        newOptions.replaceAll { (it as OptionUiState.SingleChoice).copy(isSelected = false) }
+                        newOptions[optionIndex] = option.copy(isSelected = true)
+                    }
+
+                    is OptionUiState.Quantity -> Unit
+                }
+                newConfig[configKey] = newOptions.toList()
+                state.copy(configurations = newConfig)
+            }
+        }
+
+    private fun onQuantityChanged(configKey: ConfigurationUiState, optionIndex: Int, amount: Int) =
+        withViewModelScope {
+            _uiState.update { state ->
+                val newConfig = state.configurations.toMutableMap()
+                val newOptions = newConfig[configKey]?.toMutableList()
+                    ?: throw RuntimeException("Invalid state configuration selected")
+                val option = newOptions[optionIndex]
+                if (option is OptionUiState.Quantity) {
+                    newOptions[optionIndex] = option.copy(amount = amount.coerceIn(0, 50))
+                }
+                newConfig[configKey] = newOptions.toList()
+                state.copy(configurations = newConfig)
+            }
+        }
 }

@@ -33,10 +33,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -45,9 +41,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import eti.lucasgomes.features.menuItem.R
-import eti.lucasgomes.features.menuItem.ui.model.ConfigurationUiState
 import eti.lucasgomes.features.menuItem.ui.model.MenuItemAction
 import eti.lucasgomes.features.menuItem.ui.model.MenuItemUiState
+import eti.lucasgomes.features.menuItem.ui.model.OptionUiState
 import eti.lucasgomes.makalu.components.CardItem
 import eti.lucasgomes.makalu.components.appBars.ExpandableTopAppBar
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
@@ -129,21 +125,43 @@ internal fun BoxScope.MenuItemScreen(
                     )
                 }
                 items(options) { option ->
-                    when (config.type) {
-                        ConfigurationUiState.Type.SINGLE_CHOICE -> SingleChoiceItem(
-                            false,
-                            option,
-                            {},
-                        )
+                    when (option) {
+                        is OptionUiState.SingleChoice -> SingleChoiceItem(
+                            option.isSelected,
+                            option.label,
+                        ) {
+                            onAction(
+                                MenuItemAction.OptionSelected(
+                                    config,
+                                    options.indexOf(option)
+                                )
+                            )
+                        }
 
-                        ConfigurationUiState.Type.MULTIPLE_CHOICE -> MultipleChoiceItem(
-                            false,
-                            option,
-                            {},
-                        )
+                        is OptionUiState.MultipleChoice -> MultipleChoiceItem(
+                            option.isSelected,
+                            option.label,
+                        ) {
+                            onAction(
+                                MenuItemAction.OptionSelected(
+                                    config,
+                                    options.indexOf(option)
+                                )
+                            )
+                        }
 
-                        ConfigurationUiState.Type.QUANTITY -> QuantityItem(
-                            option
+                        is OptionUiState.Quantity -> QuantityItem(
+                            option.label,
+                            amount = option.amount,
+                            onAmountChanged = {
+                                onAction(
+                                    MenuItemAction.QuantityChanged(
+                                        config,
+                                        options.indexOf(option),
+                                        it
+                                    )
+                                )
+                            }
                         )
                     }
                 }
@@ -184,7 +202,7 @@ private fun LazyItemScope.SingleChoiceItem(
             )
             .padding(16.dp)
     ) {
-        RadioButton(selected = false, onClick = null)
+        RadioButton(selected = isSelected, onClick = null)
         Text(label, style = typography.titleMedium)
     }
 }
@@ -213,9 +231,8 @@ private fun LazyItemScope.MultipleChoiceItem(
 }
 
 @Composable
-private fun LazyItemScope.QuantityItem(label: String) {
+private fun LazyItemScope.QuantityItem(label: String, amount: Int, onAmountChanged: (Int) -> Unit) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        var count by remember { mutableIntStateOf(0) }
         CardItem(
             modifier = Modifier
                 .fillMaxWidth()
@@ -226,14 +243,14 @@ private fun LazyItemScope.QuantityItem(label: String) {
             },
             trailingContent = {
                 Spacer(Modifier)
-                AnimatedVisibility(count > 0) {
+                AnimatedVisibility(amount > 0) {
                     Box(
                         Modifier
                             .size(40.dp)
                             .background(colorScheme.primary, shape = CircleShape)
                     ) {
                         AnimatedContent(
-                            count,
+                            amount,
                             modifier = Modifier.align(Alignment.Center),
                         ) {
                             Text(
@@ -246,12 +263,12 @@ private fun LazyItemScope.QuantityItem(label: String) {
                 }
             },
             leadingContent = {
-                AnimatedVisibility(count > 0) {
-                    OutlinedButton(onClick = { count-- }) {
+                AnimatedVisibility(amount > 0) {
+                    OutlinedButton(onClick = { onAmountChanged(amount - 1) }) {
                         Text("-")
                     }
                 }
-                Button(onClick = { count++ }) {
+                Button(onClick = { onAmountChanged(amount + 1) }) {
                     Text("+")
                 }
                 Spacer(Modifier)

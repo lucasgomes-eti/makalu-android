@@ -11,5 +11,22 @@ internal data class MenuItemUiState(
     val name: UiText = UiText.Empty,
     val ingredients: String? = null,
     val price: BigDecimal = BigDecimal.ZERO,
-    val configurations: Map<ConfigurationUiState, List<String>> = emptyMap()
+    val configurations: Map<ConfigurationUiState, List<OptionUiState>> = emptyMap()
 )
+
+internal sealed class OptionUiState(open val label: String) {
+    data class SingleChoice(
+        override val label: String = "",
+        val isSelected: Boolean = false
+    ) : OptionUiState(label)
+
+    data class MultipleChoice(
+        override val label: String = "",
+        val isSelected: Boolean = false
+    ) : OptionUiState(label)
+
+    data class Quantity(
+        override val label: String = "",
+        val amount: Int = 0
+    ) : OptionUiState(label)
+}
