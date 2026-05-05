@@ -41,6 +41,8 @@ internal class MenuItemViewModel(
                 action.optionIndex,
                 action.amount
             )
+
+            is MenuItemAction.NotesChanged -> onNotesChanged(action.value)
         }
     }
 
@@ -137,10 +139,24 @@ internal class MenuItemViewModel(
                     ?: throw RuntimeException("Invalid state configuration selected")
                 val option = newOptions[optionIndex]
                 if (option is OptionUiState.Quantity) {
-                    newOptions[optionIndex] = option.copy(amount = amount.coerceIn(0, 50))
+                    newOptions[optionIndex] = option.copy(amount = amount.coerceIn(0, MAX_QUANTITY))
                 }
                 newConfig[configKey] = newOptions.toList()
                 state.copy(configurations = newConfig)
             }
         }
+
+    private fun onNotesChanged(value: String) = withViewModelScope {
+        if (value.length > MAX_NOTES_LENGTH) {
+            return@withViewModelScope
+        }
+        _uiState.update { state ->
+            state.copy(notes = value)
+        }
+    }
+
+    companion object {
+        const val MAX_QUANTITY = 50
+        const val MAX_NOTES_LENGTH = 200
+    }
 }

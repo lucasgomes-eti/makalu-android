@@ -17,4 +17,6 @@ internal sealed interface MenuItemAction {
         val optionIndex: Int,
         val amount: Int
     ) : MenuItemAction
+
+    data class NotesChanged(val value: String) : MenuItemAction
 }

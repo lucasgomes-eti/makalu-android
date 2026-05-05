@@ -173,8 +173,8 @@ internal fun BoxScope.MenuItemScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    value = "",
-                    onValueChange = {},
+                    value = uiState.notes,
+                    onValueChange = { onAction(MenuItemAction.NotesChanged(it)) },
                     label = {
                         Text("Notes")
                     })
