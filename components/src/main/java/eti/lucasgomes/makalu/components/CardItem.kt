@@ -3,7 +3,9 @@ package eti.lucasgomes.makalu.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -23,11 +25,11 @@ fun CardItem(
     modifier: Modifier = Modifier.height(80.dp),
     contentWeight: Float? = null,
     onClick: (() -> Unit)? = null,
-    headlineContent: @Composable () -> Unit,
-    supportingContent: @Composable () -> Unit = {},
-    trailingContent: @Composable (() -> Unit)? = null,
-    leadingContent: @Composable (() -> Unit)? = null,
-    ) {
+    headlineContent: @Composable ColumnScope.() -> Unit,
+    supportingContent: @Composable ColumnScope.() -> Unit = {},
+    trailingContent: @Composable (RowScope.() -> Unit)? = null,
+    leadingContent: @Composable (RowScope.() -> Unit)? = null,
+) {
     SurfaceWithOptionalClick(
         onClick = onClick
     ) {
@@ -43,9 +45,11 @@ fun CardItem(
             }
             Column(
                 verticalArrangement = Arrangement.spacedBy(2.dp),
-                modifier = Modifier.then(if (contentWeight != null) {
-                    Modifier.weight(contentWeight)
-                } else Modifier)
+                modifier = Modifier.then(
+                    if (contentWeight != null) {
+                        Modifier.weight(contentWeight)
+                    } else Modifier
+                )
             ) {
                 headlineContent()
                 supportingContent()
@@ -60,7 +64,10 @@ fun CardItem(
 }
 
 @Composable
-private fun SurfaceWithOptionalClick(onClick: (() -> Unit)? = null, content: @Composable () -> Unit) {
+private fun SurfaceWithOptionalClick(
+    onClick: (() -> Unit)? = null,
+    content: @Composable () -> Unit
+) {
     if (onClick == null) {
         Surface(
             border = BorderStroke(1.dp, colorScheme.outline),

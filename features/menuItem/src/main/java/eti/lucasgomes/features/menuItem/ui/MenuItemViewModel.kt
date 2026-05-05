@@ -43,21 +43,24 @@ internal class MenuItemViewModel(
                 )
             }
         }.onSuccess { response ->
+
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
                     imageUrl = mapMenuImageIdToUrl(response.imageId),
                     name = UiText.PlainText(response.name),
+                    price = response.price,
                     ingredients = response.ingredients,
-                    configurations = response.configurations.map { config ->
-                        ConfigurationUiState(
-                            name = config.name,
-                            type = when (config.type) {
-                                MenuItemResponse.Configuration.Type.SINGLE_CHOICE -> ConfigurationUiState.Type.SINGLE_CHOICE
-                                MenuItemResponse.Configuration.Type.MULTIPLE_CHOICE -> ConfigurationUiState.Type.MULTIPLE_CHOICE
-                                MenuItemResponse.Configuration.Type.QUANTITY -> ConfigurationUiState.Type.QUANTITY
-                            },
-                            options = config.options
+                    configurations = response.configurations.associate { config ->
+                        Pair(
+                            ConfigurationUiState(
+                                name = config.name,
+                                type = when (config.type) {
+                                    MenuItemResponse.Configuration.Type.SINGLE_CHOICE -> ConfigurationUiState.Type.SINGLE_CHOICE
+                                    MenuItemResponse.Configuration.Type.MULTIPLE_CHOICE -> ConfigurationUiState.Type.MULTIPLE_CHOICE
+                                    MenuItemResponse.Configuration.Type.QUANTITY -> ConfigurationUiState.Type.QUANTITY
+                                },
+                            ), config.options
                         )
                     }
                 )

@@ -11,5 +11,5 @@ internal data class MenuItemUiState(
     val name: UiText = UiText.Empty,
     val ingredients: String? = null,
     val price: BigDecimal = BigDecimal.ZERO,
-    val configurations: List<ConfigurationUiState> = emptyList()
+    val configurations: Map<ConfigurationUiState, List<String>> = emptyMap()
 )

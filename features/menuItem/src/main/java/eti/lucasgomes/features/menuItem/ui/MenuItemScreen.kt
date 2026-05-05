@@ -1,28 +1,48 @@
 package eti.lucasgomes.features.menuItem.ui
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.plus
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.LoadingIndicator
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import eti.lucasgomes.features.menuItem.R
 import eti.lucasgomes.features.menuItem.ui.model.ConfigurationUiState
@@ -32,14 +52,12 @@ import eti.lucasgomes.makalu.components.CardItem
 import eti.lucasgomes.makalu.components.appBars.ExpandableTopAppBar
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
 import eti.lucasgomes.makalu.components.buttons.ConfigureFab
-import eti.lucasgomes.makalu.components.buttons.ExpressiveButton
 import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 import eti.lucasgomes.makalu.components.dsl.UiText
 
 @Composable
 internal fun BoxScope.MenuItemScreen(
-    uiState: MenuItemUiState,
-    onAction: (MenuItemAction) -> Unit
+    uiState: MenuItemUiState, onAction: (MenuItemAction) -> Unit
 ) {
     OnFirstComposition { onAction(MenuItemAction.OnInitialFetch) }
     ConfigureFab(
@@ -50,37 +68,38 @@ internal fun BoxScope.MenuItemScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
             ExpandableTopAppBar(
                 scrollBehavior,
                 backgroundImageUrl = uiState.imageUrl,
                 title = if (uiState.isLoading) stringResource(eti.lucasgomes.makalu.components.R.string.loading) else uiState.name.asString()
             ) { onAction(MenuItemAction.NavigateBackClicked) }
-        }
-    ) { innerPadding ->
+        }) { innerPadding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = innerPadding + PaddingValues(16.dp, 16.dp, 16.dp, 72.dp)
+            contentPadding = innerPadding + PaddingValues(0.dp, 16.dp, 0.dp, 72.dp)
         ) {
             if (uiState.generalError != UiText.Empty) {
                 item {
                     ErrorBanner(uiState.generalError.asString()) {
                         onAction(MenuItemAction.OnDismissError)
                     }
+                    Spacer(Modifier.height(16.dp))
                 }
             }
             if (uiState.isLoading) {
                 item {
                     Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                        Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
                     ) { LoadingIndicator() }
+                    Spacer(Modifier.height(16.dp))
                 }
             }
             item {
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
                     CardItem(headlineContent = {
                         Text(text = "Price", style = typography.bodyMedium)
                     }, supportingContent = {
@@ -101,63 +120,143 @@ internal fun BoxScope.MenuItemScreen(
                     }
                 }
             }
-            items(uiState.configurations) { configuration ->
-                Text(configuration.name)
-                when (configuration.type) {
-                    ConfigurationUiState.Type.SINGLE_CHOICE -> {
-                        configuration.options.forEach { opt ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                RadioButton(selected = false, onClick = {})
-                                Text(opt)
-                            }
-                        }
-                    }
+            uiState.configurations.forEach { (config, options) ->
+                item {
+                    Text(
+                        config.name,
+                        style = typography.labelLarge,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+                items(options) { option ->
+                    when (config.type) {
+                        ConfigurationUiState.Type.SINGLE_CHOICE -> SingleChoiceItem(
+                            false,
+                            option,
+                            {},
+                        )
 
-                    ConfigurationUiState.Type.MULTIPLE_CHOICE -> {
-                        configuration.options.forEach { opt ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Checkbox(checked = false, onCheckedChange = {})
-                                Text(opt)
-                            }
+                        ConfigurationUiState.Type.MULTIPLE_CHOICE -> MultipleChoiceItem(
+                            false,
+                            option,
+                            {},
+                        )
 
-                        }
-                    }
-
-                    ConfigurationUiState.Type.QUANTITY -> {
-                        configuration.options.forEach { opt ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Text(opt)
-                                ExpressiveButton(onClick = {}) {
-                                    Text("+")
-                                }
-                                Text("count")
-                                ExpressiveButton(onClick = {}) {
-                                    Text("-")
-                                }
-                            }
-                        }
+                        ConfigurationUiState.Type.QUANTITY -> QuantityItem(
+                            option
+                        )
                     }
                 }
             }
+
             item {
+                Spacer(Modifier.height(16.dp))
                 TextField(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                     value = "",
                     onValueChange = {},
                     label = {
                         Text("Notes")
-                    }
-                )
+                    })
+
             }
         }
+    }
+}
+
+@Composable
+private fun LazyItemScope.SingleChoiceItem(
+    isSelected: Boolean = false,
+    label: String,
+    onClick: () -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .selectable(
+                selected = isSelected,
+                role = Role.RadioButton,
+                onClick = onClick
+            )
+            .padding(16.dp)
+    ) {
+        RadioButton(selected = false, onClick = null)
+        Text(label, style = typography.titleMedium)
+    }
+}
+
+@Composable
+private fun LazyItemScope.MultipleChoiceItem(
+    isSelected: Boolean = false,
+    label: String,
+    onClick: () -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .selectable(
+                selected = isSelected,
+                role = Role.Checkbox,
+                onClick = onClick
+            )
+            .padding(16.dp)
+    ) {
+        Checkbox(checked = isSelected, onCheckedChange = null)
+        Text(label, style = typography.titleMedium)
+    }
+}
+
+@Composable
+private fun LazyItemScope.QuantityItem(label: String) {
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        var count by remember { mutableIntStateOf(0) }
+        CardItem(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(80.dp),
+            contentWeight = 1f,
+            headlineContent = {
+                Text(label, style = typography.titleMedium)
+            },
+            trailingContent = {
+                Spacer(Modifier)
+                AnimatedVisibility(count > 0) {
+                    Box(
+                        Modifier
+                            .size(40.dp)
+                            .background(colorScheme.primary, shape = CircleShape)
+                    ) {
+                        AnimatedContent(
+                            count,
+                            modifier = Modifier.align(Alignment.Center),
+                        ) {
+                            Text(
+                                "$it",
+                                style = typography.titleMedium,
+                                color = colorScheme.onPrimary,
+                            )
+                        }
+                    }
+                }
+            },
+            leadingContent = {
+                AnimatedVisibility(count > 0) {
+                    OutlinedButton(onClick = { count-- }) {
+                        Text("-")
+                    }
+                }
+                Button(onClick = { count++ }) {
+                    Text("+")
+                }
+                Spacer(Modifier)
+            }
+        )
+        Spacer(Modifier.padding(8.dp))
     }
 }
