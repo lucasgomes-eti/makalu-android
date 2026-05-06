@@ -2,11 +2,14 @@ package eti.lucasgomes.features.menuItem.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +24,7 @@ import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.LoadingIndicator
@@ -35,12 +39,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import eti.lucasgomes.features.menuItem.R
+import eti.lucasgomes.features.menuItem.ui.model.ConfigurationUiState
 import eti.lucasgomes.features.menuItem.ui.model.MenuItemAction
 import eti.lucasgomes.features.menuItem.ui.model.MenuItemUiState
 import eti.lucasgomes.features.menuItem.ui.model.OptionUiState
@@ -124,45 +130,52 @@ internal fun BoxScope.MenuItemScreen(
                         modifier = Modifier.padding(16.dp)
                     )
                 }
-                items(options) { option ->
-                    when (option) {
-                        is OptionUiState.SingleChoice -> SingleChoiceItem(
-                            option.isSelected,
-                            option.label,
-                        ) {
-                            onAction(
-                                MenuItemAction.OptionSelected(
-                                    config,
-                                    options.indexOf(option)
-                                )
-                            )
-                        }
 
-                        is OptionUiState.MultipleChoice -> MultipleChoiceItem(
-                            option.isSelected,
-                            option.label,
-                        ) {
-                            onAction(
-                                MenuItemAction.OptionSelected(
-                                    config,
-                                    options.indexOf(option)
-                                )
-                            )
-                        }
-
-                        is OptionUiState.Quantity -> QuantityItem(
-                            option.label,
-                            amount = option.amount,
-                            onAmountChanged = {
+                when (config.type) {
+                    ConfigurationUiState.Type.SINGLE_CHOICE -> {
+                        item {
+                            SingleChoiceSection(options) {
                                 onAction(
-                                    MenuItemAction.QuantityChanged(
+                                    MenuItemAction.OptionSelected(
                                         config,
-                                        options.indexOf(option),
-                                        it
+                                        options.indexOf(it)
                                     )
                                 )
                             }
-                        )
+                        }
+                    }
+
+                    ConfigurationUiState.Type.MULTIPLE_CHOICE -> {
+                        item {
+                            MultipleChoiceSection(options) {
+                                onAction(
+                                    MenuItemAction.OptionSelected(
+                                        config,
+                                        options.indexOf(it)
+                                    )
+                                )
+                            }
+                        }
+                    }
+
+                    ConfigurationUiState.Type.QUANTITY -> {
+                        items(options) { option ->
+                            if (option is OptionUiState.Quantity) {
+                                QuantityItem(
+                                    option.label,
+                                    amount = option.amount,
+                                    onAmountChanged = {
+                                        onAction(
+                                            MenuItemAction.QuantityChanged(
+                                                config,
+                                                options.indexOf(option),
+                                                it
+                                            )
+                                        )
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -185,48 +198,66 @@ internal fun BoxScope.MenuItemScreen(
 }
 
 @Composable
-private fun LazyItemScope.SingleChoiceItem(
-    isSelected: Boolean = false,
-    label: String,
-    onClick: () -> Unit,
+private fun SingleChoiceSection(
+    options: List<OptionUiState>,
+    onOptionSelected: (OptionUiState.SingleChoice) -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .selectable(
-                selected = isSelected,
-                role = Role.RadioButton,
-                onClick = onClick
-            )
-            .padding(16.dp)
+    FlowRow(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        RadioButton(selected = isSelected, onClick = null)
-        Text(label, style = typography.titleMedium)
+        options.forEach { option ->
+            if (option is OptionUiState.SingleChoice) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .border(BorderStroke(1.dp, colorScheme.outline), RoundedCornerShape(12.dp))
+                        .selectable(
+                            selected = option.isSelected,
+                            role = Role.RadioButton,
+                            onClick = { onOptionSelected(option) }
+                        )
+                        .padding(16.dp)
+                ) {
+                    RadioButton(selected = option.isSelected, onClick = null)
+                    Text(option.label, style = typography.titleMedium)
+                }
+            }
+        }
     }
 }
 
 @Composable
-private fun LazyItemScope.MultipleChoiceItem(
-    isSelected: Boolean = false,
-    label: String,
-    onClick: () -> Unit,
+private fun MultipleChoiceSection(
+    options: List<OptionUiState>,
+    onOptionSelected: (OptionUiState.MultipleChoice) -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .selectable(
-                selected = isSelected,
-                role = Role.Checkbox,
-                onClick = onClick
-            )
-            .padding(16.dp)
+    FlowRow(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Checkbox(checked = isSelected, onCheckedChange = null)
-        Text(label, style = typography.titleMedium)
+        options.forEach { option ->
+            if (option is OptionUiState.MultipleChoice) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .border(BorderStroke(1.dp, colorScheme.outline), RoundedCornerShape(12.dp))
+                        .selectable(
+                            selected = option.isSelected,
+                            role = Role.Checkbox,
+                            onClick = { onOptionSelected(option) }
+                        )
+                        .padding(16.dp)
+                ) {
+                    Checkbox(checked = option.isSelected, onCheckedChange = null)
+                    Text(option.label, style = typography.titleMedium)
+                }
+            }
+        }
     }
 }
 
