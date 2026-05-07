@@ -75,15 +75,15 @@ internal class MenuItemViewModel(
                             ), config.options.map { option ->
                                 when (config.type) {
                                     MenuItemResponse.Configuration.Type.SINGLE_CHOICE -> OptionUiState.SingleChoice(
-                                        option
+                                        option.name, option.additionalPrice
                                     )
 
                                     MenuItemResponse.Configuration.Type.MULTIPLE_CHOICE -> OptionUiState.MultipleChoice(
-                                        option
+                                        option.name, option.additionalPrice
                                     )
 
                                     MenuItemResponse.Configuration.Type.QUANTITY -> OptionUiState.Quantity(
-                                        option
+                                        option.name, option.additionalPrice
                                     )
                                 }
                             }

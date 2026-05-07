@@ -56,6 +56,7 @@ import eti.lucasgomes.makalu.components.banners.ErrorBanner
 import eti.lucasgomes.makalu.components.buttons.ConfigureFab
 import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 import eti.lucasgomes.makalu.components.dsl.UiText
+import java.math.BigDecimal
 
 @Composable
 internal fun BoxScope.MenuItemScreen(
@@ -162,7 +163,8 @@ internal fun BoxScope.MenuItemScreen(
                         items(options) { option ->
                             if (option is OptionUiState.Quantity) {
                                 QuantityItem(
-                                    option.label,
+                                    label = option.label,
+                                    additionalPrice = option.additionalPrice,
                                     amount = option.amount,
                                     onAmountChanged = {
                                         onAction(
@@ -222,7 +224,13 @@ private fun SingleChoiceSection(
                         .padding(16.dp)
                 ) {
                     RadioButton(selected = option.isSelected, onClick = null)
-                    Text(option.label, style = typography.titleMedium)
+                    Column {
+                        Text(option.label, style = typography.titleMedium)
+                        Text(
+                            "+${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)}${option.additionalPrice}",
+                            style = typography.labelMedium
+                        )
+                    }
                 }
             }
         }
@@ -254,7 +262,13 @@ private fun MultipleChoiceSection(
                         .padding(16.dp)
                 ) {
                     Checkbox(checked = option.isSelected, onCheckedChange = null)
-                    Text(option.label, style = typography.titleMedium)
+                    Column {
+                        Text(option.label, style = typography.titleMedium)
+                        Text(
+                            "+${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)}${option.additionalPrice}",
+                            style = typography.labelMedium
+                        )
+                    }
                 }
             }
         }
@@ -262,7 +276,12 @@ private fun MultipleChoiceSection(
 }
 
 @Composable
-private fun LazyItemScope.QuantityItem(label: String, amount: Int, onAmountChanged: (Int) -> Unit) {
+private fun LazyItemScope.QuantityItem(
+    label: String,
+    additionalPrice: BigDecimal,
+    amount: Int,
+    onAmountChanged: (Int) -> Unit
+) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         CardItem(
             modifier = Modifier
@@ -271,6 +290,12 @@ private fun LazyItemScope.QuantityItem(label: String, amount: Int, onAmountChang
             contentWeight = 1f,
             headlineContent = {
                 Text(label, style = typography.titleMedium)
+            },
+            supportingContent = {
+                Text(
+                    "+${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)}$additionalPrice",
+                    style = typography.labelMedium
+                )
             },
             trailingContent = {
                 Spacer(Modifier)

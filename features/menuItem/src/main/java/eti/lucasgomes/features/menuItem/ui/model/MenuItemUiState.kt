@@ -15,19 +15,25 @@ internal data class MenuItemUiState(
     val notes: String = ""
 )
 
-internal sealed class OptionUiState(open val label: String) {
+internal sealed class OptionUiState(
+    open val label: String,
+    open val additionalPrice: BigDecimal
+) {
     data class SingleChoice(
         override val label: String = "",
+        override val additionalPrice: BigDecimal = BigDecimal.ZERO,
         val isSelected: Boolean = false
-    ) : OptionUiState(label)
+    ) : OptionUiState(label, additionalPrice)
 
     data class MultipleChoice(
         override val label: String = "",
+        override val additionalPrice: BigDecimal = BigDecimal.ZERO,
         val isSelected: Boolean = false
-    ) : OptionUiState(label)
+    ) : OptionUiState(label, additionalPrice)
 
     data class Quantity(
         override val label: String = "",
+        override val additionalPrice: BigDecimal = BigDecimal.ZERO,
         val amount: Int = 0
-    ) : OptionUiState(label)
+    ) : OptionUiState(label, additionalPrice)
 }

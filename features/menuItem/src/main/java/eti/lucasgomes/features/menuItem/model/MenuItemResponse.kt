@@ -26,8 +26,15 @@ data class MenuItemResponse(
     data class Configuration(
         val name: String,
         val type: Type,
-        val options: List<String>
+        val options: List<Option>
     ) {
         enum class Type { SINGLE_CHOICE, MULTIPLE_CHOICE, QUANTITY }
+
+        @Serializable
+        data class Option(
+            val name: String,
+            @Serializable(with = BigDecimalSerializer::class)
+            val additionalPrice: BigDecimal
+        )
     }
 }
