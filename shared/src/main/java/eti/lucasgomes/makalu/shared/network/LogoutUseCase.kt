@@ -12,7 +12,14 @@ class LogoutUseCase(
     private val navigator: Navigator
 ) {
     suspend operator fun invoke() {
-        dataStore.updateData { settings -> settings.copy(accessToken = null, refreshToken = null) }
+        dataStore.updateData { settings ->
+            settings.copy(
+                accessToken = null,
+                refreshToken = null,
+                addressId = null,
+                addressName = null
+            )
+        }
         navigator.navigate(
             Destination.Graph.Auth, NavOptions(
                 popUpTo = PopUpToOptions(
