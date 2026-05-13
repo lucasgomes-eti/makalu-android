@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.jetbrains.kotlin.serialization)
@@ -12,19 +12,14 @@ kotlin {
         jvmTarget.set(JvmTarget.JVM_21)
     }
 }
-
 android {
-    namespace = "eti.lucasgomes.makalu"
+    namespace = "eti.lucasgomes.features.checkout"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "eti.lucasgomes.makalu"
         minSdk = libs.versions.minSdk.get().toInt()
-        targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = libs.versions.versionCode.get().toInt()
-        versionName = libs.versions.versionName.get()
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -40,45 +35,24 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
-    buildFeatures {
-        compose = true
-        buildConfig = true
-    }
 }
 
 dependencies {
     //Project
     implementation(projects.shared)
     implementation(projects.components)
-    implementation(projects.features.auth)
-    implementation(projects.features.home)
-    implementation(projects.features.orders)
-    implementation(projects.features.profile)
-    implementation(projects.features.address)
-    implementation(projects.features.store)
-    implementation(projects.features.menuItem)
-    implementation(projects.features.checkout)
-
-    // Android
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
 
     // Compose
-    implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
-    implementation(libs.androidx.compose.navigation)
 
-    // DI
+    //DI
     implementation(libs.koin.androidx.compose)
-
-    // Test
-    testImplementation(libs.junit)
 
     // Tooling
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // Maps
-    implementation(libs.play.services.location)
+    // Image Loading
+    implementation(libs.bundles.coil)
 }

@@ -19,4 +19,6 @@ internal sealed interface MenuItemAction {
     ) : MenuItemAction
 
     data class NotesChanged(val value: String) : MenuItemAction
+
+    data object AddToCartClicked : MenuItemAction
 }

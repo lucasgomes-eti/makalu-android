@@ -10,6 +10,7 @@ import eti.lucasgomes.features.menuItem.ui.model.MenuItemUiState
 import eti.lucasgomes.features.menuItem.ui.model.OptionUiState
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
+import eti.lucasgomes.makalu.shared.navigation.Destination
 import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.shared.network.onError
 import eti.lucasgomes.makalu.shared.network.onSuccess
@@ -43,6 +44,7 @@ internal class MenuItemViewModel(
             )
 
             is MenuItemAction.NotesChanged -> onNotesChanged(action.value)
+            MenuItemAction.AddToCartClicked -> onAddToCartClicked()
         }
     }
 
@@ -153,6 +155,10 @@ internal class MenuItemViewModel(
         _uiState.update { state ->
             state.copy(notes = value)
         }
+    }
+
+    private fun onAddToCartClicked() = withViewModelScope {
+        navigator.navigate(Destination.Screen.Checkout)
     }
 
     companion object {

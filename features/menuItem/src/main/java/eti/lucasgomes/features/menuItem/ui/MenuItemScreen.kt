@@ -66,7 +66,7 @@ internal fun BoxScope.MenuItemScreen(
     ConfigureFab(
         icon = painterResource(R.drawable.add_shopping_cart),
         contentDescription = "Add do cart icon"
-    ) { }
+    ) { onAction(MenuItemAction.AddToCartClicked) }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
