@@ -13,7 +13,7 @@ kotlin {
     }
 }
 android {
-    namespace = "eti.lucasgomes.features.checkout"
+    namespace = "eti.lucasgomes.features.cart"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

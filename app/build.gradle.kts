@@ -57,7 +57,7 @@ dependencies {
     implementation(projects.features.address)
     implementation(projects.features.store)
     implementation(projects.features.menuItem)
-    implementation(projects.features.checkout)
+    implementation(projects.features.cart)
 
     // Android
     implementation(libs.androidx.core.ktx)

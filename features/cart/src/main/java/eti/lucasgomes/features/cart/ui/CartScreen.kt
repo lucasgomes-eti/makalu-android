@@ -1,4 +1,4 @@
-package eti.lucasgomes.features.checkout.ui
+package eti.lucasgomes.features.cart.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,7 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import eti.lucasgomes.features.checkout.R
+import eti.lucasgomes.features.cart.R
 import eti.lucasgomes.makalu.components.CardItem
 import eti.lucasgomes.makalu.components.appBars.ConfigureTopBar
 import eti.lucasgomes.makalu.components.buttons.ExpressiveButton
@@ -39,8 +39,8 @@ import eti.lucasgomes.makalu.components.buttons.ExpressiveTextButton
 import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 
 @Composable
-internal fun BoxScope.CheckoutScreen(uiState: CheckoutUiState, onAction: (CheckoutAction) -> Unit) {
-    OnFirstComposition { onAction(CheckoutAction.OnInitialFetch) }
+internal fun BoxScope.CartScreen(uiState: CartUiState, onAction: (CartAction) -> Unit) {
+    OnFirstComposition { onAction(CartAction.OnInitialFetch) }
     ConfigureTopBar("Cart")
 
     LazyColumn(

@@ -1,4 +1,4 @@
-package eti.lucasgomes.features.checkout.ui
+package eti.lucasgomes.features.cart.ui
 
 import androidx.lifecycle.ViewModel
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
@@ -6,14 +6,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-internal class CheckoutViewModel : ViewModel() {
+internal class CartViewModel : ViewModel() {
 
-    private val _uiState = MutableStateFlow(CheckoutUiState())
+    private val _uiState = MutableStateFlow(CartUiState())
     val uiState = _uiState.asStateFlow()
 
-    fun onAction(action: CheckoutAction) {
+    fun onAction(action: CartAction) {
         when (action) {
-            CheckoutAction.OnInitialFetch -> onInitialFetch()
+            CartAction.OnInitialFetch -> onInitialFetch()
         }
     }
 

@@ -1,6 +1,6 @@
-package eti.lucasgomes.features.checkout.ui
+package eti.lucasgomes.features.cart.ui
 
-internal data class CheckoutUiState(
+internal data class CartUiState(
     val items: List<CartItemUiState> = emptyList()
 )
 
