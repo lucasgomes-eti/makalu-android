@@ -1,9 +1,12 @@
 package eti.lucasgomes.features.cart.di
 
+import eti.lucasgomes.features.cart.CartClient
 import eti.lucasgomes.features.cart.ui.CartViewModel
-import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val cartModule = module {
-    viewModelOf(::CartViewModel)
+    viewModel { CartViewModel(it.get(), get()) }
+    singleOf(::CartClient)
 }

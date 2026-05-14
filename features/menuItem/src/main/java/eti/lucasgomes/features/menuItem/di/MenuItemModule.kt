@@ -7,6 +7,13 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val menuItemModule = module {
-    viewModel { params -> MenuItemViewModel(params.get(), get(), get()) }
+    viewModel { params ->
+        MenuItemViewModel(
+            storeId = params[0],
+            menuItemId = params[1],
+            navigator = get(),
+            menuItemClient = get()
+        )
+    }
     singleOf(::MenuItemClient)
 }

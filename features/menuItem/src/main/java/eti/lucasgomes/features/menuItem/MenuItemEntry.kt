@@ -11,8 +11,8 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun MenuItemEntry(innerPadding: PaddingValues, id: Long) {
-    val viewModel = koinViewModel<MenuItemViewModel> { parametersOf(id) }
+fun MenuItemEntry(innerPadding: PaddingValues, storeId: Long, menuItemId: Long) {
+    val viewModel = koinViewModel<MenuItemViewModel> { parametersOf(storeId, menuItemId) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     ScreenContainer(innerPadding, hasBottomBar = false, hasTopBar = false, hasFab = true) {
         MenuItemScreen(uiState, viewModel::onAction)

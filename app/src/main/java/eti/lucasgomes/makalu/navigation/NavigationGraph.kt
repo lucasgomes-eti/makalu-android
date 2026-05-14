@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import eti.lucasgomes.adress.AddressEntry
-import eti.lucasgomes.features.cart.CheckoutEntry
+import eti.lucasgomes.features.cart.CartEntry
 import eti.lucasgomes.features.menuItem.MenuItemEntry
 import eti.lucasgomes.features.store.StoreEntry
 import eti.lucasgomes.makalu.components.imageCropper.ImageCropperEntry
@@ -49,13 +49,15 @@ fun NavigationGraph(
                 )
             }
             composable<Destination.Screen.MenuItem> {
+                val dest = it.toRoute<Destination.Screen.MenuItem>()
                 MenuItemEntry(
-                    innerPadding,
-                    it.toRoute<Destination.Screen.MenuItem>().id
+                    innerPadding = innerPadding,
+                    storeId = dest.storeId,
+                    menuItemId = dest.menuItemId
                 )
             }
-            composable<Destination.Screen.Checkout> {
-                CheckoutEntry(innerPadding)
+            composable<Destination.Screen.Cart> {
+                CartEntry(innerPadding, it.toRoute<Destination.Screen.Cart>().storeId)
             }
         }
     }

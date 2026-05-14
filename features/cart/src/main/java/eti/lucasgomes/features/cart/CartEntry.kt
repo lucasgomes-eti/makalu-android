@@ -8,11 +8,12 @@ import eti.lucasgomes.features.cart.ui.CartScreen
 import eti.lucasgomes.features.cart.ui.CartViewModel
 import eti.lucasgomes.makalu.components.ScreenContainer
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
-fun CheckoutEntry(innerPadding: PaddingValues) {
+fun CartEntry(innerPadding: PaddingValues, storeId: Long) {
 
-    val viewModel = koinViewModel<CartViewModel>()
+    val viewModel = koinViewModel<CartViewModel> { parametersOf(storeId) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     ScreenContainer(innerPadding, hasBottomBar = false, hasTopBar = true) {

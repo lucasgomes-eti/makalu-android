@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +41,7 @@ import eti.lucasgomes.makalu.components.appBars.ExpandableTopAppBar
 import eti.lucasgomes.makalu.components.appBars.LocalTopBarUiController
 import eti.lucasgomes.makalu.components.appBars.TopBarUiController
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
+import eti.lucasgomes.makalu.components.buttons.ConfigureFab
 import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 import eti.lucasgomes.makalu.components.dsl.UiText
 
@@ -47,6 +49,10 @@ import eti.lucasgomes.makalu.components.dsl.UiText
 @Composable
 internal fun BoxScope.StoreScreen(uiState: StoreUiState, onAction: (StoreAction) -> Unit) {
     OnFirstComposition { onAction(StoreAction.OnInitialFetch) }
+
+    ConfigureFab(painterResource(R.drawable.shopping_cart), "Go to cart button") {
+        onAction(StoreAction.CartClicked)
+    }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 

@@ -8,4 +8,6 @@ internal sealed interface StoreAction {
     data object NavigateBackClicked : StoreAction
 
     data class MenuItemClicked(val id: Long) : StoreAction
+
+    data object CartClicked : StoreAction
 }

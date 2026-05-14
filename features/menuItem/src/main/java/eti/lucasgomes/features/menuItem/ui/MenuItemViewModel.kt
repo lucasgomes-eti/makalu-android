@@ -19,12 +19,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 internal class MenuItemViewModel(
-    private val id: Long,
+    private val storeId: Long,
+    private val menuItemId: Long,
     private val navigator: Navigator,
     private val menuItemClient: MenuItemClient
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(MenuItemUiState(id))
+    private val _uiState = MutableStateFlow(MenuItemUiState(menuItemId))
     val uiState = _uiState.asStateFlow()
 
     fun onAction(action: MenuItemAction) {
@@ -50,7 +51,7 @@ internal class MenuItemViewModel(
 
     private fun onInitialFetch() = withViewModelScope {
         _uiState.update { state -> state.copy(isLoading = true) }
-        menuItemClient.getItem(id).onError { error ->
+        menuItemClient.getItem(menuItemId).onError { error ->
             _uiState.update { state ->
                 state.copy(
                     generalError = UiText.PlainText(error.formatedMessage),
@@ -98,7 +99,7 @@ internal class MenuItemViewModel(
 
     private fun mapMenuImageIdToUrl(imageId: Long?): String? =
         imageId?.let { imageId ->
-            "${MakaluConfig.BASE_URL}stores/menu/${id}/image/$imageId"
+            "${MakaluConfig.BASE_URL}stores/menu/${menuItemId}/image/$imageId"
         }
 
     private fun onDismissError() = withViewModelScope {
@@ -158,7 +159,7 @@ internal class MenuItemViewModel(
     }
 
     private fun onAddToCartClicked() = withViewModelScope {
-        navigator.navigate(Destination.Screen.Checkout)
+        navigator.navigate(Destination.Screen.Cart(storeId))
     }
 
     companion object {

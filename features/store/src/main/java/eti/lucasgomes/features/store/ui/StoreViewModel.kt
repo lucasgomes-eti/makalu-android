@@ -33,6 +33,7 @@ internal class StoreViewModel(
             StoreAction.OnDismissError -> onDismissError()
             StoreAction.NavigateBackClicked -> onNavigateBackClicked()
             is StoreAction.MenuItemClicked -> onMenuItemClicked(action.id)
+            StoreAction.CartClicked -> onCartClicked()
         }
     }
 
@@ -102,6 +103,10 @@ internal class StoreViewModel(
     }
 
     private fun onMenuItemClicked(menuItemId: Long) = withViewModelScope {
-        navigator.navigate(Destination.Screen.MenuItem(menuItemId))
+        navigator.navigate(Destination.Screen.MenuItem(storeId = id, menuItemId = menuItemId))
+    }
+
+    private fun onCartClicked() = withViewModelScope {
+        navigator.navigate(Destination.Screen.Cart(storeId = id))
     }
 }
