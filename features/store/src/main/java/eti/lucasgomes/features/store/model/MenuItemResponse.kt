@@ -33,6 +33,8 @@ data class MenuItemResponse(
         @Serializable
         data class Option(
             val name: String,
+
+            @SerialName("additional_price")
             @Serializable(with = BigDecimalSerializer::class)
             val additionalPrice: BigDecimal
         )

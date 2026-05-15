@@ -3,6 +3,7 @@ package eti.lucasgomes.features.menuItem.ui
 import MakaluConfig
 import androidx.lifecycle.ViewModel
 import eti.lucasgomes.features.menuItem.MenuItemClient
+import eti.lucasgomes.features.menuItem.model.CartItemRequest
 import eti.lucasgomes.features.menuItem.model.MenuItemResponse
 import eti.lucasgomes.features.menuItem.ui.model.ConfigurationUiState
 import eti.lucasgomes.features.menuItem.ui.model.MenuItemAction
@@ -78,15 +79,15 @@ internal class MenuItemViewModel(
                             ), config.options.map { option ->
                                 when (config.type) {
                                     MenuItemResponse.Configuration.Type.SINGLE_CHOICE -> OptionUiState.SingleChoice(
-                                        option.name, option.additionalPrice
+                                        option.id, option.name, option.additionalPrice
                                     )
 
                                     MenuItemResponse.Configuration.Type.MULTIPLE_CHOICE -> OptionUiState.MultipleChoice(
-                                        option.name, option.additionalPrice
+                                        option.id, option.name, option.additionalPrice
                                     )
 
                                     MenuItemResponse.Configuration.Type.QUANTITY -> OptionUiState.Quantity(
-                                        option.name, option.additionalPrice
+                                        option.id, option.name, option.additionalPrice
                                     )
                                 }
                             }
@@ -159,11 +160,42 @@ internal class MenuItemViewModel(
     }
 
     private fun onAddToCartClicked() = withViewModelScope {
-        navigator.navigate(Destination.Screen.Cart(storeId))
+        _uiState.update { state -> state.copy(isLoading = true) }
+        val uiState = uiState.value
+        val request = buildCartItemRequest(uiState)
+        menuItemClient.addItemToCart(storeId, menuItemId, request).onError { error ->
+            _uiState.update { state ->
+                state.copy(
+                    generalError = UiText.PlainText(error.formatedMessage),
+                    isLoading = false
+                )
+            }
+        }.onSuccess {
+            navigator.navigate(Destination.Screen.Cart(storeId))
+        }
+    }
+
+    private fun buildCartItemRequest(uiState: MenuItemUiState): CartItemRequest {
+        val selectedOptions =
+            uiState.configurations.flatMap { (_, options) -> options }.filter { option ->
+                when (option) {
+                    is OptionUiState.SingleChoice -> option.isSelected
+                    is OptionUiState.MultipleChoice -> option.isSelected
+                    is OptionUiState.Quantity -> option.amount > 0
+                }
+            }
+        return CartItemRequest(
+            configurations = selectedOptions.map { option ->
+                CartItemRequest.Configuration(
+                    option.id,
+                    (option as? OptionUiState.Quantity)?.amount ?: 1
+                )
+            }
+        )
     }
 
     companion object {
         const val MAX_QUANTITY = 50
-        const val MAX_NOTES_LENGTH = 200
+        const val MAX_NOTES_LENGTH = 240
     }
 }

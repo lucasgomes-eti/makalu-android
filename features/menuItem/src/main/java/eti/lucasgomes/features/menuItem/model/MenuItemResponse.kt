@@ -24,6 +24,7 @@ data class MenuItemResponse(
 ) {
     @Serializable
     data class Configuration(
+        val id: Long,
         val name: String,
         val type: Type,
         val options: List<Option>
@@ -32,7 +33,10 @@ data class MenuItemResponse(
 
         @Serializable
         data class Option(
+            val id: Long,
             val name: String,
+
+            @SerialName("additional_price")
             @Serializable(with = BigDecimalSerializer::class)
             val additionalPrice: BigDecimal
         )
