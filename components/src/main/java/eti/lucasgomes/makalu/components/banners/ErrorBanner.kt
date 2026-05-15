@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import eti.lucasgomes.makalu.components.R
 
 @Composable
-fun ErrorBanner(message: String, onDismissed: () -> Unit) {
+fun ErrorBanner(message: String, onDismissed: (() -> Unit)? = null) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.errorContainer
@@ -29,13 +29,15 @@ fun ErrorBanner(message: String, onDismissed: () -> Unit) {
                     .weight(1f),
                 style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onErrorContainer)
             )
-            IconButton(onClick = onDismissed, content = {
-                Icon(
-                    painterResource(R.drawable.close),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onErrorContainer
-                )
-            })
+            onDismissed?.let {
+                IconButton(onClick = it, content = {
+                    Icon(
+                        painterResource(R.drawable.close),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                })
+            }
         }
     }
 }

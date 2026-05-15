@@ -15,7 +15,7 @@ internal class CartViewModel(
     private val cartClient: CartClient
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(CartUiState())
+    private val _uiState = MutableStateFlow<CartUiState>(CartUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
     fun onAction(action: CartAction) {
@@ -25,18 +25,18 @@ internal class CartViewModel(
     }
 
     private fun onInitialFetch() = withViewModelScope {
-        _uiState.update { state -> state.copy(isLoading = true) }
+        _uiState.update { CartUiState.Loading }
         cartClient.getByStore(storeId).onError { error ->
-            _uiState.update { state ->
-                state.copy(
-                    generalError = UiText.PlainText(error.formatedMessage),
-                    isLoading = false
-                )
+            _uiState.update {
+                CartUiState.Error(generalError = UiText.PlainText(error.formatedMessage))
             }
         }.onSuccess { response ->
-            _uiState.update { state ->
-                state.copy(
-                    isLoading = false,
+            if (response.items.isEmpty()) {
+                _uiState.update { CartUiState.Empty }
+                return@onSuccess
+            }
+            _uiState.update {
+                CartUiState.Data(
                     items = response.items.map { itemResponse ->
                         CartItemUiState(itemResponse.id)
                     }

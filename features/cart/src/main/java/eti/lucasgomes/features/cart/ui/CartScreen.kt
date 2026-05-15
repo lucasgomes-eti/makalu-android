@@ -18,11 +18,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -34,6 +36,7 @@ import coil3.compose.AsyncImage
 import eti.lucasgomes.features.cart.R
 import eti.lucasgomes.makalu.components.CardItem
 import eti.lucasgomes.makalu.components.appBars.ConfigureTopBar
+import eti.lucasgomes.makalu.components.banners.ErrorBanner
 import eti.lucasgomes.makalu.components.buttons.ExpressiveButton
 import eti.lucasgomes.makalu.components.buttons.ExpressiveTextButton
 import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
@@ -43,6 +46,16 @@ internal fun BoxScope.CartScreen(uiState: CartUiState, onAction: (CartAction) ->
     OnFirstComposition { onAction(CartAction.OnInitialFetch) }
     ConfigureTopBar("Cart")
 
+    when (uiState) {
+        CartUiState.Empty -> EmptyCart()
+        is CartUiState.Error -> ErrorBanner(uiState.generalError.asString())
+        CartUiState.Loading -> LoadingState()
+        is CartUiState.Data -> CartList(uiState)
+    }
+}
+
+@Composable
+private fun CartList(uiState: CartUiState.Data) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -109,8 +122,36 @@ internal fun BoxScope.CartScreen(uiState: CartUiState, onAction: (CartAction) ->
             }
         }
     }
+}
 
 
+@Composable
+private fun EmptyCart() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Column {
+            Icon(
+                painterResource(R.drawable.shopping_cart_off),
+                contentDescription = "Empty cart icon",
+                modifier = Modifier.size(128.dp),
+                tint = colorScheme.primary
+            )
+            Text("Your cart is empty")
+        }
+    }
+}
+
+@Composable
+private fun LoadingState() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        CircularProgressIndicator()
+    }
 }
 
 @Composable
