@@ -12,8 +12,23 @@ internal data class MenuItemUiState(
     val ingredients: String? = null,
     val price: BigDecimal = BigDecimal.ZERO,
     val configurations: Map<ConfigurationUiState, List<OptionUiState>> = emptyMap(),
-    val notes: String = ""
-)
+    val notes: String = "",
+) {
+    val totalPrice: BigDecimal
+        get() = configurations.flatMap { (_, options) -> options }.filter { option ->
+            when (option) {
+                is OptionUiState.SingleChoice -> option.isSelected
+                is OptionUiState.MultipleChoice -> option.isSelected
+                is OptionUiState.Quantity -> option.amount > 0
+            }
+        }.map { option ->
+            when (option) {
+                is OptionUiState.SingleChoice -> option.additionalPrice
+                is OptionUiState.MultipleChoice -> option.additionalPrice
+                is OptionUiState.Quantity -> option.additionalPrice * option.amount.toBigDecimal()
+            }
+        }.fold(price) { acc, price -> acc + price }
+}
 
 internal sealed class OptionUiState(
     open val id: Long,

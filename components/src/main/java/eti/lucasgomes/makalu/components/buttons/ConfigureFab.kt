@@ -8,10 +8,14 @@ import androidx.compose.ui.graphics.painter.Painter
 fun ConfigureFab(
     icon: Painter,
     contentDescription: String,
+    isExtended: Boolean = false,
+    label: String = "",
     onClick: () -> Unit
 ) {
     val fab = LocalFabUiController.current
-    LaunchedEffect(Unit) {
+    LaunchedEffect(icon, isExtended, label) {
         fab.setAction(FabAction(icon, contentDescription, onClick))
+        fab.setExtended(isExtended)
+        fab.setLabel(label)
     }
 }
