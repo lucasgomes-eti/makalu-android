@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
@@ -57,6 +59,7 @@ internal fun BoxScope.CartScreen(uiState: CartUiState, onAction: (CartAction) ->
 @Composable
 private fun CartList(uiState: CartUiState.Data) {
     LazyColumn(
+        modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -69,7 +72,7 @@ private fun CartList(uiState: CartUiState.Data) {
                     .fillMaxWidth()
                     .height(80.dp),
                 headlineContent = {
-                    Text("uiState.address", style = typography.bodyLarge)
+                    Text(uiState.address.asString(), style = typography.bodyLarge)
                 },
                 trailingContent = {
                     Row {
@@ -94,7 +97,16 @@ private fun CartList(uiState: CartUiState.Data) {
                     .fillMaxWidth()
                     .height(80.dp),
                 headlineContent = {
-                    Text("uiState.price", style = typography.bodyLarge)
+                    Text(
+                        "${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${uiState.totalPrice}",
+                        style = typography.bodyLarge
+                    )
+                },
+                supportingContent = {
+                    Text(
+                        "Delivery fee: ${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${uiState.deliveryFee}",
+                        style = typography.labelMedium
+                    )
                 },
                 trailingContent = {
                     Row {
@@ -118,7 +130,7 @@ private fun CartList(uiState: CartUiState.Data) {
                     .fillMaxWidth(),
                 onClick = {}
             ) {
-                Text("Make order")
+                Text("Make order - ${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${uiState.totalPrice}")
             }
         }
     }
@@ -157,7 +169,10 @@ private fun LoadingState() {
 @Composable
 private fun LazyItemScope.CartItem(uiState: CartItemUiState) {
     Card {
-        Column(modifier = Modifier.padding(8.dp)) {
+        Column(
+            modifier = Modifier.padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             CardItem(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -166,7 +181,7 @@ private fun LazyItemScope.CartItem(uiState: CartItemUiState) {
                 contentWeight = 1f,
                 headlineContent = {
                     Text(
-                        text = "item.name",
+                        text = uiState.name,
                         style = typography.titleMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -174,7 +189,7 @@ private fun LazyItemScope.CartItem(uiState: CartItemUiState) {
                 },
                 supportingContent = {
                     Text(
-                        "${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ",
+                        "${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${uiState.price}",
                         style = typography.labelMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -183,12 +198,61 @@ private fun LazyItemScope.CartItem(uiState: CartItemUiState) {
                 leadingContent = {
                     AsyncImage(
                         modifier = Modifier.size(80.dp),
-                        model = "item.imageUrl",
+                        model = uiState.imageUrl,
                         contentDescription = null,
                         contentScale = ContentScale.Crop
                     )
                 }
             )
+            if (uiState.configurations.isNotEmpty()) {
+                CardItem(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentWeight = 1f,
+                    headlineContent = {
+                        uiState.configurations.forEach { configuration ->
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                configuration.name,
+                                style = typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Spacer(Modifier.height(4.dp))
+                            configuration.options.forEach { option ->
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Text(
+                                        option.quantity.toString(),
+                                        style = typography.bodyMedium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Text(
+                                        option.name,
+                                        style = typography.bodyMedium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Text(
+                                        "+${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${option.additionalPrice}",
+                                        style = typography.bodyMedium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
+                            Spacer(Modifier.height(4.dp))
+                            if (uiState.configurations.last() != configuration) {
+                                HorizontalDivider()
+                            }
+                        }
+                    },
+                    supportingContent = {
+                        Text(uiState.notes ?: "", style = typography.bodyMedium)
+                    }
+                )
+            }
             ExpressiveTextButton(
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.textButtonColors(contentColor = colorScheme.error),

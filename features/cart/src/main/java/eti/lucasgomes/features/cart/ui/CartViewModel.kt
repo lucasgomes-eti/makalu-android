@@ -38,8 +38,32 @@ internal class CartViewModel(
             _uiState.update {
                 CartUiState.Data(
                     items = response.items.map { itemResponse ->
-                        CartItemUiState(itemResponse.id)
-                    }
+                        CartItemUiState(
+                            id = itemResponse.id,
+                            imageId = itemResponse.imageId,
+                            name = itemResponse.name,
+                            price = itemResponse.price,
+                            notes = itemResponse.notes,
+                            configurations = itemResponse.configurations.map { configurationResponse ->
+                                CartItemUiState.Configuration(
+                                    configurationResponse.configurationId,
+                                    configurationResponse.name,
+                                    configurationResponse.options.map { optionResponse ->
+                                        CartItemUiState.Configuration.Option(
+                                            optionResponse.id,
+                                            optionResponse.name,
+                                            optionResponse.additionalPrice,
+                                            optionResponse.quantity
+                                        )
+                                    }
+                                )
+                            }
+                        )
+                    },
+                    address = response.deliveryAddressLine?.let { text -> UiText.PlainText(text) }
+                        ?: UiText.PlainText("Address not found"),
+                    deliveryFee = response.total.deliveryFee,
+                    totalPrice = response.total.total
                 )
             }
         }
