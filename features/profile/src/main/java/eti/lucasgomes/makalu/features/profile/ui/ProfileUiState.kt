@@ -1,6 +1,7 @@
-package eti.lucasgomes.makalu.features.profile.model
+package eti.lucasgomes.makalu.features.profile.ui
 
 import eti.lucasgomes.makalu.components.dsl.UiText
+import eti.lucasgomes.makalu.shared.mapImageUrl
 
 data class ProfileUiState(
     val isLoading: Boolean = false,
@@ -9,10 +10,13 @@ data class ProfileUiState(
     val email: String = "",
     val phoneNumber: String = "",
     val isLogoutDialogVisible: Boolean = false,
-    val imageUrlString: String? = null,
+    private val imageId: Long? = null,
     val isImagePickerVisible: Boolean = false,
     val isPermissionDeniedDialogVisible: Boolean = false,
     val imageUploadLoading: Boolean = false,
 ) {
-    val isProfileImageLoaded get() = imageUrlString != null
+    val isProfileImageLoaded get() = imageUrl != null
+
+    val imageUrl: String?
+        get() = mapImageUrl(imageId)
 }

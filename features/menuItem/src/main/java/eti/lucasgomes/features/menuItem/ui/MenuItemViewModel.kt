@@ -1,6 +1,5 @@
 package eti.lucasgomes.features.menuItem.ui
 
-import MakaluConfig
 import androidx.lifecycle.ViewModel
 import eti.lucasgomes.features.menuItem.MenuItemClient
 import eti.lucasgomes.features.menuItem.model.CartItemRequest
@@ -63,7 +62,7 @@ internal class MenuItemViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    imageUrl = mapMenuImageIdToUrl(response.imageId),
+                    imageId = response.imageId,
                     name = UiText.PlainText(response.name),
                     price = response.price,
                     ingredients = response.ingredients,
@@ -97,11 +96,6 @@ internal class MenuItemViewModel(
             }
         }
     }
-
-    private fun mapMenuImageIdToUrl(imageId: Long?): String? =
-        imageId?.let { imageId ->
-            "${MakaluConfig.BASE_URL}stores/menu/${menuItemId}/image/$imageId"
-        }
 
     private fun onDismissError() = withViewModelScope {
         _uiState.update { state -> state.copy(generalError = UiText.Empty) }

@@ -1,6 +1,5 @@
 package eti.lucasgomes.makalu.features.profile.ui
 
-import MakaluConfig
 import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
@@ -9,7 +8,6 @@ import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
 import eti.lucasgomes.makalu.features.profile.ProfileClient
 import eti.lucasgomes.makalu.features.profile.model.ProfileAction
-import eti.lucasgomes.makalu.features.profile.model.ProfileUiState
 import eti.lucasgomes.makalu.shared.PROFILE_PIC_TEMP_FILE_PREFIX
 import eti.lucasgomes.makalu.shared.navigation.Destination
 import eti.lucasgomes.makalu.shared.navigation.Navigator
@@ -77,14 +75,10 @@ class ProfileViewModel(
                     name = response.name,
                     email = response.email,
                     phoneNumber = response.phoneNumber,
-                    imageUrlString = mapImageIdToUrl(response.profileImageId)
+                    imageId = response.profileImageId
                 )
             }
         }
-    }
-
-    private fun mapImageIdToUrl(imageId: Long?): String? = imageId?.let { id ->
-        "${MakaluConfig.BASE_URL}profile/image/$id"
     }
 
     private fun onLogoutDialogDismissed() = withViewModelScope {
@@ -148,7 +142,7 @@ class ProfileViewModel(
             _uiState.update { state ->
                 state.copy(
                     imageUploadLoading = false,
-                    imageUrlString = mapImageIdToUrl(it.id)
+                    imageId = it.id
                 )
             }
         }

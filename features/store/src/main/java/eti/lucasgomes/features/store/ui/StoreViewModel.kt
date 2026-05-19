@@ -1,6 +1,5 @@
 package eti.lucasgomes.features.store.ui
 
-import MakaluConfig
 import androidx.lifecycle.ViewModel
 import eti.lucasgomes.features.store.StoreClient
 import eti.lucasgomes.features.store.ui.model.MenuItemUiState
@@ -50,7 +49,7 @@ internal class StoreViewModel(
             _uiState.update { state ->
                 state.copy(
                     name = UiText.PlainText(response.name),
-                    coverImageUrl = mapCoverImageIdToUrl(response.coverImageId),
+                    coverImageId = response.coverImageId,
                     deliveryFee = response.deliveryFee
                 )
             }
@@ -65,24 +64,15 @@ internal class StoreViewModel(
                     menuItems = response.groupBy { it.category }.mapValues { (_, values) ->
                         values.map { itemResponse ->
                             MenuItemUiState(
-                                itemResponse.id,
-                                itemResponse.category,
-                                itemResponse.name, itemResponse.price,
-                                mapMenuImageIdToUrl(itemResponse.id, itemResponse.imageId),
+                                id = itemResponse.id,
+                                category = itemResponse.category,
+                                name = itemResponse.name, price = itemResponse.price,
+                                imageId = itemResponse.imageId,
                             )
                         }
                     })
             }
         }
-    }
-
-    private fun mapMenuImageIdToUrl(menuId: Long, imageId: Long?): String? =
-        imageId?.let { imageId ->
-            "${MakaluConfig.BASE_URL}stores/menu/${menuId}/image/$imageId"
-        }
-
-    private fun mapCoverImageIdToUrl(imageId: Long?): String? = imageId?.let { id ->
-        "${MakaluConfig.BASE_URL}stores/cover-image/$id"
     }
 
     private fun handleGeneralError(mkError: MakaluError) {

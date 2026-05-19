@@ -1,6 +1,5 @@
 package eti.lucasgomes.makalu.features.home.ui
 
-import MakaluConfig
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -129,22 +128,14 @@ internal class HomeViewModel(
                             store.id,
                             store.name,
                             store.categories.joinToString(", ") { category -> category.description },
-                            logoUrl = mapLogoImageIdToUrl(store.logoImageId),
-                            coverUrl = mapCoverImageIdToUrl(store.coverImageId)
+                            logoId = store.logoImageId,
+                            coverId = store.coverImageId
                         )
                     },
                     isStoresLoading = false,
                 )
             }
         }
-    }
-
-    private fun mapLogoImageIdToUrl(imageId: Long?): String? = imageId?.let { id ->
-        "${MakaluConfig.BASE_URL}stores/logo-image/$id"
-    }
-
-    private fun mapCoverImageIdToUrl(imageId: Long?): String? = imageId?.let { id ->
-        "${MakaluConfig.BASE_URL}stores/cover-image/$id"
     }
 
     private fun onRefreshStores() = withViewModelScope {

@@ -206,8 +206,8 @@ private fun HomePreview() {
                     id = 1,
                     name = "Scary's",
                     category = "Burger",
-                    logoUrl = "https://picsum.photos/200",
-                    coverUrl = "https://picsum.photos/200/300",
+                    logoId = 1,
+                    coverId = 1,
                 )
             )
         )

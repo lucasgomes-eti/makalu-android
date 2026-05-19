@@ -76,8 +76,8 @@ private fun StoreListItemPreview() {
                 1,
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
                 "Ut placerat feugiat nisi, a maximus turpis varius in. Maecenas at auctor ipsum. Suspendisse potenti. Donec tincidunt magna sit amet massa convallis, id pretium mauris placerat.",
-                "",
-                ""
+                1,
+                1
             )) {}
         }
     }

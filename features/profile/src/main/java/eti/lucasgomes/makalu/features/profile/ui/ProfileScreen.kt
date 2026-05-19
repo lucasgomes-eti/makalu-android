@@ -45,7 +45,6 @@ import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.pickers.SelectOrCaptureImagePicker
 import eti.lucasgomes.makalu.features.profile.R
 import eti.lucasgomes.makalu.features.profile.model.ProfileAction
-import eti.lucasgomes.makalu.features.profile.model.ProfileUiState
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -73,7 +72,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, onAction: (ProfileAction) ->
                     LoadingIndicator()
                 } else {
                     Box(contentAlignment = Alignment.Center) {
-                        val profilePicturePainter by rememberAsyncImagePainter(uiState.imageUrlString).state.collectAsStateWithLifecycle()
+                        val profilePicturePainter by rememberAsyncImagePainter(uiState.imageUrl).state.collectAsStateWithLifecycle()
                         Image(
                             painter = if (uiState.isProfileImageLoaded) profilePicturePainter.painter
                                 ?: painterResource(
