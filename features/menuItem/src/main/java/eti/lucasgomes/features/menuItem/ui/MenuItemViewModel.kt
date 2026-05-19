@@ -176,14 +176,9 @@ internal class MenuItemViewModel(
     }
 
     private fun buildCartItemRequest(uiState: MenuItemUiState): CartItemRequest {
-        val selectedOptions =
-            uiState.configurations.flatMap { (_, options) -> options }.filter { option ->
-                when (option) {
-                    is OptionUiState.SingleChoice -> option.isSelected
-                    is OptionUiState.MultipleChoice -> option.isSelected
-                    is OptionUiState.Quantity -> option.amount > 0
-                }
-            }
+        val selectedOptions = uiState.configurations.flatMap { (_, options) -> options }
+            .filter { it.isSelected }
+
         return CartItemRequest(
             configurations = selectedOptions.map { option ->
                 CartItemRequest.Configuration(
