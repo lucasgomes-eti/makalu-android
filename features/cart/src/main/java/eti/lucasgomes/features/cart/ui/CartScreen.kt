@@ -38,33 +38,41 @@ import coil3.compose.AsyncImage
 import eti.lucasgomes.features.cart.R
 import eti.lucasgomes.makalu.components.CardItem
 import eti.lucasgomes.makalu.components.appBars.ConfigureTopBar
+import eti.lucasgomes.makalu.components.appBars.TopBarAction
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
 import eti.lucasgomes.makalu.components.buttons.ExpressiveButton
-import eti.lucasgomes.makalu.components.buttons.ExpressiveTextButton
+import eti.lucasgomes.makalu.components.buttons.ExpressiveLoadingTextButton
 import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 
 @Composable
 internal fun BoxScope.CartScreen(uiState: CartUiState, onAction: (CartAction) -> Unit) {
     OnFirstComposition { onAction(CartAction.OnInitialFetch) }
-    ConfigureTopBar("Cart")
+
+    ConfigureTopBar(
+        "Cart", navigationActions = listOf(
+            TopBarAction(painterResource(R.drawable.delete), contentDescription = "Delete icon") {
+                onAction(CartAction.DeleteAllItemsClicked)
+            }
+        )
+    )
 
     when (uiState) {
         CartUiState.Empty -> EmptyCart()
         is CartUiState.Error -> ErrorBanner(uiState.generalError.asString())
         CartUiState.Loading -> LoadingState()
-        is CartUiState.Data -> CartList(uiState)
+        is CartUiState.Data -> CartList(uiState) { onAction(CartAction.RemoveItemClicked(it)) }
     }
 }
 
 @Composable
-private fun CartList(uiState: CartUiState.Data) {
+private fun CartList(uiState: CartUiState.Data, onRemoveClicked: (cartItemId: Long) -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item { Text("Items", style = typography.titleLarge) }
-        items(uiState.items) { CartItem(it) }
+        items(uiState.items) { CartItem(it) { onRemoveClicked(it.id) } }
         item { Text("Address", style = typography.titleLarge) }
         item {
             CardItem(
@@ -167,7 +175,7 @@ private fun LoadingState() {
 }
 
 @Composable
-private fun LazyItemScope.CartItem(uiState: CartItemUiState) {
+private fun LazyItemScope.CartItem(uiState: CartItemUiState, onRemoveClicked: () -> Unit) {
     Card {
         Column(
             modifier = Modifier.padding(8.dp),
@@ -253,10 +261,11 @@ private fun LazyItemScope.CartItem(uiState: CartItemUiState) {
                     }
                 )
             }
-            ExpressiveTextButton(
+            ExpressiveLoadingTextButton(
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.textButtonColors(contentColor = colorScheme.error),
-                onClick = {}
+                onClick = onRemoveClicked,
+                isLoading = uiState.isRemoving
             ) {
                 Text("Remove")
             }

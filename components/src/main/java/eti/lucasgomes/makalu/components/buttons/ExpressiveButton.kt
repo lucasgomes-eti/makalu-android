@@ -107,3 +107,40 @@ fun ExpressiveTextButton(
         content = content,
     )
 }
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun ExpressiveLoadingTextButton(
+    onClick: () -> Unit,
+    isLoading: Boolean,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
+    elevation: ButtonElevation? = ButtonDefaults.buttonElevation(),
+    border: BorderStroke? = null,
+    contentPadding: PaddingValues = ButtonDefaults.contentPaddingFor(ButtonDefaults.MinHeight),
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable RowScope.() -> Unit,
+) {
+    Crossfade(
+        isLoading,
+    ) { loading ->
+        Box(modifier, contentAlignment = Alignment.Center) {
+            if (loading) {
+                LoadingIndicator()
+            } else {
+                ExpressiveTextButton(
+                    onClick,
+                    modifier,
+                    enabled,
+                    colors,
+                    elevation,
+                    border,
+                    contentPadding,
+                    interactionSource,
+                    content
+                )
+            }
+        }
+    }
+}

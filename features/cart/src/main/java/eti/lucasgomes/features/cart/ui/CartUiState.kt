@@ -22,6 +22,7 @@ internal data class CartItemUiState(
     val name: String,
     val price: BigDecimal,
     val notes: String?,
+    val isRemoving: Boolean = false,
     val configurations: List<Configuration>
 ) {
     val imageUrl: String?

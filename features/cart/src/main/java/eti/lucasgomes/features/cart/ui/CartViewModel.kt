@@ -21,6 +21,8 @@ internal class CartViewModel(
     fun onAction(action: CartAction) {
         when (action) {
             CartAction.OnInitialFetch -> onInitialFetch()
+            is CartAction.RemoveItemClicked -> onRemoveItemClicked(action.cartItemId)
+            CartAction.DeleteAllItemsClicked -> onDeleteAllItemsClicked()
         }
     }
 
@@ -66,6 +68,50 @@ internal class CartViewModel(
                     totalPrice = response.total.total
                 )
             }
+        }
+    }
+
+    private fun onRemoveItemClicked(cartItemId: Long) = withViewModelScope {
+        setItemRemoving(cartItemId, true)
+        cartClient.deleteByItem(storeId, cartItemId).onError { error ->
+            setItemRemoving(cartItemId, false)
+            _uiState.update {
+                CartUiState.Error(generalError = UiText.PlainText(error.formatedMessage))
+            }
+        }.onSuccess {
+            _uiState.update { state ->
+                if (state is CartUiState.Data) {
+                    val index = state.items.indexOfFirst { it.id == cartItemId }.takeIf { it != -1 }
+                        ?: return@update state
+                    state.copy(items = state.items.toMutableList().apply { removeAt(index) })
+                } else state
+            }
+        }
+    }
+
+    private fun setItemRemoving(cartItemId: Long, isRemoving: Boolean) {
+        _uiState.update { state ->
+            if (state is CartUiState.Data) {
+                state.copy(items = state.items.map { item ->
+                    if (item.id == cartItemId) {
+                        item.copy(isRemoving = isRemoving)
+                    } else {
+                        item
+                    }
+                })
+            } else state
+        }
+    }
+
+    private fun onDeleteAllItemsClicked() = withViewModelScope {
+        if (uiState.value !is CartUiState.Data) return@withViewModelScope
+        _uiState.update { CartUiState.Loading }
+        cartClient.deleteAllItemsByStore(storeId).onError { error ->
+            _uiState.update {
+                CartUiState.Error(generalError = UiText.PlainText(error.formatedMessage))
+            }
+        }.onSuccess {
+            _uiState.update { CartUiState.Empty }
         }
     }
 }
