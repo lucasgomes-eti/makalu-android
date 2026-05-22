@@ -78,12 +78,18 @@ internal class CartViewModel(
             _uiState.update {
                 CartUiState.Error(generalError = UiText.PlainText(error.formatedMessage))
             }
-        }.onSuccess {
+        }.onSuccess { response ->
             _uiState.update { state ->
                 if (state is CartUiState.Data) {
+                    if (response.items.isEmpty()) {
+                        return@update CartUiState.Empty
+                    }
                     val index = state.items.indexOfFirst { it.id == cartItemId }.takeIf { it != -1 }
                         ?: return@update state
-                    state.copy(items = state.items.toMutableList().apply { removeAt(index) })
+                    state.copy(
+                        items = state.items.toMutableList().apply { removeAt(index) },
+                        totalPrice = response.total.total
+                    )
                 } else state
             }
         }

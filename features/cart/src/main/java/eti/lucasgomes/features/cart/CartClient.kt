@@ -14,7 +14,7 @@ class CartClient(private val httpClientManager: HttpClientManager) {
             get("/stores/$storeId/cart")
         }
 
-    suspend fun deleteByItem(storeId: Long, cartItemId: Long): EmptyResult =
+    suspend fun deleteByItem(storeId: Long, cartItemId: Long): Resource<CartResponse> =
         httpClientManager.withApiResource {
             delete("/stores/$storeId/cart/items/$cartItemId")
         }
