@@ -165,6 +165,7 @@ internal class MenuItemViewModel(
                 )
             }
         }.onSuccess {
+            _uiState.update { state -> state.copy(isLoading = false) }
             navigator.navigate(Destination.Screen.Cart(storeId))
         }
     }
