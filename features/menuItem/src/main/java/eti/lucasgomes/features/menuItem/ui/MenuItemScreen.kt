@@ -27,6 +27,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
@@ -58,6 +59,7 @@ import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 import eti.lucasgomes.makalu.components.dsl.UiText
 import java.math.BigDecimal
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun BoxScope.MenuItemScreen(
     uiState: MenuItemUiState, onAction: (MenuItemAction) -> Unit
