@@ -2,6 +2,7 @@ package eti.lucasgomes.features.cart.ui
 
 import androidx.lifecycle.ViewModel
 import eti.lucasgomes.features.cart.CartClient
+import eti.lucasgomes.features.cart.model.CreateOrderRequest
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
 import eti.lucasgomes.makalu.shared.network.onError
@@ -18,11 +19,14 @@ internal class CartViewModel(
     private val _uiState = MutableStateFlow<CartUiState>(CartUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
+    private var cartId: Long? = null
+
     fun onAction(action: CartAction) {
         when (action) {
             CartAction.OnInitialFetch -> onInitialFetch()
             is CartAction.RemoveItemClicked -> onRemoveItemClicked(action.cartItemId)
             CartAction.DeleteAllItemsClicked -> onDeleteAllItemsClicked()
+            CartAction.MakeOrderClicked -> onMakeOrderClicked()
         }
     }
 
@@ -37,6 +41,7 @@ internal class CartViewModel(
                 _uiState.update { CartUiState.Empty }
                 return@onSuccess
             }
+            cartId = response.id
             _uiState.update {
                 CartUiState.Data(
                     items = response.items.map { itemResponse ->
@@ -119,5 +124,26 @@ internal class CartViewModel(
         }.onSuccess {
             _uiState.update { CartUiState.Empty }
         }
+    }
+
+    private fun onMakeOrderClicked() = withViewModelScope {
+        _uiState.update { state ->
+            if (state is CartUiState.Data) {
+                state.copy(isMakingOrder = true)
+            } else return@withViewModelScope
+        }
+
+        val request = cartId?.let {
+            CreateOrderRequest(storeId = storeId, cartId = it)
+        } ?: return@withViewModelScope
+
+        cartClient.submitOrder(request).onError { error ->
+            _uiState.update {
+                CartUiState.Error(generalError = UiText.PlainText(error.formatedMessage))
+            }
+        }.onSuccess {
+            // TODO: navigate to order screen
+        }
+
     }
 }

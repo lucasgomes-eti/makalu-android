@@ -7,8 +7,11 @@ import java.math.BigDecimal
 
 @Serializable
 data class CartResponse(
+    val id: Long,
+
     @SerialName("delivery_address_line")
     val deliveryAddressLine: String?,
+
     val items: List<CartItemResponse>,
     val total: Total
 ) {

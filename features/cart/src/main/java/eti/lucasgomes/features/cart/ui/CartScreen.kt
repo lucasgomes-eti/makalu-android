@@ -40,7 +40,7 @@ import eti.lucasgomes.makalu.components.CardItem
 import eti.lucasgomes.makalu.components.appBars.ConfigureTopBar
 import eti.lucasgomes.makalu.components.appBars.TopBarAction
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
-import eti.lucasgomes.makalu.components.buttons.ExpressiveButton
+import eti.lucasgomes.makalu.components.buttons.ExpressiveLoadingButton
 import eti.lucasgomes.makalu.components.buttons.ExpressiveLoadingTextButton
 import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 
@@ -60,12 +60,20 @@ internal fun BoxScope.CartScreen(uiState: CartUiState, onAction: (CartAction) ->
         CartUiState.Empty -> EmptyCart()
         is CartUiState.Error -> ErrorBanner(uiState.generalError.asString())
         CartUiState.Loading -> LoadingState()
-        is CartUiState.Data -> CartList(uiState) { onAction(CartAction.RemoveItemClicked(it)) }
+        is CartUiState.Data -> CartList(
+            uiState,
+            onRemoveClicked = { onAction(CartAction.RemoveItemClicked(it)) },
+            onMakeOrderClicked = { onAction(CartAction.MakeOrderClicked) },
+        )
     }
 }
 
 @Composable
-private fun CartList(uiState: CartUiState.Data, onRemoveClicked: (cartItemId: Long) -> Unit) {
+private fun CartList(
+    uiState: CartUiState.Data,
+    onRemoveClicked: (cartItemId: Long) -> Unit,
+    onMakeOrderClicked: () -> Unit
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -133,10 +141,11 @@ private fun CartList(uiState: CartUiState.Data, onRemoveClicked: (cartItemId: Lo
             )
         }
         item {
-            ExpressiveButton(
+            ExpressiveLoadingButton(
                 modifier = Modifier
                     .fillMaxWidth(),
-                onClick = {}
+                onClick = onMakeOrderClicked,
+                isLoading = uiState.isMakingOrder
             ) {
                 Text("Make order - ${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${uiState.totalPrice}")
             }

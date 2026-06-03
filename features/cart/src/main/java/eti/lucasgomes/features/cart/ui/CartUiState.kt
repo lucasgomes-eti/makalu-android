@@ -12,7 +12,8 @@ internal sealed interface CartUiState {
         val items: List<CartItemUiState> = emptyList(),
         val address: UiText = UiText.Empty,
         val deliveryFee: BigDecimal = BigDecimal.ZERO,
-        val totalPrice: BigDecimal = BigDecimal.ZERO
+        val totalPrice: BigDecimal = BigDecimal.ZERO,
+        val isMakingOrder: Boolean = false
     ) : CartUiState
 }
 
