@@ -80,7 +80,7 @@ class LoginViewModel(
             }.onSuccess {
                 _uiState.update { state -> state.copy(isLoading = false) }
                 navigator.navigate(
-                    Destination.Graph.Home,
+                    Destination.Graph.Root,
                     NavOptions(popUpTo = PopUpToOptions(Destination.Graph.Auth, inclusive = true))
                 )
             }

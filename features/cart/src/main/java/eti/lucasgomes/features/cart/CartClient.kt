@@ -2,6 +2,7 @@ package eti.lucasgomes.features.cart
 
 import eti.lucasgomes.features.cart.model.CartResponse
 import eti.lucasgomes.features.cart.model.CreateOrderRequest
+import eti.lucasgomes.makalu.shared.model.OrderSimpleResponse
 import eti.lucasgomes.makalu.shared.network.EmptyResult
 import eti.lucasgomes.makalu.shared.network.HttpClientManager
 import eti.lucasgomes.makalu.shared.network.Resource
@@ -27,7 +28,7 @@ class CartClient(private val httpClientManager: HttpClientManager) {
             delete("/stores/$storeId/cart/items")
         }
 
-    suspend fun submitOrder(request: CreateOrderRequest): EmptyResult =
+    suspend fun submitOrder(request: CreateOrderRequest): Resource<OrderSimpleResponse> =
         httpClientManager.withApiResource {
             post("/orders") { setBody(request) }
         }

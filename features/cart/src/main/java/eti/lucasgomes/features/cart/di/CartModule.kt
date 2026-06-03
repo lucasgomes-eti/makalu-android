@@ -7,6 +7,6 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val cartModule = module {
-    viewModel { CartViewModel(it.get(), get()) }
+    viewModel { CartViewModel(it.get(), get(), get()) }
     singleOf(::CartClient)
 }

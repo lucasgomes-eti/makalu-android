@@ -6,10 +6,10 @@ sealed interface Destination {
 
     object Graph {
         @Serializable
-        data object Home : Destination
+        data object Auth : Destination
 
         @Serializable
-        data object Auth : Destination
+        data object Root : Destination
     }
 
     object Screen {
@@ -42,5 +42,8 @@ sealed interface Destination {
 
         @Serializable
         data class Cart(val storeId: Long) : Destination
+
+        @Serializable
+        data class OderDetail(val orderId: Long) : Destination
     }
 }

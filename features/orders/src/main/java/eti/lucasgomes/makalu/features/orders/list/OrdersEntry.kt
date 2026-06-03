@@ -1,4 +1,4 @@
-package eti.lucasgomes.makalu.features.orders
+package eti.lucasgomes.makalu.features.orders.list
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable

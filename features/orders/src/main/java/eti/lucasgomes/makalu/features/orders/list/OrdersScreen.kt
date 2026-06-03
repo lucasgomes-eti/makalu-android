@@ -1,4 +1,4 @@
-package eti.lucasgomes.makalu.features.orders
+package eti.lucasgomes.makalu.features.orders.list
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

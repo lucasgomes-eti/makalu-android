@@ -5,6 +5,10 @@ import eti.lucasgomes.features.cart.CartClient
 import eti.lucasgomes.features.cart.model.CreateOrderRequest
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
+import eti.lucasgomes.makalu.shared.navigation.Destination
+import eti.lucasgomes.makalu.shared.navigation.NavOptions
+import eti.lucasgomes.makalu.shared.navigation.Navigator
+import eti.lucasgomes.makalu.shared.navigation.PopUpToOptions
 import eti.lucasgomes.makalu.shared.network.onError
 import eti.lucasgomes.makalu.shared.network.onSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +17,8 @@ import kotlinx.coroutines.flow.update
 
 internal class CartViewModel(
     private val storeId: Long,
-    private val cartClient: CartClient
+    private val cartClient: CartClient,
+    private val navigator: Navigator
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<CartUiState>(CartUiState.Loading)
@@ -141,9 +146,11 @@ internal class CartViewModel(
             _uiState.update {
                 CartUiState.Error(generalError = UiText.PlainText(error.formatedMessage))
             }
-        }.onSuccess {
-            // TODO: navigate to order screen
+        }.onSuccess { response ->
+            navigator.navigate(
+                Destination.Screen.OderDetail(response.id),
+                navOptions = NavOptions(popUpTo = PopUpToOptions(Destination.Graph.Root))
+            )
         }
-
     }
 }

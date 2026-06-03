@@ -248,7 +248,7 @@ class RegistrationViewModel(
     private suspend fun navigateToHome() {
         _uiState.update { state -> state.copy(generalError = UiText.Empty, isLoading = false) }
         navigator.navigate(
-            Destination.Graph.Home,
+            Destination.Graph.Root,
             NavOptions(
                 popUpTo = PopUpToOptions(
                     Destination.Graph.Auth,

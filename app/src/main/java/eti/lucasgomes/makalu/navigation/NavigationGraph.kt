@@ -15,7 +15,8 @@ import eti.lucasgomes.makalu.components.imageCropper.ImageCropperEntry
 import eti.lucasgomes.makalu.features.auth.login.LoginEntry
 import eti.lucasgomes.makalu.features.auth.registration.RegistrationEntry
 import eti.lucasgomes.makalu.features.home.HomeEntry
-import eti.lucasgomes.makalu.features.orders.OrdersEntry
+import eti.lucasgomes.makalu.features.orders.detail.OrderDetailEntry
+import eti.lucasgomes.makalu.features.orders.list.OrdersEntry
 import eti.lucasgomes.makalu.features.profile.ProfileEntry
 import eti.lucasgomes.makalu.shared.navigation.Destination
 
@@ -27,7 +28,7 @@ fun NavigationGraph(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = if (hasAccessToken) Destination.Graph.Home else Destination.Graph.Auth
+        startDestination = if (hasAccessToken) Destination.Graph.Root else Destination.Graph.Auth
     ) {
         navigation<Destination.Graph.Auth>(startDestination = Destination.Screen.Login) {
             composable<Destination.Screen.Login> { LoginEntry(innerPadding) }
@@ -37,7 +38,7 @@ fun NavigationGraph(
             }
         }
 
-        navigation<Destination.Graph.Home>(startDestination = Destination.Screen.Home) {
+        navigation<Destination.Graph.Root>(startDestination = Destination.Screen.Home) {
             composable<Destination.Screen.Home> { HomeEntry(innerPadding) }
             composable<Destination.Screen.Orders> { OrdersEntry(innerPadding) }
             composable<Destination.Screen.Profile> { ProfileEntry(innerPadding) }
@@ -58,6 +59,9 @@ fun NavigationGraph(
             }
             composable<Destination.Screen.Cart> {
                 CartEntry(innerPadding, it.toRoute<Destination.Screen.Cart>().storeId)
+            }
+            composable<Destination.Screen.OderDetail> {
+                OrderDetailEntry(innerPadding, it.toRoute<Destination.Screen.OderDetail>().orderId)
             }
         }
     }

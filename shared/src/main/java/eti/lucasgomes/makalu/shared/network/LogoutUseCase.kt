@@ -23,7 +23,7 @@ class LogoutUseCase(
         navigator.navigate(
             Destination.Graph.Auth, NavOptions(
                 popUpTo = PopUpToOptions(
-                    Destination.Graph.Home,
+                    Destination.Graph.Root,
                     inclusive = true
                 )
             )
