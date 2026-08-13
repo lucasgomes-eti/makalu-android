@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +50,8 @@ import androidx.compose.ui.unit.dp
 import eti.lucasgomes.makalu.components.ExpressivePullToRefreshIndicator
 import eti.lucasgomes.makalu.components.buttons.ConfigureFab
 import eti.lucasgomes.makalu.components.buttons.ExpressiveTextButton
+import eti.lucasgomes.makalu.components.buttons.FabUiController
+import eti.lucasgomes.makalu.components.buttons.LocalFabUiController
 import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.features.home.R
@@ -193,23 +196,27 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
 @Preview(showBackground = true)
 @Composable
 private fun HomePreview() {
-    HomeScreen(
-        HomeUiState(
-            address = UiText.PlainText("123 Main St"),
-            categories = listOf(
-                CategoryUiState(1, UiText.PlainText("All"), true),
-                CategoryUiState(2, UiText.PlainText("Coffee"), false),
-                CategoryUiState(3, UiText.PlainText("Pizza"), false),
-            ),
-            stores = listOf(
-                StoreUiState.Data(
-                    id = 1,
-                    name = "Scary's",
-                    category = "Burger",
-                    logoId = 1,
-                    coverId = 1,
+
+    CompositionLocalProvider(LocalFabUiController provides FabUiController()) {
+        HomeScreen(
+            HomeUiState(
+                address = UiText.PlainText("123 Main St"),
+                categories = listOf(
+                    CategoryUiState(1, UiText.PlainText("All"), true),
+                    CategoryUiState(2, UiText.PlainText("Coffee"), false),
+                    CategoryUiState(3, UiText.PlainText("Pizza"), false),
+                ),
+                stores = listOf(
+                    StoreUiState.Data(
+                        id = 1,
+                        name = "Scary's",
+                        category = "Burger",
+                        logoId = 1,
+                        coverId = 1,
+                    )
                 )
             )
-        )
-    ) {}
+        ) {}
+    }
+
 }
