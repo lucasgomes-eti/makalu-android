@@ -47,6 +47,9 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
 
+    // Image Loading
+    implementation(libs.bundles.coil)
+
     //DI
     implementation(libs.koin.androidx.compose)
 

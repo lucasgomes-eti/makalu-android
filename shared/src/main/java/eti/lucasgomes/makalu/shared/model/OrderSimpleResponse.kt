@@ -4,6 +4,7 @@ import eti.lucasgomes.makalu.shared.serializer.BigDecimalSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.math.BigDecimal
+import kotlin.time.Instant
 
 @Serializable
 data class OrderSimpleResponse(
@@ -16,6 +17,9 @@ data class OrderSimpleResponse(
     @SerialName("store_name")
     val storeName: String,
 
+    @SerialName("store_image_id")
+    val storeImageId: Long?,
+
     @SerialName("delivery_address_line")
     val deliveryAddressLine: String,
 
@@ -25,10 +29,10 @@ data class OrderSimpleResponse(
     val total: Total,
 
     @SerialName("created_at")
-    val createdAt: String,
+    val createdAt: Instant,
 
     @SerialName("updated_at")
-    val updatedAt: String
+    val updatedAt: Instant
 ) {
     @Serializable
     data class Total(

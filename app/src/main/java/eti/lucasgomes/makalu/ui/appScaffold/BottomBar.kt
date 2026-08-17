@@ -40,7 +40,7 @@ fun BottomBar(
         BottomNavigationItem(
             name = stringResource(R.string.orders),
             route = Destination.Screen.Orders,
-            defaultIcon = painterResource(R.drawable.outline_receipt),
+            defaultIcon = painterResource(eti.lucasgomes.makalu.components.R.drawable.outline_receipt),
             selectedIcon = painterResource(R.drawable.filled_receipt),
             contentDescription = stringResource(R.string.accessibility_orders_icon)
         ),
