@@ -1,4 +1,4 @@
-package eti.lucasgomes.makalu.features.orders
+package eti.lucasgomes.makalu.features.orders.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
@@ -22,7 +22,12 @@ import eti.lucasgomes.makalu.components.GreenPea
 import eti.lucasgomes.makalu.components.HawkesBlue
 import eti.lucasgomes.makalu.components.Himalaya
 import eti.lucasgomes.makalu.components.ScienceBlue
+import eti.lucasgomes.makalu.features.orders.R
 import eti.lucasgomes.makalu.shared.model.OrderStatus
+import eti.lucasgomes.makalu.shared.model.OrderStatus.ACCEPTED
+import eti.lucasgomes.makalu.shared.model.OrderStatus.FINISHED
+import eti.lucasgomes.makalu.shared.model.OrderStatus.IN_ROUTE
+import eti.lucasgomes.makalu.shared.model.OrderStatus.PENDING
 
 @Composable
 internal fun OrderTimeline(
@@ -34,13 +39,13 @@ internal fun OrderTimeline(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            painter = painterResource(getIconRes(OrderStatus.PENDING, status)),
+            painter = painterResource(getIconRes(PENDING, status)),
             contentDescription = null,
-            tint = getIconTint(OrderStatus.PENDING, status),
+            tint = getIconTint(PENDING, status),
             modifier = Modifier
                 .size(28.dp)
                 .background(
-                    getStepColor(OrderStatus.PENDING, status),
+                    getStepColor(PENDING, status),
                     shape = CircleShape
                 )
                 .padding(4.dp)
@@ -51,13 +56,13 @@ internal fun OrderTimeline(
             color = getDividerColor(status, 0)
         )
         Icon(
-            painter = painterResource(getIconRes(OrderStatus.ACCEPTED, status)),
+            painter = painterResource(getIconRes(ACCEPTED, status)),
             contentDescription = null,
-            tint = getIconTint(OrderStatus.ACCEPTED, status),
+            tint = getIconTint(ACCEPTED, status),
             modifier = Modifier
                 .size(28.dp)
                 .background(
-                    getStepColor(OrderStatus.ACCEPTED, status),
+                    getStepColor(ACCEPTED, status),
                     shape = CircleShape
                 )
                 .padding(4.dp)
@@ -68,13 +73,13 @@ internal fun OrderTimeline(
             getDividerColor(status, 1)
         )
         Icon(
-            painter = painterResource(getIconRes(OrderStatus.IN_ROUTE, status)),
+            painter = painterResource(getIconRes(IN_ROUTE, status)),
             contentDescription = null,
-            tint = getIconTint(OrderStatus.IN_ROUTE, status),
+            tint = getIconTint(IN_ROUTE, status),
             modifier = Modifier
                 .size(28.dp)
                 .background(
-                    getStepColor(OrderStatus.IN_ROUTE, status),
+                    getStepColor(IN_ROUTE, status),
                     shape = CircleShape
                 )
                 .padding(4.dp)
@@ -85,13 +90,13 @@ internal fun OrderTimeline(
             getDividerColor(status, 2)
         )
         Icon(
-            painter = painterResource(getIconRes(OrderStatus.FINISHED, status)),
+            painter = painterResource(getIconRes(FINISHED, status)),
             contentDescription = null,
-            tint = getIconTint(OrderStatus.FINISHED, status),
+            tint = getIconTint(FINISHED, status),
             modifier = Modifier
                 .size(28.dp)
                 .background(
-                    getStepColor(OrderStatus.FINISHED, status),
+                    getStepColor(FINISHED, status),
                     shape = CircleShape
                 )
                 .padding(4.dp)
@@ -102,28 +107,28 @@ internal fun OrderTimeline(
 @Composable
 private fun getStepColor(forStatus: OrderStatus, withStatus: OrderStatus): Color {
     when (forStatus) {
-        OrderStatus.PENDING -> {
-            if (withStatus == OrderStatus.PENDING) return Himalaya
-            if (withStatus > OrderStatus.PENDING) return DairyCream
+        PENDING -> {
+            if (withStatus == PENDING) return Himalaya
+            if (withStatus > PENDING) return DairyCream
             return colorScheme.surfaceDim
         }
 
-        OrderStatus.ACCEPTED, OrderStatus.CANCELLED -> {
-            if (withStatus == OrderStatus.ACCEPTED) return ScienceBlue
+        ACCEPTED, OrderStatus.CANCELLED -> {
+            if (withStatus == ACCEPTED) return ScienceBlue
             if (withStatus == OrderStatus.CANCELLED) return colorScheme.error
-            if (withStatus > OrderStatus.ACCEPTED) return HawkesBlue
+            if (withStatus > ACCEPTED) return HawkesBlue
             return colorScheme.surfaceDim
         }
 
-        OrderStatus.IN_ROUTE -> {
-            if (withStatus == OrderStatus.IN_ROUTE) return colorScheme.primary
-            if (withStatus > OrderStatus.IN_ROUTE) return colorScheme.primaryContainer
+        IN_ROUTE -> {
+            if (withStatus == IN_ROUTE) return colorScheme.primary
+            if (withStatus > IN_ROUTE) return colorScheme.primaryContainer
             return colorScheme.surfaceDim
         }
 
-        OrderStatus.FINISHED -> {
-            if (withStatus == OrderStatus.FINISHED) return GreenPea
-            if (withStatus > OrderStatus.FINISHED) return GreenPea
+        FINISHED -> {
+            if (withStatus == FINISHED) return GreenPea
+            if (withStatus > FINISHED) return GreenPea
             return colorScheme.surfaceDim
         }
     }
@@ -132,24 +137,24 @@ private fun getStepColor(forStatus: OrderStatus, withStatus: OrderStatus): Color
 @DrawableRes
 private fun getIconRes(forStatus: OrderStatus, withStatus: OrderStatus): Int {
     when (forStatus) {
-        OrderStatus.PENDING -> {
-            return if (withStatus > OrderStatus.PENDING) R.drawable.check
+        PENDING -> {
+            return if (withStatus > PENDING) R.drawable.check
             else R.drawable.schedule
         }
 
-        OrderStatus.ACCEPTED, OrderStatus.CANCELLED -> {
+        ACCEPTED, OrderStatus.CANCELLED -> {
             return if (withStatus == OrderStatus.CANCELLED) eti.lucasgomes.makalu.components.R.drawable.close
-            else if (withStatus > OrderStatus.ACCEPTED) R.drawable.check
+            else if (withStatus > ACCEPTED) R.drawable.check
             else R.drawable.restaurant
         }
 
-        OrderStatus.IN_ROUTE -> {
-            return if (withStatus > OrderStatus.IN_ROUTE) R.drawable.check
+        IN_ROUTE -> {
+            return if (withStatus > IN_ROUTE) R.drawable.check
             else R.drawable.two_wheeler
         }
 
-        OrderStatus.FINISHED -> {
-            return if (withStatus > OrderStatus.FINISHED) R.drawable.check
+        FINISHED -> {
+            return if (withStatus > FINISHED) R.drawable.check
             else R.drawable.check_circle
         }
     }
@@ -158,28 +163,28 @@ private fun getIconRes(forStatus: OrderStatus, withStatus: OrderStatus): Int {
 @Composable
 private fun getIconTint(forStatus: OrderStatus, withStatus: OrderStatus): Color {
     when (forStatus) {
-        OrderStatus.PENDING -> {
-            if (withStatus == OrderStatus.PENDING) return Color.White
-            if (withStatus > OrderStatus.PENDING) return Himalaya
+        PENDING -> {
+            if (withStatus == PENDING) return Color.White
+            if (withStatus > PENDING) return Himalaya
             return colorScheme.inverseOnSurface
         }
 
-        OrderStatus.ACCEPTED, OrderStatus.CANCELLED -> {
-            if (withStatus == OrderStatus.ACCEPTED) return Color.White
+        ACCEPTED, OrderStatus.CANCELLED -> {
+            if (withStatus == ACCEPTED) return Color.White
             if (withStatus == OrderStatus.CANCELLED) return Color.White
-            if (withStatus > OrderStatus.ACCEPTED) return ScienceBlue
+            if (withStatus > ACCEPTED) return ScienceBlue
             return colorScheme.inverseOnSurface
         }
 
-        OrderStatus.IN_ROUTE -> {
-            if (withStatus == OrderStatus.IN_ROUTE) return Color.White
-            if (withStatus > OrderStatus.IN_ROUTE) return colorScheme.primary
+        IN_ROUTE -> {
+            if (withStatus == IN_ROUTE) return Color.White
+            if (withStatus > IN_ROUTE) return colorScheme.primary
             return colorScheme.inverseOnSurface
         }
 
-        OrderStatus.FINISHED -> {
-            if (withStatus == OrderStatus.FINISHED) return Color.White
-            if (withStatus > OrderStatus.FINISHED) return Color.White
+        FINISHED -> {
+            if (withStatus == FINISHED) return Color.White
+            if (withStatus > FINISHED) return Color.White
             return colorScheme.inverseOnSurface
         }
     }
@@ -188,11 +193,11 @@ private fun getIconTint(forStatus: OrderStatus, withStatus: OrderStatus): Color 
 @Composable
 private fun getDividerColor(forStatus: OrderStatus, atIndex: Int): Color {
     when (forStatus) {
-        OrderStatus.PENDING -> {
+        PENDING -> {
             return colorScheme.outlineVariant
         }
 
-        OrderStatus.ACCEPTED -> {
+        ACCEPTED -> {
             if (atIndex == 0) {
                 return ScienceBlue
             }
@@ -208,14 +213,14 @@ private fun getDividerColor(forStatus: OrderStatus, atIndex: Int): Color {
             return colorScheme.outlineVariant
         }
 
-        OrderStatus.IN_ROUTE -> {
+        IN_ROUTE -> {
             if (atIndex <= 1) {
                 return colorScheme.primary
             }
             return colorScheme.outlineVariant
         }
 
-        OrderStatus.FINISHED -> {
+        FINISHED -> {
             return GreenPea
         }
     }
@@ -224,13 +229,13 @@ private fun getDividerColor(forStatus: OrderStatus, atIndex: Int): Color {
 @Preview(showBackground = true)
 @Composable
 private fun OrderTimelinePendingPreview() {
-    OrderTimeline(status = OrderStatus.PENDING)
+    OrderTimeline(status = PENDING)
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun OrderTimelineAcceptedPreview() {
-    OrderTimeline(status = OrderStatus.ACCEPTED)
+    OrderTimeline(status = ACCEPTED)
 }
 
 @Preview(showBackground = true)
@@ -242,11 +247,11 @@ private fun OrderTimelineCanceledPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun OrderTimelineInRoutePreview() {
-    OrderTimeline(status = OrderStatus.IN_ROUTE)
+    OrderTimeline(status = IN_ROUTE)
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun OrderTimelineFinishedPreview() {
-    OrderTimeline(status = OrderStatus.FINISHED)
+    OrderTimeline(status = FINISHED)
 }

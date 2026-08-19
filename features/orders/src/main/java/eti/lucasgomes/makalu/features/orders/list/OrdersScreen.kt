@@ -1,7 +1,6 @@
 package eti.lucasgomes.makalu.features.orders.list
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,8 +30,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import eti.lucasgomes.makalu.features.orders.OrderTimeline
-import eti.lucasgomes.makalu.features.orders.R
+import eti.lucasgomes.makalu.components.dsl.UiText
+import eti.lucasgomes.makalu.features.orders.components.OrderStatusTag
+import eti.lucasgomes.makalu.features.orders.components.OrderTimeline
 import eti.lucasgomes.makalu.shared.model.OrderStatus
 
 @Composable
@@ -76,25 +76,7 @@ internal fun OrdersScreen(uiState: OrdersUiState) {
                         }
 
                         Spacer(Modifier.width(8.dp))
-                        Row(
-                            modifier = Modifier
-                                .background(
-                                    colorScheme.primaryContainer,
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                                .padding(horizontal = 8.dp, vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            // TODO: display icon based on status
-                            Icon(
-                                painter = painterResource(R.drawable.two_wheeler),
-                                contentDescription = null,
-                                modifier = Modifier.size(14.dp),
-                                tint = colorScheme.onPrimaryContainer
-                            )
-                            Text(it.status, color = colorScheme.onPrimaryContainer)
-                        }
+                        OrderStatusTag(it.status)
                     }
                     Row(
                         Modifier.fillMaxWidth(),
@@ -139,9 +121,9 @@ private fun OrdersPreview() {
     OrdersScreen(
         OrdersUiState(
             listOf(
-                OrderSimpleUiState(
+                OrdersUiState.Item(
                     1,
-                    "PENDING",
+                    OrdersUiState.Item.Status(OrderStatus.PENDING, UiText.PlainText("Pending")),
                     "123",
                     "Sushi Naka",
                     1,
