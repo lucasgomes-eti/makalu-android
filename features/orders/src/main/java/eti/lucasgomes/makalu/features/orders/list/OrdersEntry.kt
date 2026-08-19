@@ -11,5 +11,5 @@ import org.koin.androidx.compose.koinViewModel
 fun OrdersEntry(innerPadding: PaddingValues) {
     val viewModel = koinViewModel<OrdersViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    ScreenContainer(innerPadding) { OrdersScreen(uiState) }
+    ScreenContainer(innerPadding) { OrdersScreen(uiState, viewModel::onAction) }
 }

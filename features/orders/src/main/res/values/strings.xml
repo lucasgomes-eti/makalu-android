@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="order_status_pending">Pending</string>
+    <string name="order_status_accepted">Accepted</string>
+    <string name="order_status_cancelled">Cancelled</string>
+    <string name="order_status_in_route">In route</string>
+    <string name="order_status_finished">Finished</string>
+    <string name="orders_empty">You have no orders yet</string>
+</resources>

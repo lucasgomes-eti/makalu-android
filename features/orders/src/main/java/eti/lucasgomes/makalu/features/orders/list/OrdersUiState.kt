@@ -3,10 +3,17 @@ package eti.lucasgomes.makalu.features.orders.list
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.shared.mapImageUrl
 import eti.lucasgomes.makalu.shared.model.OrderStatus
+import java.math.BigDecimal
+import kotlin.time.Instant
 
 data class OrdersUiState(
-    val orders: List<Item>
+    val isLoading: Boolean = false,
+    val generalError: UiText = UiText.Empty,
+    val orders: List<Item> = emptyList()
 ) {
+    val isEmpty: Boolean
+        get() = orders.isEmpty() && !isLoading && generalError == UiText.Empty
+
     data class Item(
         val id: Long,
         val status: Status,
@@ -15,10 +22,10 @@ data class OrdersUiState(
         private val storeImageId: Long?,
         val deliveryAddressLine: String,
         val itemsCount: Int,
-        val deliveryFee: String,
-        val totalPrice: String,
-        val createdAt: String,
-        val updatedAt: String
+        val deliveryFee: BigDecimal,
+        val totalPrice: BigDecimal,
+        val createdAt: Instant,
+        val updatedAt: Instant
     ) {
         val storeImageUrl: String?
             get() = mapImageUrl(storeImageId)
