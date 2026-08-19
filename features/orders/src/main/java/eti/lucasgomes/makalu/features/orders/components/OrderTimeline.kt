@@ -1,8 +1,8 @@
 package eti.lucasgomes.makalu.features.orders.components
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,17 +17,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import eti.lucasgomes.makalu.components.DairyCream
-import eti.lucasgomes.makalu.components.GreenPea
-import eti.lucasgomes.makalu.components.HawkesBlue
-import eti.lucasgomes.makalu.components.Himalaya
-import eti.lucasgomes.makalu.components.ScienceBlue
 import eti.lucasgomes.makalu.features.orders.R
 import eti.lucasgomes.makalu.shared.model.OrderStatus
 import eti.lucasgomes.makalu.shared.model.OrderStatus.ACCEPTED
+import eti.lucasgomes.makalu.shared.model.OrderStatus.CANCELLED
 import eti.lucasgomes.makalu.shared.model.OrderStatus.FINISHED
 import eti.lucasgomes.makalu.shared.model.OrderStatus.IN_ROUTE
 import eti.lucasgomes.makalu.shared.model.OrderStatus.PENDING
+
+private val timelineSteps = listOf(PENDING, ACCEPTED, IN_ROUTE, FINISHED)
+
+private val StepSize = 28.dp
+private val StepPadding = 4.dp
+private val ConnectorThickness = 2.dp
 
 @Composable
 internal fun OrderTimeline(
@@ -38,193 +40,79 @@ internal fun OrderTimeline(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            painter = painterResource(getIconRes(PENDING, status)),
-            contentDescription = null,
-            tint = getIconTint(PENDING, status),
-            modifier = Modifier
-                .size(28.dp)
-                .background(
-                    getStepColor(PENDING, status),
-                    shape = CircleShape
-                )
-                .padding(4.dp)
-        )
-        HorizontalDivider(
-            modifier = Modifier.weight(1f),
-            thickness = 2.dp,
-            color = getDividerColor(status, 0)
-        )
-        Icon(
-            painter = painterResource(getIconRes(ACCEPTED, status)),
-            contentDescription = null,
-            tint = getIconTint(ACCEPTED, status),
-            modifier = Modifier
-                .size(28.dp)
-                .background(
-                    getStepColor(ACCEPTED, status),
-                    shape = CircleShape
-                )
-                .padding(4.dp)
-        )
-        HorizontalDivider(
-            modifier = Modifier.weight(1f),
-            thickness = 2.dp,
-            getDividerColor(status, 1)
-        )
-        Icon(
-            painter = painterResource(getIconRes(IN_ROUTE, status)),
-            contentDescription = null,
-            tint = getIconTint(IN_ROUTE, status),
-            modifier = Modifier
-                .size(28.dp)
-                .background(
-                    getStepColor(IN_ROUTE, status),
-                    shape = CircleShape
-                )
-                .padding(4.dp)
-        )
-        HorizontalDivider(
-            modifier = Modifier.weight(1f),
-            thickness = 2.dp,
-            getDividerColor(status, 2)
-        )
-        Icon(
-            painter = painterResource(getIconRes(FINISHED, status)),
-            contentDescription = null,
-            tint = getIconTint(FINISHED, status),
-            modifier = Modifier
-                .size(28.dp)
-                .background(
-                    getStepColor(FINISHED, status),
-                    shape = CircleShape
-                )
-                .padding(4.dp)
-        )
-    }
-}
-
-@Composable
-private fun getStepColor(forStatus: OrderStatus, withStatus: OrderStatus): Color {
-    when (forStatus) {
-        PENDING -> {
-            if (withStatus == PENDING) return Himalaya
-            if (withStatus > PENDING) return DairyCream
-            return colorScheme.surfaceDim
-        }
-
-        ACCEPTED, OrderStatus.CANCELLED -> {
-            if (withStatus == ACCEPTED) return ScienceBlue
-            if (withStatus == OrderStatus.CANCELLED) return colorScheme.error
-            if (withStatus > ACCEPTED) return HawkesBlue
-            return colorScheme.surfaceDim
-        }
-
-        IN_ROUTE -> {
-            if (withStatus == IN_ROUTE) return colorScheme.primary
-            if (withStatus > IN_ROUTE) return colorScheme.primaryContainer
-            return colorScheme.surfaceDim
-        }
-
-        FINISHED -> {
-            if (withStatus == FINISHED) return GreenPea
-            if (withStatus > FINISHED) return GreenPea
-            return colorScheme.surfaceDim
-        }
-    }
-}
-
-@DrawableRes
-private fun getIconRes(forStatus: OrderStatus, withStatus: OrderStatus): Int {
-    when (forStatus) {
-        PENDING -> {
-            return if (withStatus > PENDING) R.drawable.check
-            else R.drawable.schedule
-        }
-
-        ACCEPTED, OrderStatus.CANCELLED -> {
-            return if (withStatus == OrderStatus.CANCELLED) eti.lucasgomes.makalu.components.R.drawable.close
-            else if (withStatus > ACCEPTED) R.drawable.check
-            else R.drawable.restaurant
-        }
-
-        IN_ROUTE -> {
-            return if (withStatus > IN_ROUTE) R.drawable.check
-            else R.drawable.two_wheeler
-        }
-
-        FINISHED -> {
-            return if (withStatus > FINISHED) R.drawable.check
-            else R.drawable.check_circle
+        timelineSteps.forEachIndexed { index, step ->
+            if (index > 0) {
+                StepConnector(color = connectorColor(status, atIndex = index - 1))
+            }
+            StepIcon(step = step, currentStatus = status)
         }
     }
 }
 
 @Composable
-private fun getIconTint(forStatus: OrderStatus, withStatus: OrderStatus): Color {
-    when (forStatus) {
-        PENDING -> {
-            if (withStatus == PENDING) return Color.White
-            if (withStatus > PENDING) return Himalaya
-            return colorScheme.inverseOnSurface
-        }
+private fun StepIcon(step: OrderStatus, currentStatus: OrderStatus) {
+    val state = step.stateWithin(currentStatus)
+    // A canceled order takes over the step it stopped at, so that slot is painted red.
+    val palette = if (state == StepState.CURRENT) currentStatus.palette() else step.palette()
+    val backgroundColor = when (state) {
+        StepState.UPCOMING -> colorScheme.surfaceDim
+        StepState.CURRENT -> palette.strong
+        StepState.COMPLETED -> palette.soft
+    }
+    val tint = when (state) {
+        StepState.UPCOMING -> colorScheme.inverseOnSurface
+        StepState.CURRENT -> palette.onStrong
+        StepState.COMPLETED -> palette.onSoft
+    }
+    val iconRes = if (state == StepState.COMPLETED) R.drawable.check else palette.icon
 
-        ACCEPTED, OrderStatus.CANCELLED -> {
-            if (withStatus == ACCEPTED) return Color.White
-            if (withStatus == OrderStatus.CANCELLED) return Color.White
-            if (withStatus > ACCEPTED) return ScienceBlue
-            return colorScheme.inverseOnSurface
-        }
+    Icon(
+        painter = painterResource(iconRes),
+        contentDescription = null,
+        tint = tint,
+        modifier = Modifier
+            .size(StepSize)
+            .background(backgroundColor, shape = CircleShape)
+            .padding(StepPadding)
+    )
+}
 
-        IN_ROUTE -> {
-            if (withStatus == IN_ROUTE) return Color.White
-            if (withStatus > IN_ROUTE) return colorScheme.primary
-            return colorScheme.inverseOnSurface
-        }
+@Composable
+private fun RowScope.StepConnector(color: Color) {
+    HorizontalDivider(
+        modifier = Modifier.weight(1f),
+        thickness = ConnectorThickness,
+        color = color
+    )
+}
 
-        FINISHED -> {
-            if (withStatus == FINISHED) return Color.White
-            if (withStatus > FINISHED) return Color.White
-            return colorScheme.inverseOnSurface
-        }
+private enum class StepState { UPCOMING, CURRENT, COMPLETED }
+
+/**
+ * Where a status sits on the timeline. A canceled order stops on the [ACCEPTED] step, so both
+ * share an index.
+ */
+private val OrderStatus.timelineIndex: Int
+    get() = when (this) {
+        PENDING -> 0
+        ACCEPTED, CANCELLED -> 1
+        IN_ROUTE -> 2
+        FINISHED -> 3
+    }
+
+private fun OrderStatus.stateWithin(currentStatus: OrderStatus): StepState {
+    val currentIndex = currentStatus.timelineIndex
+    return when {
+        timelineIndex < currentIndex -> StepState.COMPLETED
+        timelineIndex == currentIndex -> StepState.CURRENT
+        else -> StepState.UPCOMING
     }
 }
 
 @Composable
-private fun getDividerColor(forStatus: OrderStatus, atIndex: Int): Color {
-    when (forStatus) {
-        PENDING -> {
-            return colorScheme.outlineVariant
-        }
-
-        ACCEPTED -> {
-            if (atIndex == 0) {
-                return ScienceBlue
-            }
-
-            return colorScheme.outlineVariant
-        }
-
-        OrderStatus.CANCELLED -> {
-            if (atIndex == 0) {
-                return colorScheme.error
-            }
-
-            return colorScheme.outlineVariant
-        }
-
-        IN_ROUTE -> {
-            if (atIndex <= 1) {
-                return colorScheme.primary
-            }
-            return colorScheme.outlineVariant
-        }
-
-        FINISHED -> {
-            return GreenPea
-        }
-    }
-}
+private fun connectorColor(currentStatus: OrderStatus, atIndex: Int): Color =
+    if (atIndex < currentStatus.timelineIndex) currentStatus.palette().strong
+    else colorScheme.outlineVariant
 
 @Preview(showBackground = true)
 @Composable
@@ -241,7 +129,7 @@ private fun OrderTimelineAcceptedPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun OrderTimelineCanceledPreview() {
-    OrderTimeline(status = OrderStatus.CANCELLED)
+    OrderTimeline(status = CANCELLED)
 }
 
 @Preview(showBackground = true)

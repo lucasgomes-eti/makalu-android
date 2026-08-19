@@ -99,7 +99,7 @@ internal fun OrdersScreen(uiState: OrdersUiState) {
                             Text(it.deliveryAddressLine)
                         }
                     }
-                    OrderTimeline(modifier = Modifier.fillMaxWidth(), status = OrderStatus.PENDING)
+                    OrderTimeline(modifier = Modifier.fillMaxWidth(), status = it.status.data)
                     Row(
                         Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
