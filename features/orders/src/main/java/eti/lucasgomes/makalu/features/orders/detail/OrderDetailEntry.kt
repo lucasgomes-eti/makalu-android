@@ -15,8 +15,6 @@ fun OrderDetailEntry(innerPadding: PaddingValues, orderId: Long) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     ScreenContainer(innerPadding, hasTopBar = true, hasBottomBar = false) {
-        OrderDetailScreen(
-            uiState
-        )
+        OrderDetailScreen(uiState, viewModel::onAction)
     }
 }

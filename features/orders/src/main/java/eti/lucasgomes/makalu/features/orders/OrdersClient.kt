@@ -1,5 +1,6 @@
 package eti.lucasgomes.makalu.features.orders
 
+import eti.lucasgomes.makalu.features.orders.model.OrderDetailedResponse
 import eti.lucasgomes.makalu.shared.model.OrderSimpleResponse
 import eti.lucasgomes.makalu.shared.network.HttpClientManager
 import eti.lucasgomes.makalu.shared.network.Resource
@@ -10,5 +11,10 @@ internal class OrdersClient(private val httpClientManager: HttpClientManager) {
     suspend fun getOrders(): Resource<List<OrderSimpleResponse>> =
         httpClientManager.withApiResource {
             get("/orders")
+        }
+
+    suspend fun getOrder(id: Long): Resource<OrderDetailedResponse> =
+        httpClientManager.withApiResource {
+            get("/orders/$id")
         }
 }

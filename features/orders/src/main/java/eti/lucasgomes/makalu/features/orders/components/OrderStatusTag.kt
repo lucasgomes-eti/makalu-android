@@ -15,11 +15,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import eti.lucasgomes.makalu.components.dsl.UiText
-import eti.lucasgomes.makalu.features.orders.list.OrdersUiState
 import eti.lucasgomes.makalu.shared.model.OrderStatus
 
 @Composable
-internal fun OrderStatusTag(status: OrdersUiState.Item.Status) {
+internal fun OrderStatusTag(status: OrderStatusUiState) {
     val palette = status.data.palette()
     Row(
         modifier = Modifier
@@ -44,29 +43,29 @@ internal fun OrderStatusTag(status: OrdersUiState.Item.Status) {
 @Preview
 @Composable
 private fun OrderStatusTagPendingPreview() {
-    OrderStatusTag(status = OrdersUiState.Item.Status(OrderStatus.PENDING, UiText.PlainText("Pending")))
+    OrderStatusTag(status = OrderStatusUiState(OrderStatus.PENDING, UiText.PlainText("Pending")))
 }
 
 @Preview
 @Composable
 private fun OrderStatusTagAcceptedPreview() {
-    OrderStatusTag(status = OrdersUiState.Item.Status(OrderStatus.ACCEPTED, UiText.PlainText("Accepted")))
+    OrderStatusTag(status = OrderStatusUiState(OrderStatus.ACCEPTED, UiText.PlainText("Accepted")))
 }
 
 @Preview
 @Composable
 private fun OrderStatusTagCanceledPreview() {
-    OrderStatusTag(status = OrdersUiState.Item.Status(OrderStatus.CANCELLED, UiText.PlainText("Cancelled")))
+    OrderStatusTag(status = OrderStatusUiState(OrderStatus.CANCELLED, UiText.PlainText("Cancelled")))
 }
 
 @Preview
 @Composable
 private fun OrderStatusTagInRoutePreview() {
-    OrderStatusTag(status = OrdersUiState.Item.Status(OrderStatus.IN_ROUTE, UiText.PlainText("In route")))
+    OrderStatusTag(status = OrderStatusUiState(OrderStatus.IN_ROUTE, UiText.PlainText("In route")))
 }
 
 @Preview
 @Composable
 private fun OrderStatusTagFinishedPreview() {
-    OrderStatusTag(status = OrdersUiState.Item.Status(OrderStatus.FINISHED, UiText.PlainText("Finished")))
+    OrderStatusTag(status = OrderStatusUiState(OrderStatus.FINISHED, UiText.PlainText("Finished")))
 }

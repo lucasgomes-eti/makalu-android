@@ -6,4 +6,7 @@
     <string name="order_status_in_route">In route</string>
     <string name="order_status_finished">Finished</string>
     <string name="orders_empty">You have no orders yet</string>
+    <string name="order_detail_title">Order Nº %1$s</string>
+    <string name="order_detail_title_empty">Order</string>
+    <string name="order_detail_items">Items</string>
 </resources>

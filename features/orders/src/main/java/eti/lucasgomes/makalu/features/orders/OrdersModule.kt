@@ -8,7 +8,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val ordersModule = module {
-    viewModel { params -> OrderDetailViewModel(params.get()) }
+    viewModel { params -> OrderDetailViewModel(params.get(), get()) }
     viewModelOf(::OrdersViewModel)
     singleOf(::OrdersClient)
 }
