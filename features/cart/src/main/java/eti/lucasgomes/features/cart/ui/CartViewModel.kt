@@ -132,15 +132,13 @@ internal class CartViewModel(
     }
 
     private fun onMakeOrderClicked() = withViewModelScope {
-        _uiState.update { state ->
-            if (state is CartUiState.Data) {
-                state.copy(isMakingOrder = true)
-            } else return@withViewModelScope
-        }
-
+        val state = uiState.value
+        if (state !is CartUiState.Data || state.isMakingOrder) return@withViewModelScope
         val request = cartId?.let {
             CreateOrderRequest(storeId = storeId, cartId = it)
         } ?: return@withViewModelScope
+
+        _uiState.update { state.copy(isMakingOrder = true) }
 
         cartClient.submitOrder(request).onError { error ->
             _uiState.update {
