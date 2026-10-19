@@ -15,6 +15,10 @@ sealed interface AddressAction {
 
     data object PermissionDeniedDismissed : AddressAction
 
+    data object PermissionRationaleRequested : AddressAction
+
+    data object PermissionRationaleDismissed : AddressAction
+
     data object GoToSystemSettingsClicked : AddressAction
 
     data object InitialFetch : AddressAction

@@ -1,6 +1,8 @@
 package eti.lucasgomes.adress.ui
 
 import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -35,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -42,6 +45,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -69,6 +74,9 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
         rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grants ->
             onAction(AddressAction.GetCurrentLocationClicked(grants.values.any { it }))
         }
+
+    val context = LocalContext.current
+    val activity = LocalActivity.current
 
     val cameraPositionState = rememberCameraPositionState()
 
@@ -138,7 +146,19 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
                         .clickable(
                             enabled = uiState.isLoading.not() && uiState.isLocationLoading.not(),
                             role = Role.Button,
-                            onClick = { permissionLauncher.launch(LOCATION_PERMISSIONS) })
+                            onClick = {
+                                val isGranted = LOCATION_PERMISSIONS.any {
+                                    ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+                                }
+                                val shouldShowRationale = activity != null && LOCATION_PERMISSIONS.any {
+                                    ActivityCompat.shouldShowRequestPermissionRationale(activity, it)
+                                }
+                                when {
+                                    isGranted -> onAction(AddressAction.GetCurrentLocationClicked(true))
+                                    shouldShowRationale -> onAction(AddressAction.PermissionRationaleRequested)
+                                    else -> permissionLauncher.launch(LOCATION_PERMISSIONS)
+                                }
+                            })
                 )
                 if (uiState.isLocationLoading) {
                     LoadingIndicator()
@@ -224,6 +244,16 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
             onGoToSystemSettings = { onAction(AddressAction.GoToSystemSettingsClicked) },
         )
     }
+
+    if (uiState.isPermissionRationaleDialogVisible) {
+        LocationPermissionRationaleDialog(
+            onDismissRequest = { onAction(AddressAction.PermissionRationaleDismissed) },
+            onContinue = {
+                onAction(AddressAction.PermissionRationaleDismissed)
+                permissionLauncher.launch(LOCATION_PERMISSIONS)
+            },
+        )
+    }
 }
 
 @Composable
@@ -233,15 +263,41 @@ fun LocationPermissionDeniedDialog(onDismissRequest: () -> Unit, onGoToSystemSet
             Icon(painterResource(eti.lucasgomes.makalu.components.R.drawable.close), null)
         },
         title = {
-            Text("Location permission denied")
+            Text(stringResource(R.string.location_permission_denied))
         },
         text = {
-            Text("Please grant the location permission to use this feature.")
+            Text(stringResource(R.string.please_grant_the_location_permission))
         },
         onDismissRequest = onDismissRequest,
         confirmButton = {
             TextButton(onClick = onGoToSystemSettings) {
                 Text(stringResource(eti.lucasgomes.makalu.components.R.string.go_to_system_settings))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismissRequest,
+                colors = ButtonDefaults.textButtonColors(contentColor = colorScheme.onSurface)
+            ) {
+                Text(stringResource(eti.lucasgomes.makalu.components.R.string.dismiss))
+            }
+        }
+    )
+}
+
+@Composable
+private fun LocationPermissionRationaleDialog(onDismissRequest: () -> Unit, onContinue: () -> Unit) {
+    AlertDialog(
+        title = {
+            Text(stringResource(R.string.location_permission_rationale_title))
+        },
+        text = {
+            Text(stringResource(R.string.location_permission_rationale_text))
+        },
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            TextButton(onClick = onContinue) {
+                Text(stringResource(R.string.continue_label))
             }
         },
         dismissButton = {

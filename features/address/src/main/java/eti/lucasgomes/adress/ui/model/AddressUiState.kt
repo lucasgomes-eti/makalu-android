@@ -18,6 +18,7 @@ data class AddressUiState(
     val isLocationLoading: Boolean = false,
     val locationError: UiText = UiText.Empty,
     val isPermissionDeniedDialogVisible: Boolean = false,
+    val isPermissionRationaleDialogVisible: Boolean = false,
     val generalError: UiText = UiText.Empty,
 ) : TextFieldErrorsAssignable {
 

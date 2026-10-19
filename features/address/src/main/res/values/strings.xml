@@ -10,4 +10,10 @@
     <string name="number">Number</string>
     <string name="complement">Complement</string>
     <string name="save_address">Save address</string>
+    <string name="location_permission_denied">Location permission denied</string>
+    <string name="please_grant_the_location_permission">Please grant the location permission to use this feature.</string>
+    <string name="location_permission_rationale_title">Allow location access</string>
+    <string name="location_permission_rationale_text">Makalu uses your location to fill in your delivery address automatically. You can still type it in manually.</string>
+    <string name="continue_label">Continue</string>
+    <string name="error_getting_location">Error getting location, location might be disabled or unavailable</string>
 </resources>

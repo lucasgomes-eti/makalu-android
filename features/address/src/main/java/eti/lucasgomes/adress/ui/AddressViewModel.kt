@@ -47,6 +47,8 @@ class AddressViewModel(
             AddressAction.SaveAddressClicked -> onSaveAddressClicked()
             is AddressAction.GetCurrentLocationClicked -> onGetCurrentLocationClicked(action.permissionGranted)
             AddressAction.PermissionDeniedDismissed -> onPermissionDeniedDismissed()
+            AddressAction.PermissionRationaleRequested -> onPermissionRationaleRequested()
+            AddressAction.PermissionRationaleDismissed -> onPermissionRationaleDismissed()
             AddressAction.GoToSystemSettingsClicked -> onGoToSystemSettingsClicked()
         }
     }
@@ -248,7 +250,7 @@ class AddressViewModel(
             }.addOnFailureListener {
                 _uiState.update { state ->
                     state.copy(
-                        locationError = UiText.PlainText("Error getting location, location might be disabled or unavailable")
+                        locationError = UiText.StringResource(R.string.error_getting_location)
                     )
                 }
             }.addOnCompleteListener {
@@ -277,6 +279,14 @@ class AddressViewModel(
         _uiState.update { state ->
             state.copy(isPermissionDeniedDialogVisible = false)
         }
+    }
+
+    private fun onPermissionRationaleRequested() = withViewModelScope {
+        _uiState.update { state -> state.copy(isPermissionRationaleDialogVisible = true) }
+    }
+
+    private fun onPermissionRationaleDismissed() = withViewModelScope {
+        _uiState.update { state -> state.copy(isPermissionRationaleDialogVisible = false) }
     }
 
     private fun onGoToSystemSettingsClicked() = withViewModelScope {
