@@ -7,6 +7,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import eti.lucasgomes.makalu.BuildConfig
 import eti.lucasgomes.makalu.components.ext.openApplicationSettings
 import eti.lucasgomes.makalu.shared.MkLogger
 import eti.lucasgomes.makalu.shared.navigation.OSNavigation
@@ -27,7 +28,7 @@ val appModule = module {
     single<MkLogger> {
         object : MkLogger {
             override fun logDebug(tag: String, message: String) {
-                Log.d(tag, message)
+                if (BuildConfig.DEBUG) Log.d(tag, message)
             }
         }
     }
