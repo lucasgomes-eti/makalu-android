@@ -1,6 +1,6 @@
 package eti.lucasgomes.adress.ui
 
-import android.annotation.SuppressLint
+import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -56,14 +56,18 @@ import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.features.adress.R
 
+private val LOCATION_PERMISSIONS = arrayOf(
+    Manifest.permission.ACCESS_FINE_LOCATION,
+    Manifest.permission.ACCESS_COARSE_LOCATION,
+)
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@SuppressLint("MissingPermission")
 @Composable
 internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) -> Unit) {
 
     val permissionLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { permissionGranted ->
-            onAction(AddressAction.GetCurrentLocationClicked(permissionGranted))
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grants ->
+            onAction(AddressAction.GetCurrentLocationClicked(grants.values.any { it }))
         }
 
     val cameraPositionState = rememberCameraPositionState()
@@ -134,9 +138,7 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
                         .clickable(
                             enabled = uiState.isLoading.not() && uiState.isLocationLoading.not(),
                             role = Role.Button,
-                            onClick = {
-                                permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-                            })
+                            onClick = { permissionLauncher.launch(LOCATION_PERMISSIONS) })
                 )
                 if (uiState.isLocationLoading) {
                     LoadingIndicator()
