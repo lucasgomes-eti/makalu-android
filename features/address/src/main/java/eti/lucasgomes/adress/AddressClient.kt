@@ -7,29 +7,41 @@ import eti.lucasgomes.makalu.shared.model.AddressResponse
 import eti.lucasgomes.makalu.shared.network.EmptyResult
 import eti.lucasgomes.makalu.shared.network.HttpClientManager
 import eti.lucasgomes.makalu.shared.network.Resource
+import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.engine.android.Android
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
-import io.ktor.client.request.url
-import io.ktor.http.HttpHeaders
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 class AddressClient(private val httpClientManager: HttpClientManager) {
 
+    private val geocodingClient = HttpClient(Android) {
+        install(ContentNegotiation) {
+            json(Json { ignoreUnknownKeys = true })
+        }
+        engine {
+            connectTimeout = TIME_OUT
+            socketTimeout = TIME_OUT
+        }
+    }
+
     suspend fun reverseGeocode(latitude: Double, longitude: Double): ReverseGeocodeResponse {
         return try {
-            val response = httpClientManager.getClient().get {
-                url("https://maps.googleapis.com/maps/api/geocode/json")
-                headers.remove(HttpHeaders.Authorization)
+            val response = geocodingClient.get("https://maps.googleapis.com/maps/api/geocode/json") {
                 parameter("latlng", "$latitude,$longitude")
                 parameter("key", BuildConfig.MAPS_API_KEY)
             }.body<GeocodeResponse>()
 
-            val components = response.results.first().addressComponents
+            val components = response.results.firstOrNull()?.addressComponents
+                ?: return ReverseGeocodeResponse()
 
             fun find(type: String) =
                 components.firstOrNull { it.types.contains(type) }?.longName
@@ -82,6 +94,9 @@ class AddressClient(private val httpClientManager: HttpClientManager) {
         }
     }
 
+    companion object {
+        private const val TIME_OUT = 6000
+    }
 }
 
 
