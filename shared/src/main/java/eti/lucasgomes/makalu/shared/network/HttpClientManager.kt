@@ -24,6 +24,7 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.Url
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
@@ -77,6 +78,7 @@ class HttpClientManager(
             }
             install(Auth) {
                 bearer {
+                    sendWithoutRequest { request -> request.url.host == Url(MakaluConfig.BASE_URL).host }
                     loadTokens {
                         val (accessToken, refreshToken) = dataStore.data.first()
                         accessToken?.let { BearerTokens(it, refreshToken) }
