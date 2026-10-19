@@ -225,7 +225,6 @@ class AddressViewModel(
         )
     }
 
-    @SuppressLint("MissingPermission")
     private fun onGetCurrentLocationClicked(permissionGranted: Boolean) = withViewModelScope {
         if (permissionGranted) {
             _uiState.update { state ->
@@ -234,30 +233,34 @@ class AddressViewModel(
                     locationError = UiText.Empty
                 )
             }
-            fusedClient.getCurrentLocation(
-                Priority.PRIORITY_HIGH_ACCURACY,
-                null
-            ).addOnSuccessListener { location ->
-                _uiState.update { state ->
-                    state.copy(
-                        location = LatLng(
-                            location.latitude,
-                            location.longitude
-                        )
-                    )
-                }
-                reverseGeocodeLocation(location.latitude, location.longitude)
-            }.addOnFailureListener {
-                _uiState.update { state ->
-                    state.copy(
-                        locationError = UiText.StringResource(R.string.error_getting_location)
-                    )
-                }
-            }.addOnCompleteListener {
-                _uiState.update { state -> state.copy(isLocationLoading = false) }
-            }
+            fetchCurrentLocation()
         } else {
             _uiState.update { state -> state.copy(isPermissionDeniedDialogVisible = true) }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun fetchCurrentLocation() {
+        fusedClient.getCurrentLocation(
+            Priority.PRIORITY_HIGH_ACCURACY,
+            null
+        ).addOnSuccessListener { location ->
+            if (location == null) {
+                _uiState.update { state ->
+                    state.copy(locationError = UiText.StringResource(R.string.location_unavailable))
+                }
+                return@addOnSuccessListener
+            }
+            _uiState.update { state ->
+                state.copy(location = LatLng(location.latitude, location.longitude))
+            }
+            reverseGeocodeLocation(location.latitude, location.longitude)
+        }.addOnFailureListener {
+            _uiState.update { state ->
+                state.copy(locationError = UiText.StringResource(R.string.error_getting_location))
+            }
+        }.addOnCompleteListener {
+            _uiState.update { state -> state.copy(isLocationLoading = false) }
         }
     }
 

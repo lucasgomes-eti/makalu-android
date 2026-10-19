@@ -16,4 +16,5 @@
     <string name="location_permission_rationale_text">Makalu uses your location to fill in your delivery address automatically. You can still type it in manually.</string>
     <string name="continue_label">Continue</string>
     <string name="error_getting_location">Error getting location, location might be disabled or unavailable</string>
+    <string name="location_unavailable">Couldn\'t determine your location. Make sure location is turned on and try again.</string>
 </resources>
