@@ -1,9 +1,11 @@
 package eti.lucasgomes.adress.ui
 
 import android.Manifest
+import android.app.Activity
 import android.content.pm.PackageManager
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -75,6 +77,11 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
             onAction(AddressAction.GetCurrentLocationClicked(grants.values.any { it }))
         }
 
+    val locationSettingsLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            onAction(AddressAction.LocationSettingsResult(result.resultCode == Activity.RESULT_OK))
+        }
+
     val context = LocalContext.current
     val activity = LocalActivity.current
 
@@ -82,6 +89,13 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
 
     OnFirstComposition {
         onAction(AddressAction.InitialFetch)
+    }
+
+    LaunchedEffect(uiState.locationSettingsResolution) {
+        uiState.locationSettingsResolution?.let { resolution ->
+            onAction(AddressAction.LocationSettingsPromptShown)
+            locationSettingsLauncher.launch(IntentSenderRequest.Builder(resolution).build())
+        }
     }
 
     LaunchedEffect(uiState.location) {

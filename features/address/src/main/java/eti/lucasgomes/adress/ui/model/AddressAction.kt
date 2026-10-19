@@ -21,5 +21,9 @@ sealed interface AddressAction {
 
     data object GoToSystemSettingsClicked : AddressAction
 
+    data object LocationSettingsPromptShown : AddressAction
+
+    data class LocationSettingsResult(val enabled: Boolean) : AddressAction
+
     data object InitialFetch : AddressAction
 }

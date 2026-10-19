@@ -4,8 +4,12 @@ import android.annotation.SuppressLint
 import android.app.Application
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
+import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.maps.model.LatLng
 import eti.lucasgomes.adress.AddressClient
 import eti.lucasgomes.adress.model.AddressRequest
@@ -26,6 +30,7 @@ import kotlinx.coroutines.flow.update
 
 class AddressViewModel(
     private val fusedClient: FusedLocationProviderClient,
+    private val settingsClient: SettingsClient,
     private val app: Application,
     private val addressClient: AddressClient,
     private val navigator: Navigator,
@@ -50,6 +55,8 @@ class AddressViewModel(
             AddressAction.PermissionRationaleRequested -> onPermissionRationaleRequested()
             AddressAction.PermissionRationaleDismissed -> onPermissionRationaleDismissed()
             AddressAction.GoToSystemSettingsClicked -> onGoToSystemSettingsClicked()
+            AddressAction.LocationSettingsPromptShown -> onLocationSettingsPromptShown()
+            is AddressAction.LocationSettingsResult -> onLocationSettingsResult(action.enabled)
         }
     }
 
@@ -233,9 +240,41 @@ class AddressViewModel(
                     locationError = UiText.Empty
                 )
             }
-            fetchCurrentLocation()
+            checkLocationSettings()
         } else {
             _uiState.update { state -> state.copy(isPermissionDeniedDialogVisible = true) }
+        }
+    }
+
+    private fun checkLocationSettings() {
+        val request = LocationSettingsRequest.Builder()
+            .addLocationRequest(LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 0L).build())
+            .build()
+        settingsClient.checkLocationSettings(request)
+            .addOnSuccessListener { fetchCurrentLocation() }
+            .addOnFailureListener { exception ->
+                if (exception is ResolvableApiException) {
+                    _uiState.update { state -> state.copy(locationSettingsResolution = exception.resolution) }
+                } else {
+                    fetchCurrentLocation()
+                }
+            }
+    }
+
+    private fun onLocationSettingsPromptShown() = withViewModelScope {
+        _uiState.update { state -> state.copy(locationSettingsResolution = null) }
+    }
+
+    private fun onLocationSettingsResult(enabled: Boolean) = withViewModelScope {
+        if (enabled) {
+            fetchCurrentLocation()
+        } else {
+            _uiState.update { state ->
+                state.copy(
+                    isLocationLoading = false,
+                    locationError = UiText.StringResource(R.string.location_services_disabled)
+                )
+            }
         }
     }
 

@@ -17,4 +17,5 @@
     <string name="continue_label">Continue</string>
     <string name="error_getting_location">Error getting location, location might be disabled or unavailable</string>
     <string name="location_unavailable">Couldn\'t determine your location. Make sure location is turned on and try again.</string>
+    <string name="location_services_disabled">Turn on location to fill in your address automatically, or type it in manually.</string>
 </resources>

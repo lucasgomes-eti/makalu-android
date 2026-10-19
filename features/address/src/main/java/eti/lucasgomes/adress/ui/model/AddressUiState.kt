@@ -1,5 +1,6 @@
 package eti.lucasgomes.adress.ui.model
 
+import android.app.PendingIntent
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.MarkerState
 import eti.lucasgomes.makalu.components.dsl.TextFieldErrorsAssignable
@@ -19,6 +20,7 @@ data class AddressUiState(
     val locationError: UiText = UiText.Empty,
     val isPermissionDeniedDialogVisible: Boolean = false,
     val isPermissionRationaleDialogVisible: Boolean = false,
+    val locationSettingsResolution: PendingIntent? = null,
     val generalError: UiText = UiText.Empty,
 ) : TextFieldErrorsAssignable {
 
