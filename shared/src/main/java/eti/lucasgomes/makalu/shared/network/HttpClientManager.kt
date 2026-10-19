@@ -14,6 +14,7 @@ import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.observer.ResponseObserver
@@ -54,6 +55,8 @@ class HttpClientManager(
                 json(contentSerializer)
             }
             install(Logging) {
+                level = LogLevel.HEADERS
+                sanitizeHeader { header -> header == HttpHeaders.Authorization }
                 logger = object : Logger {
                     override fun log(message: String) {
                         mkLogger.logDebug("HttpLogging", message)
