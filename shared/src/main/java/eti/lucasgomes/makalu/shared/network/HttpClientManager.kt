@@ -106,11 +106,13 @@ class HttpClientManager(
                                 }
                             }
 
-                            else -> {
+                            in REFRESH_REJECTED_STATUSES -> {
                                 client.clearAuthTokens()
                                 logoutUseCase()
                                 null
                             }
+
+                            else -> null
                         }
 
                         auth?.let {
@@ -181,5 +183,6 @@ class HttpClientManager(
 
     companion object {
         private const val TIME_OUT = 6000
+        private val REFRESH_REJECTED_STATUSES = setOf(400, 401, 403, 404)
     }
 }
