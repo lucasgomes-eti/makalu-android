@@ -1,13 +1,12 @@
 package eti.lucasgomes.makalu.shared.navigation
 
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 
 class DefaultNavigator : Navigator {
     private val _navigationActions = Channel<NavigationAction>(Channel.BUFFERED)
     override val navigationActions = _navigationActions.receiveAsFlow()
-
-    private val navigationResults = Channel<Any?>()
 
     override suspend fun navigate(
         destination: Destination,
@@ -20,11 +19,12 @@ class DefaultNavigator : Navigator {
         destination: Destination,
         requestKey: RequestKey
     ): T {
+        val result = CompletableDeferred<Any?>()
         _navigationActions.send(NavigationAction.NavigateForResult(destination, requestKey) {
-            navigationResults.send(it)
+            result.complete(it)
         })
 
-        return navigationResults.receive() as T
+        return result.await() as T
     }
 
     override suspend fun navigateUp() {

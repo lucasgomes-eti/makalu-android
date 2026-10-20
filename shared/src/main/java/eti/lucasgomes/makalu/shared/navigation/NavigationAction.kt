@@ -10,7 +10,7 @@ sealed interface NavigationAction {
     data class NavigateForResult(
         val destination: Destination,
         val requestKey: RequestKey,
-        val onResult: suspend (result: Any?) -> Unit
+        val onResult: (result: Any?) -> Unit
     ) : NavigationAction
 
     data object NavigateUp : NavigationAction
