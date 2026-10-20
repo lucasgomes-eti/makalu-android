@@ -147,8 +147,14 @@ class HttpClientManager(
 
         return when (response.status.value) {
             in 200..299 -> {
-                val data = response.body<T>()
-                onSuccess?.invoke(data)
+                val data = try {
+                    response.body<T>().also { onSuccess?.invoke(it) }
+                } catch (e: Exception) {
+                    if (e is CancellationException) {
+                        throw e
+                    }
+                    return Resource.Error(unexpectedErrorWithException(e))
+                }
                 Resource.Success(data)
             }
 
