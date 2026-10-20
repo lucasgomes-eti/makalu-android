@@ -20,6 +20,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlin.coroutines.cancellation.CancellationException
 
 class AddressClient(private val httpClientManager: HttpClientManager) {
 
@@ -52,7 +53,10 @@ class AddressClient(private val httpClientManager: HttpClientManager) {
                 number = find("street_number") ?: "",
                 complement = find("subpremise") ?: ""
             )
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            if (e is CancellationException) {
+                throw e
+            }
             ReverseGeocodeResponse()
         }
 
