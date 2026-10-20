@@ -1,7 +1,7 @@
 package eti.lucasgomes.makalu.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
 import eti.lucasgomes.makalu.shared.navigation.NavOptions
@@ -9,7 +9,6 @@ import eti.lucasgomes.makalu.shared.navigation.NavigationAction
 
 @Composable
 fun bindNavigationEvents(navHostController: NavHostController): (NavigationAction) -> Unit {
-    val owner = LocalLifecycleOwner.current
     return { action ->
         when (action) {
             is NavigationAction.Navigate -> navHostController.navigate(
@@ -18,12 +17,16 @@ fun bindNavigationEvents(navHostController: NavHostController): (NavigationActio
             )
 
             is NavigationAction.NavigateForResult -> {
-                navHostController.currentBackStackEntry?.savedStateHandle?.let { savedStateHandle ->
-                    savedStateHandle.getLiveData<Any?>(action.requestKey.toString())
-                        .observe(owner) {
-                            action.onResult(it)
-                            savedStateHandle.remove<Any?>(action.requestKey.toString())
+                navHostController.currentBackStackEntry?.let { entry ->
+                    val key = action.requestKey.toString()
+                    val liveData = entry.savedStateHandle.getLiveData<Any?>(key)
+                    liveData.observe(entry, object : Observer<Any?> {
+                        override fun onChanged(value: Any?) {
+                            liveData.removeObserver(this)
+                            entry.savedStateHandle.remove<Any?>(key)
+                            action.onResult(value)
                         }
+                    })
                 }
                 navHostController.navigate(action.destination)
             }
