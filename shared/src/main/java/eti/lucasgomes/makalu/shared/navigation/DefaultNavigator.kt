@@ -4,7 +4,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 
 class DefaultNavigator : Navigator {
-    private val _navigationActions = Channel<NavigationAction>()
+    private val _navigationActions = Channel<NavigationAction>(Channel.BUFFERED)
     override val navigationActions = _navigationActions.receiveAsFlow()
 
     private val navigationResults = Channel<Any?>()
