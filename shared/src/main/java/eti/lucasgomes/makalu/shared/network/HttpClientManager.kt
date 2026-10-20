@@ -161,7 +161,10 @@ class HttpClientManager(
             in 400..599 -> {
                 val error = try {
                     response.body<MakaluError>()
-                } catch (_: Exception) {
+                } catch (e: Exception) {
+                    if (e is CancellationException) {
+                        throw e
+                    }
                     unexpectedErrorWithHttpStatusCode(response.status.value)
                 }
                 onFailure?.invoke(error)
