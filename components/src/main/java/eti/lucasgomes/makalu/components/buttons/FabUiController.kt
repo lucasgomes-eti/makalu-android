@@ -10,6 +10,7 @@ class FabUiController {
 
     val isExtended: MutableState<Boolean> = mutableStateOf(false)
     val label: MutableState<String> = mutableStateOf("")
+    val isEnabled: MutableState<Boolean> = mutableStateOf(true)
 
     /** Default state is 'hidden'**/
     fun show() {
@@ -31,6 +32,10 @@ class FabUiController {
 
     fun setLabel(label: String) {
         this.label.value = label
+    }
+
+    fun setEnabled(enabled: Boolean) {
+        this.isEnabled.value = enabled
     }
 }
 

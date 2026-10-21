@@ -10,12 +10,14 @@ fun ConfigureFab(
     contentDescription: String,
     isExtended: Boolean = false,
     label: String = "",
+    isEnabled: Boolean = true,
     onClick: () -> Unit
 ) {
     val fab = LocalFabUiController.current
-    LaunchedEffect(icon, isExtended, label) {
+    LaunchedEffect(icon, isExtended, label, isEnabled) {
         fab.setAction(FabAction(icon, contentDescription, onClick))
         fab.setExtended(isExtended)
         fab.setLabel(label)
+        fab.setEnabled(isEnabled)
     }
 }
