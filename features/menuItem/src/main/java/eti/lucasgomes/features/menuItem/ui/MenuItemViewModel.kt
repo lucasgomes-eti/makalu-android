@@ -62,6 +62,7 @@ internal class MenuItemViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
+                    isLoaded = true,
                     imageId = response.imageId,
                     name = UiText.PlainText(response.name),
                     price = response.price,
@@ -154,6 +155,7 @@ internal class MenuItemViewModel(
     }
 
     private fun onAddToCartClicked() = withViewModelScope {
+        if (!uiState.value.isAddToCartEnabled) return@withViewModelScope
         _uiState.update { state -> state.copy(isLoading = true) }
         val uiState = uiState.value
         val request = buildCartItemRequest(uiState)

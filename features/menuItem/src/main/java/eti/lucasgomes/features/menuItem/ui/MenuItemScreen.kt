@@ -69,7 +69,8 @@ internal fun BoxScope.MenuItemScreen(
         icon = painterResource(R.drawable.add_shopping_cart),
         contentDescription = "Add do cart icon",
         isExtended = true,
-        label = "${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${uiState.totalPrice}"
+        label = "${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${uiState.totalPrice}",
+        isEnabled = uiState.isAddToCartEnabled
     ) { onAction(MenuItemAction.AddToCartClicked) }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()

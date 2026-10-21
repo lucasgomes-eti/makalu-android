@@ -7,6 +7,7 @@ import java.math.BigDecimal
 internal data class MenuItemUiState(
     val id: Long,
     val isLoading: Boolean = false,
+    val isLoaded: Boolean = false,
     val generalError: UiText = UiText.Empty,
     private val imageId: Long? = null,
     val name: UiText = UiText.Empty,
@@ -24,6 +25,9 @@ internal data class MenuItemUiState(
             .filter { it.isSelected }
             .map { it.totalPrice }
             .fold(price) { acc, price -> acc + price }
+
+    val isAddToCartEnabled: Boolean
+        get() = isLoaded && !isLoading
 }
 
 internal sealed class OptionUiState(
