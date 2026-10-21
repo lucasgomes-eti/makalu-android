@@ -180,7 +180,8 @@ internal class MenuItemViewModel(
                     option.id,
                     (option as? OptionUiState.Quantity)?.amount ?: 1
                 )
-            }
+            },
+            notes = uiState.notes.trim().takeIf { it.isNotEmpty() }
         )
     }
 
