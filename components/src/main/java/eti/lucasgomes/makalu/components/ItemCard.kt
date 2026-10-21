@@ -4,20 +4,22 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import java.math.BigDecimal
@@ -70,18 +72,22 @@ fun ItemCard(
             )
             if (configurations.isNotEmpty()) {
                 CardItem(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
                     contentWeight = 1f,
                     headlineContent = {
-                        configurations.forEach { configuration ->
-                            Spacer(Modifier.height(8.dp))
+                        ItemCardSectionLabel(stringResource(R.string.item_options))
+                    },
+                    supportingContent = {
+                        configurations.forEachIndexed { index, configuration ->
+                            if (index > 0) HorizontalDivider(Modifier.padding(vertical = 4.dp))
                             Text(
                                 configuration.name,
                                 style = typography.titleMedium,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
-                            Spacer(Modifier.height(4.dp))
                             configuration.options.forEach { option ->
                                 Row(
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -106,18 +112,112 @@ fun ItemCard(
                                     )
                                 }
                             }
-                            Spacer(Modifier.height(4.dp))
-                            if (configurations.last() != configuration) {
-                                HorizontalDivider()
-                            }
                         }
+                    }
+                )
+            }
+            if (!notes.isNullOrBlank()) {
+                CardItem(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
+                    contentWeight = 1f,
+                    headlineContent = {
+                        ItemCardSectionLabel(stringResource(R.string.item_notes))
                     },
                     supportingContent = {
-                        Text(notes ?: "", style = typography.bodyMedium)
+                        Text(notes.trim(), style = typography.bodyMedium)
                     }
                 )
             }
             footer()
+        }
+    }
+}
+
+@Composable
+private fun ItemCardSectionLabel(text: String) {
+    Text(text, style = typography.labelLarge, color = colorScheme.primary)
+}
+
+private val previewConfigurations = listOf(
+    ItemConfigurationUiState(
+        id = 1,
+        name = "Sauces",
+        options = listOf(
+            ItemOptionUiState(id = 1, name = "Teriyaki", additionalPrice = BigDecimal("1.50"), quantity = 2),
+            ItemOptionUiState(id = 2, name = "Spicy mayo", additionalPrice = BigDecimal("1.00"), quantity = 1)
+        )
+    ),
+    ItemConfigurationUiState(
+        id = 2,
+        name = "Extras",
+        options = listOf(
+            ItemOptionUiState(id = 3, name = "Cream cheese", additionalPrice = BigDecimal("2.00"), quantity = 1)
+        )
+    )
+)
+
+@Preview(showBackground = true)
+@Composable
+private fun ItemCardOptionsAndNotesPreview() {
+    ItemCard(
+        name = "Hot Filadélfia",
+        imageUrl = null,
+        price = BigDecimal("22.11"),
+        notes = "No onions",
+        configurations = previewConfigurations
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ItemCardOptionsOnlyPreview() {
+    ItemCard(
+        name = "Hot Filadélfia",
+        imageUrl = null,
+        price = BigDecimal("22.11"),
+        notes = null,
+        configurations = previewConfigurations.take(1)
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ItemCardNotesOnlyPreview() {
+    ItemCard(
+        name = "Hot Filadélfia",
+        imageUrl = null,
+        price = BigDecimal("22.11"),
+        notes = "No onions",
+        configurations = emptyList()
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ItemCardPlainPreview() {
+    ItemCard(
+        name = "Hot Filadélfia",
+        imageUrl = null,
+        price = BigDecimal("22.11"),
+        notes = "   ",
+        configurations = emptyList()
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ItemCardWithFooterPreview() {
+    ItemCard(
+        name = "Hot Filadélfia",
+        imageUrl = null,
+        price = BigDecimal("22.11"),
+        notes = "No onions",
+        configurations = previewConfigurations.take(1)
+    ) {
+        TextButton(onClick = {}, modifier = Modifier.fillMaxWidth()) {
+            Text("Remove", color = colorScheme.error)
         }
     }
 }
