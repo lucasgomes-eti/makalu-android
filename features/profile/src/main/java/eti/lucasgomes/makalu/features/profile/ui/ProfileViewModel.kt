@@ -149,6 +149,7 @@ class ProfileViewModel(
     }
 
     private fun onGoToSystemSettingsClicked() = withViewModelScope {
+        _uiState.update { state -> state.copy(isPermissionDeniedDialogVisible = false) }
         osNavigation.openApplicationSettings()
     }
 
@@ -157,7 +158,7 @@ class ProfileViewModel(
     }
 
     private fun onPermissionDeniedDialogDismissed() = withViewModelScope {
-        _uiState.update { state -> state.copy() }
+        _uiState.update { state -> state.copy(isPermissionDeniedDialogVisible = false) }
     }
 
     private fun onPermissionLauncherResultReceived(
