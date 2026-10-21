@@ -201,6 +201,7 @@ class RegistrationViewModel(
     }
 
     private fun onCreateAccountClicked() = withViewModelScope {
+        if (_uiState.value.isLoading) return@withViewModelScope
         _uiState.update { state -> state.copy(isLoading = true) }
         withValidUiState {
             register(it)

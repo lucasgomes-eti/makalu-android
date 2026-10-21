@@ -67,6 +67,7 @@ class LoginViewModel(
     }
 
     private fun onLoginClicked() = withViewModelScope {
+        if (_uiState.value.isLoading) return@withViewModelScope
         _uiState.update { state -> state.copy(isLoading = true) }
 
         withValidUiState { request ->
