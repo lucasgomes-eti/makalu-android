@@ -116,11 +116,12 @@ class RegistrationViewModel(
     }
 
     private fun onGoToSystemSettingsClicked() = withViewModelScope {
+        _uiState.update { state -> state.copy(isPermissionDeniedDialogVisible = false) }
         osNavigation.openApplicationSettings()
     }
 
     private fun onPermissionDeniedDialogDismissed() = withViewModelScope {
-        _uiState.update { state -> state.copy() }
+        _uiState.update { state -> state.copy(isPermissionDeniedDialogVisible = false) }
     }
 
     private fun onNameChanged(text: String) = withViewModelScope {
