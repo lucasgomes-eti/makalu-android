@@ -128,7 +128,14 @@ class RegistrationViewModel(
         if (text.length > MAX_NAME_LENGTH)
             return@withViewModelScope
 
-        _uiState.update { state -> state.copy(name = state.name.copy(text, error = UiText.Empty)) }
+        _uiState.update { state ->
+            state.copy(
+                name = state.name.copy(
+                    text = text,
+                    error = UiText.Empty
+                )
+            )
+        }
     }
 
     private fun onEmailChanged(text: String) = withViewModelScope {
@@ -138,7 +145,7 @@ class RegistrationViewModel(
         _uiState.update { state ->
             state.copy(
                 email = state.email.copy(
-                    text,
+                    text = text,
                     error = UiText.Empty
                 )
             )
@@ -152,7 +159,7 @@ class RegistrationViewModel(
         _uiState.update { state ->
             state.copy(
                 phoneNumber = state.phoneNumber.copy(
-                    text,
+                    text = text,
                     error = UiText.Empty
                 )
             )
@@ -166,7 +173,7 @@ class RegistrationViewModel(
         _uiState.update { state ->
             state.copy(
                 password = state.password.copy(
-                    text,
+                    text = text,
                     error = UiText.Empty
                 ),
                 passwordConfirmation = state.passwordConfirmation.copy(error = UiText.Empty)
@@ -185,7 +192,7 @@ class RegistrationViewModel(
         _uiState.update { state ->
             state.copy(
                 passwordConfirmation = state.passwordConfirmation.copy(
-                    text,
+                    text = text,
                     error = UiText.Empty
                 ),
                 password = state.password.copy(error = UiText.Empty)
