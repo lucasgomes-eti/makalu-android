@@ -121,6 +121,7 @@ class AddressViewModel(
     }
 
     private fun onSaveAddressClicked() = withViewModelScope {
+        if (_uiState.value.isLoading) return@withViewModelScope
         _uiState.update { state -> state.copy(isLoading = true) }
         withValidUiState { request ->
             addressId?.let { id ->
