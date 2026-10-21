@@ -1,5 +1,6 @@
 package eti.lucasgomes.features.cart.ui
 
+import eti.lucasgomes.makalu.components.ItemConfigurationUiState
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.shared.mapImageUrl
 import java.math.BigDecimal
@@ -24,21 +25,8 @@ internal data class CartItemUiState(
     val price: BigDecimal,
     val notes: String?,
     val isRemoving: Boolean = false,
-    val configurations: List<Configuration>
+    val configurations: List<ItemConfigurationUiState>
 ) {
     val imageUrl: String?
         get() = mapImageUrl(imageId)
-
-    data class Configuration(
-        val configurationId: Long,
-        val name: String,
-        val options: List<Option>
-    ) {
-        data class Option(
-            val id: Long,
-            val name: String,
-            val additionalPrice: BigDecimal,
-            val quantity: Int
-        )
-    }
 }

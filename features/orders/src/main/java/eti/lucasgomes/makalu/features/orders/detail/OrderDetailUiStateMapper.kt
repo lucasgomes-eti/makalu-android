@@ -1,5 +1,7 @@
 package eti.lucasgomes.makalu.features.orders.detail
 
+import eti.lucasgomes.makalu.components.ItemConfigurationUiState
+import eti.lucasgomes.makalu.components.ItemOptionUiState
 import eti.lucasgomes.makalu.features.orders.components.OrderCardUiState
 import eti.lucasgomes.makalu.features.orders.components.toUiStatus
 import eti.lucasgomes.makalu.features.orders.model.OrderDetailedResponse
@@ -25,11 +27,11 @@ internal fun OrderDetailedResponse.toUiItems(): List<OrderDetailUiState.Item> =
             price = item.price,
             notes = item.notes,
             configurations = item.configurations.map { configuration ->
-                OrderDetailUiState.Item.Configuration(
+                ItemConfigurationUiState(
                     id = configuration.id,
                     name = configuration.name,
                     options = configuration.options.map { option ->
-                        OrderDetailUiState.Item.Configuration.Option(
+                        ItemOptionUiState(
                             id = option.id,
                             name = option.name,
                             additionalPrice = option.additionalPrice,

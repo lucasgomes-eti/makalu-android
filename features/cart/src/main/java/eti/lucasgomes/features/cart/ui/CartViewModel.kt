@@ -3,6 +3,8 @@ package eti.lucasgomes.features.cart.ui
 import androidx.lifecycle.ViewModel
 import eti.lucasgomes.features.cart.CartClient
 import eti.lucasgomes.features.cart.model.CreateOrderRequest
+import eti.lucasgomes.makalu.components.ItemConfigurationUiState
+import eti.lucasgomes.makalu.components.ItemOptionUiState
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.ext.withViewModelScope
 import eti.lucasgomes.makalu.shared.navigation.Destination
@@ -57,11 +59,11 @@ internal class CartViewModel(
                             price = itemResponse.price,
                             notes = itemResponse.notes,
                             configurations = itemResponse.configurations.map { configurationResponse ->
-                                CartItemUiState.Configuration(
+                                ItemConfigurationUiState(
                                     configurationResponse.configurationId,
                                     configurationResponse.name,
                                     configurationResponse.options.map { optionResponse ->
-                                        CartItemUiState.Configuration.Option(
+                                        ItemOptionUiState(
                                             optionResponse.id,
                                             optionResponse.name,
                                             optionResponse.additionalPrice,

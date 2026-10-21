@@ -1,33 +1,25 @@
 package eti.lucasgomes.makalu.features.orders.detail
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
-import eti.lucasgomes.makalu.components.CardItem
+import eti.lucasgomes.makalu.components.ItemCard
+import eti.lucasgomes.makalu.components.ItemConfigurationUiState
+import eti.lucasgomes.makalu.components.ItemOptionUiState
 import eti.lucasgomes.makalu.components.appBars.ConfigureTopBar
 import eti.lucasgomes.makalu.components.appBars.LocalTopBarUiController
 import eti.lucasgomes.makalu.components.appBars.TopBarUiController
@@ -79,97 +71,8 @@ internal fun OrderDetailScreen(
         uiState.card?.let { card -> item { OrderCard(card) } }
         if (uiState.items.isNotEmpty()) {
             item { Text(stringResource(R.string.order_detail_items), style = typography.titleLarge) }
-            items(uiState.items) { OrderItemCard(it) }
-        }
-    }
-}
-
-@Composable
-private fun OrderItemCard(uiState: OrderDetailUiState.Item) {
-    val currency = stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)
-    Card {
-        Column(
-            modifier = Modifier.padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            CardItem(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp),
-                contentWeight = 1f,
-                headlineContent = {
-                    Text(
-                        text = uiState.name,
-                        style = typography.titleMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                supportingContent = {
-                    Text(
-                        "$currency ${uiState.price}",
-                        style = typography.labelMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                leadingContent = {
-                    AsyncImage(
-                        modifier = Modifier.size(80.dp),
-                        model = uiState.imageUrl,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            )
-            if (uiState.configurations.isNotEmpty()) {
-                CardItem(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentWeight = 1f,
-                    headlineContent = {
-                        uiState.configurations.forEach { configuration ->
-                            Spacer(Modifier.height(8.dp))
-                            Text(
-                                configuration.name,
-                                style = typography.titleMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Spacer(Modifier.height(4.dp))
-                            configuration.options.forEach { option ->
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    Text(
-                                        option.quantity.toString(),
-                                        style = typography.bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                    Text(
-                                        option.name,
-                                        style = typography.bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                    Text(
-                                        "+$currency ${option.additionalPrice}",
-                                        style = typography.bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                }
-                            }
-                            Spacer(Modifier.height(4.dp))
-                            if (uiState.configurations.last() != configuration) {
-                                HorizontalDivider()
-                            }
-                        }
-                    },
-                    supportingContent = {
-                        Text(uiState.notes ?: "", style = typography.bodyMedium)
-                    }
-                )
+            items(uiState.items) {
+                ItemCard(it.name, it.imageUrl, it.price, it.notes, it.configurations)
             }
         }
     }
@@ -200,11 +103,11 @@ private fun OrderDetailPreview() {
                         price = BigDecimal("22.11"),
                         notes = "No onions",
                         configurations = listOf(
-                            OrderDetailUiState.Item.Configuration(
+                            ItemConfigurationUiState(
                                 id = 1,
                                 name = "Sauces",
                                 options = listOf(
-                                    OrderDetailUiState.Item.Configuration.Option(
+                                    ItemOptionUiState(
                                         id = 1,
                                         name = "Teriyaki",
                                         additionalPrice = BigDecimal("1.50"),

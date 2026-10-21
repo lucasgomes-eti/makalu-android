@@ -18,9 +18,7 @@ import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
@@ -29,14 +27,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import eti.lucasgomes.features.cart.R
 import eti.lucasgomes.makalu.components.CardItem
+import eti.lucasgomes.makalu.components.ItemCard
 import eti.lucasgomes.makalu.components.appBars.ConfigureTopBar
 import eti.lucasgomes.makalu.components.appBars.TopBarAction
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
@@ -185,99 +181,21 @@ private fun LoadingState() {
 
 @Composable
 private fun LazyItemScope.CartItem(uiState: CartItemUiState, onRemoveClicked: () -> Unit) {
-    Card {
-        Column(
-            modifier = Modifier.padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+    ItemCard(
+        name = uiState.name,
+        imageUrl = uiState.imageUrl,
+        price = uiState.price,
+        notes = uiState.notes,
+        configurations = uiState.configurations,
+        modifier = Modifier.animateItem(),
+    ) {
+        ExpressiveLoadingTextButton(
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.textButtonColors(contentColor = colorScheme.error),
+            onClick = onRemoveClicked,
+            isLoading = uiState.isRemoving
         ) {
-            CardItem(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .animateItem(),
-                contentWeight = 1f,
-                headlineContent = {
-                    Text(
-                        text = uiState.name,
-                        style = typography.titleMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                supportingContent = {
-                    Text(
-                        "${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${uiState.price}",
-                        style = typography.labelMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                leadingContent = {
-                    AsyncImage(
-                        modifier = Modifier.size(80.dp),
-                        model = uiState.imageUrl,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            )
-            if (uiState.configurations.isNotEmpty()) {
-                CardItem(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentWeight = 1f,
-                    headlineContent = {
-                        uiState.configurations.forEach { configuration ->
-                            Spacer(Modifier.height(8.dp))
-                            Text(
-                                configuration.name,
-                                style = typography.titleMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Spacer(Modifier.height(4.dp))
-                            configuration.options.forEach { option ->
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    Text(
-                                        option.quantity.toString(),
-                                        style = typography.bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                    Text(
-                                        option.name,
-                                        style = typography.bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                    Text(
-                                        "+${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${option.additionalPrice}",
-                                        style = typography.bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                }
-                            }
-                            Spacer(Modifier.height(4.dp))
-                            if (uiState.configurations.last() != configuration) {
-                                HorizontalDivider()
-                            }
-                        }
-                    },
-                    supportingContent = {
-                        Text(uiState.notes ?: "", style = typography.bodyMedium)
-                    }
-                )
-            }
-            ExpressiveLoadingTextButton(
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.textButtonColors(contentColor = colorScheme.error),
-                onClick = onRemoveClicked,
-                isLoading = uiState.isRemoving
-            ) {
-                Text("Remove")
-            }
+            Text("Remove")
         }
     }
 }
