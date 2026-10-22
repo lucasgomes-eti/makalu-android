@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.StringReader
 import java.util.Properties
 
 plugins {
@@ -15,24 +16,38 @@ kotlin {
         jvmTarget.set(JvmTarget.JVM_21)
     }
 
+    val baseUrl = providers
+        .fileContents(rootProject.layout.projectDirectory.file("local.properties"))
+        .asText
+        .orElse("")
+        .map { text ->
+            val url = Properties()
+                .apply { StringReader(text).use { load(it) } }
+                .getProperty("BASE_URL")
+                ?.trim()
+                .orEmpty()
+            if (url.isBlank()) {
+                throw GradleException("BASE_URL is missing from local.properties")
+            }
+            if (!url.endsWith("/")) {
+                throw GradleException("BASE_URL in local.properties must end with '/' (got \"$url\")")
+            }
+            url
+        }
+
     val generateConfig by tasks.registering {
         val outputDir = layout.buildDirectory.dir("generated/source/config")
 
+        inputs.property("baseUrl", baseUrl)
         outputs.dir(outputDir)
 
         doLast {
-            val props = Properties().apply {
-                load(rootProject.file("local.properties").inputStream())
-            }
-
-            val baseUrl = props.getProperty("BASE_URL") ?: ""
-
             val file = outputDir.get().file("MakaluConfig.kt").asFile
             file.parentFile.mkdirs()
             file.writeText(
                 """
             object MakaluConfig {
-                const val BASE_URL = "$baseUrl"
+                const val BASE_URL = "${baseUrl.get()}"
             }
             """.trimIndent()
             )
