@@ -24,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
-import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.features.orders.R
 import eti.lucasgomes.makalu.features.orders.components.OrderCard
@@ -37,8 +36,6 @@ import kotlin.time.Instant
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun OrdersScreen(uiState: OrdersUiState, onAction: (OrdersAction) -> Unit) {
-    OnFirstComposition { onAction(OrdersAction.OnInitialFetch) }
-
     LazyColumn(
         Modifier
             .fillMaxSize(),

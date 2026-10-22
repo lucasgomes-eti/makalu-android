@@ -55,7 +55,6 @@ import eti.lucasgomes.makalu.components.CardItem
 import eti.lucasgomes.makalu.components.appBars.ExpandableTopAppBar
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
 import eti.lucasgomes.makalu.components.buttons.ConfigureFab
-import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 import eti.lucasgomes.makalu.components.dsl.UiText
 import java.math.BigDecimal
 
@@ -64,7 +63,6 @@ import java.math.BigDecimal
 internal fun BoxScope.MenuItemScreen(
     uiState: MenuItemUiState, onAction: (MenuItemAction) -> Unit
 ) {
-    OnFirstComposition { onAction(MenuItemAction.OnInitialFetch) }
     ConfigureFab(
         icon = painterResource(R.drawable.add_shopping_cart),
         contentDescription = "Add do cart icon",

@@ -40,7 +40,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
 import eti.lucasgomes.makalu.components.CameraPermissionDeniedDialog
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
-import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.pickers.SelectOrCaptureImagePicker
 import eti.lucasgomes.makalu.features.profile.R
@@ -49,8 +48,6 @@ import eti.lucasgomes.makalu.features.profile.model.ProfileAction
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun ProfileScreen(uiState: ProfileUiState, onAction: (ProfileAction) -> Unit) {
-
-    OnFirstComposition { onAction(ProfileAction.InitialFetch) }
 
     Column(
         Modifier

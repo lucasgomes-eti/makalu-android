@@ -26,9 +26,12 @@ internal class StoreViewModel(
     private val _uiState = MutableStateFlow(StoreUiState(id))
     val uiState: StateFlow<StoreUiState> = _uiState.asStateFlow()
 
+    init {
+        onInitialFetch()
+    }
+
     fun onAction(action: StoreAction) {
         when (action) {
-            StoreAction.OnInitialFetch -> onInitialFetch()
             StoreAction.OnDismissError -> onDismissError()
             StoreAction.NavigateBackClicked -> onNavigateBackClicked()
             is StoreAction.MenuItemClicked -> onMenuItemClicked(action.id)

@@ -20,9 +20,12 @@ internal class OrdersViewModel(
     private val _uiState = MutableStateFlow(OrdersUiState())
     val uiState = _uiState.asStateFlow()
 
+    init {
+        onInitialFetch()
+    }
+
     fun onAction(action: OrdersAction) {
         when (action) {
-            OrdersAction.OnInitialFetch -> onInitialFetch()
             OrdersAction.OnDismissError -> onDismissError()
             is OrdersAction.OnOrderClicked -> onOrderClicked(action.orderId)
         }

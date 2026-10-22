@@ -42,9 +42,12 @@ class AddressViewModel(
 
     private var addressId: Long? = null
 
+    init {
+        onInitialFetch()
+    }
+
     fun onAction(action: AddressAction) {
         when (action) {
-            AddressAction.InitialFetch -> onInitialFetch()
             is AddressAction.ZipCodeChanged -> onZipCodeChanged(action.text)
             is AddressAction.StreetChanged -> onStreetChanged(action.text)
             is AddressAction.NumberChanged -> onNumberChanged(action.text)

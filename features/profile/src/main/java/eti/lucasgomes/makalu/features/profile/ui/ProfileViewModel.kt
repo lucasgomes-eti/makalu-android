@@ -31,11 +31,14 @@ class ProfileViewModel(
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState = _uiState.asStateFlow()
 
+    init {
+        onInitialFetch()
+    }
+
     fun onAction(action: ProfileAction) {
         when (action) {
             ProfileAction.LogoutClicked -> onLogoutClicked()
             ProfileAction.ErrorDismiss -> onErrorDismiss()
-            ProfileAction.InitialFetch -> onInitialFetch()
             ProfileAction.LogoutDialogDismissed -> onLogoutDialogDismissed()
             ProfileAction.LogoutConfirmed -> onLogoutConfirmed()
             ProfileAction.ProfileImageClicked -> onProfileImageClicked()

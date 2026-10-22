@@ -28,9 +28,12 @@ internal class MenuItemViewModel(
     private val _uiState = MutableStateFlow(MenuItemUiState(menuItemId))
     val uiState = _uiState.asStateFlow()
 
+    init {
+        onInitialFetch()
+    }
+
     fun onAction(action: MenuItemAction) {
         when (action) {
-            MenuItemAction.OnInitialFetch -> onInitialFetch()
             MenuItemAction.OnDismissError -> onDismissError()
             MenuItemAction.NavigateBackClicked -> onNavigateBackClicked()
             is MenuItemAction.OptionSelected -> onOptionSelected(

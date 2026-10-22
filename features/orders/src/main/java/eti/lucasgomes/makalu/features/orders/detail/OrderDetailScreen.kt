@@ -26,7 +26,6 @@ import eti.lucasgomes.makalu.components.appBars.TopBarUiController
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
 import eti.lucasgomes.makalu.components.buttons.FabUiController
 import eti.lucasgomes.makalu.components.buttons.LocalFabUiController
-import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.features.orders.R
 import eti.lucasgomes.makalu.features.orders.components.OrderCard
@@ -41,8 +40,6 @@ internal fun OrderDetailScreen(
     uiState: OrderDetailUiState,
     onAction: (OrderDetailAction) -> Unit
 ) {
-    OnFirstComposition { onAction(OrderDetailAction.OnInitialFetch) }
-
     ConfigureTopBar(
         uiState.card?.let { stringResource(R.string.order_detail_title, it.orderNumber) }
             ?: stringResource(R.string.order_detail_title_empty)

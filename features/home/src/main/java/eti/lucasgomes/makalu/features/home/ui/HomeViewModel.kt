@@ -18,6 +18,8 @@ import eti.lucasgomes.makalu.shared.network.onSuccess
 import eti.lucasgomes.makalu.shared.settings.Settings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -30,9 +32,15 @@ internal class HomeViewModel(
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
 
+    init {
+        startLoading()
+        viewModelScope.launch { fetchAddress() }
+        viewModelScope.launch { fetchCategories() }
+        viewModelScope.launch { fetchStores() }
+    }
+
     fun onAction(action: HomeAction) {
         when (action) {
-            HomeAction.InitialFetch -> onInitialFetch()
             HomeAction.RefreshStores -> onRefreshStores()
             is HomeAction.StoreClicked -> onStoreClicked(action.id)
             HomeAction.AuthClicked -> onAuthClicked()
@@ -40,13 +48,6 @@ internal class HomeViewModel(
             is HomeAction.CategoryClicked -> onCategoryClicked(action.index)
             HomeAction.AddressClicked -> onAddressClicked()
         }
-    }
-
-    private fun onInitialFetch() {
-        startLoading()
-        viewModelScope.launch { fetchAddress() }
-        viewModelScope.launch { fetchCategories() }
-        viewModelScope.launch { fetchStores() }
     }
 
     private suspend fun fetchAddress() {
@@ -58,21 +59,23 @@ internal class HomeViewModel(
                 )
             }
         }
-        dataStore.data.collect { settings ->
-            val address = settings.addressName
-            if (address.isNullOrBlank()) {
-                _uiState.update { state ->
-                    state.copy(
-                        address = UiText.StringResource(R.string.add_a_delivery_address),
-                        isAddressLoading = false
-                    )
-                }
-            } else {
-                _uiState.update { state ->
-                    state.copy(isAddressLoading = false, address = UiText.PlainText(address))
+        dataStore.data
+            .map { it.addressName }
+            .distinctUntilChanged()
+            .collect { address ->
+                if (address.isNullOrBlank()) {
+                    _uiState.update { state ->
+                        state.copy(
+                            address = UiText.StringResource(R.string.add_a_delivery_address),
+                            isAddressLoading = false
+                        )
+                    }
+                } else {
+                    _uiState.update { state ->
+                        state.copy(isAddressLoading = false, address = UiText.PlainText(address))
+                    }
                 }
             }
-        }
     }
 
     private suspend fun fetchCategories() {

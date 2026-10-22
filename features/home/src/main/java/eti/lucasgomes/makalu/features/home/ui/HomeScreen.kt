@@ -52,7 +52,6 @@ import eti.lucasgomes.makalu.components.buttons.ConfigureFab
 import eti.lucasgomes.makalu.components.buttons.ExpressiveTextButton
 import eti.lucasgomes.makalu.components.buttons.FabUiController
 import eti.lucasgomes.makalu.components.buttons.LocalFabUiController
-import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.features.home.R
 import eti.lucasgomes.makalu.features.home.ui.components.LoadingStoresListItem
@@ -67,9 +66,6 @@ import eti.lucasgomes.makalu.features.home.ui.model.StoreUiState
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
-    OnFirstComposition {
-        onAction(HomeAction.InitialFetch)
-    }
     ConfigureFab(
         icon = painterResource(R.drawable.search),
         contentDescription = stringResource(R.string.accessibility_search_store)

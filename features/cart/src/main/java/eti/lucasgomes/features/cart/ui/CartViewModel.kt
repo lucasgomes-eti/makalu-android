@@ -28,9 +28,12 @@ internal class CartViewModel(
 
     private var cartId: Long? = null
 
+    init {
+        onInitialFetch()
+    }
+
     fun onAction(action: CartAction) {
         when (action) {
-            CartAction.OnInitialFetch -> onInitialFetch()
             is CartAction.RemoveItemClicked -> onRemoveItemClicked(action.cartItemId)
             CartAction.DeleteAllItemsClicked -> onDeleteAllItemsClicked()
             CartAction.MakeOrderClicked -> onMakeOrderClicked()

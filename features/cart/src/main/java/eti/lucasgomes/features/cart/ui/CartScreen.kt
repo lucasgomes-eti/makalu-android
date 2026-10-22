@@ -38,12 +38,9 @@ import eti.lucasgomes.makalu.components.appBars.TopBarAction
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
 import eti.lucasgomes.makalu.components.buttons.ExpressiveLoadingButton
 import eti.lucasgomes.makalu.components.buttons.ExpressiveLoadingTextButton
-import eti.lucasgomes.makalu.components.dsl.OnFirstComposition
 
 @Composable
 internal fun BoxScope.CartScreen(uiState: CartUiState, onAction: (CartAction) -> Unit) {
-    OnFirstComposition { onAction(CartAction.OnInitialFetch) }
-
     ConfigureTopBar(
         "Cart", navigationActions = listOf(
             TopBarAction(painterResource(R.drawable.delete), contentDescription = "Delete icon") {
