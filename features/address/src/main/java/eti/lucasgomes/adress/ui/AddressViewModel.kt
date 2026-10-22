@@ -23,6 +23,7 @@ import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.shared.network.onError
 import eti.lucasgomes.makalu.shared.network.onSuccess
 import eti.lucasgomes.makalu.shared.settings.Settings
+import eti.lucasgomes.makalu.shared.settings.addressLabel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -145,7 +146,7 @@ class AddressViewModel(
             dataStore.updateData { settings ->
                 settings.copy(
                     addressId = response.id,
-                    addressName = "${response.street}, ${response.number}"
+                    addressName = addressLabel(response.street, response.number)
                 )
             }
             _uiState.update { state -> state.copy(isLoading = false) }
@@ -164,7 +165,7 @@ class AddressViewModel(
         }.onSuccess { response ->
             dataStore.updateData { settings ->
                 settings.copy(
-                    addressName = "${request.street}, ${request.number}"
+                    addressName = addressLabel(request.street, request.number)
                 )
             }
             _uiState.update { state -> state.copy(isLoading = false) }

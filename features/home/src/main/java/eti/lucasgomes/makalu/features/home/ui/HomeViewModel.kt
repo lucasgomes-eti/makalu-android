@@ -16,6 +16,7 @@ import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.shared.network.onError
 import eti.lucasgomes.makalu.shared.network.onSuccess
 import eti.lucasgomes.makalu.shared.settings.Settings
+import eti.lucasgomes.makalu.shared.settings.addressLabel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -55,7 +56,7 @@ internal class HomeViewModel(
             dataStore.updateData { settings ->
                 settings.copy(
                     addressId = response.id,
-                    addressName = "${response.street}, ${response.number}"
+                    addressName = addressLabel(response.street, response.number)
                 )
             }
         }
