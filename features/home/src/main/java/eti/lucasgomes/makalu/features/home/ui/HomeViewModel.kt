@@ -80,7 +80,9 @@ internal class HomeViewModel(
     }
 
     private suspend fun fetchCategories() {
-        homeClient.getCategories().onSuccess {
+        homeClient.getCategories().onError {
+            _uiState.update { state -> state.copy(isFiltersLoading = false) }
+        }.onSuccess {
             _uiState.update { state ->
                 state.copy(
                     isFiltersLoading = false,
