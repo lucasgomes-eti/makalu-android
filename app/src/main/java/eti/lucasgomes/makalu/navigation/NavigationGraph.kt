@@ -34,7 +34,12 @@ fun NavigationGraph(
     ) {
         navigation<Destination.Graph.Auth>(startDestination = Destination.Screen.Login) {
             composable<Destination.Screen.Login> { LoginEntry(innerPadding) }
-            composable<Destination.Screen.Registration> { RegistrationEntry(innerPadding) }
+            composable<Destination.Screen.Registration> { entry ->
+                RegistrationEntry(
+                    innerPadding,
+                    remember(entry) { entry.navigationResults(RequestKey.ImageCroppedUriOutput) }
+                )
+            }
             composable<Destination.Screen.ImagePreview> {
                 ImageCropperEntry(innerPadding, it.toRoute<Destination.Screen.ImagePreview>().uri)
             }

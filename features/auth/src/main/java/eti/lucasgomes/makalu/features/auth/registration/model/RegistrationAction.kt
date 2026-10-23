@@ -22,4 +22,5 @@ sealed interface RegistrationAction {
     data class PasswordConfirmationChanged(val text: String) : RegistrationAction
     data object CreateAccountClicked : RegistrationAction
     data object DismissError : RegistrationAction
+    data class CroppedImageReceived(val uri: Uri) : RegistrationAction
 }
