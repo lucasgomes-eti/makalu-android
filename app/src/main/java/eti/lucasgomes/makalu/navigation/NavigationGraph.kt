@@ -2,6 +2,7 @@ package eti.lucasgomes.makalu.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,6 +20,7 @@ import eti.lucasgomes.makalu.features.orders.detail.OrderDetailEntry
 import eti.lucasgomes.makalu.features.orders.list.OrdersEntry
 import eti.lucasgomes.makalu.features.profile.ProfileEntry
 import eti.lucasgomes.makalu.shared.navigation.Destination
+import eti.lucasgomes.makalu.shared.navigation.RequestKey
 
 @Composable
 fun NavigationGraph(
@@ -41,7 +43,12 @@ fun NavigationGraph(
         navigation<Destination.Graph.Root>(startDestination = Destination.Screen.Home) {
             composable<Destination.Screen.Home> { HomeEntry(innerPadding) }
             composable<Destination.Screen.Orders> { OrdersEntry(innerPadding) }
-            composable<Destination.Screen.Profile> { ProfileEntry(innerPadding) }
+            composable<Destination.Screen.Profile> { entry ->
+                ProfileEntry(
+                    innerPadding,
+                    remember(entry) { entry.navigationResults(RequestKey.ImageCroppedUriOutput) }
+                )
+            }
             composable<Destination.Screen.Address> { AddressEntry(innerPadding) }
             composable<Destination.Screen.Store> {
                 StoreEntry(

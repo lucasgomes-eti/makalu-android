@@ -1,7 +1,6 @@
 package eti.lucasgomes.makalu.features.profile.ui
 
 import android.net.Uri
-import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import eti.lucasgomes.makalu.components.CameraCaptureManager
 import eti.lucasgomes.makalu.components.dsl.UiText
@@ -12,7 +11,6 @@ import eti.lucasgomes.makalu.shared.PROFILE_PIC_TEMP_FILE_PREFIX
 import eti.lucasgomes.makalu.shared.navigation.Destination
 import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.shared.navigation.OSNavigation
-import eti.lucasgomes.makalu.shared.navigation.RequestKey
 import eti.lucasgomes.makalu.shared.network.LogoutUseCase
 import eti.lucasgomes.makalu.shared.network.onError
 import eti.lucasgomes.makalu.shared.network.onSuccess
@@ -51,6 +49,8 @@ class ProfileViewModel(
                 action.isGranted,
                 action.launchCamera
             )
+
+            is ProfileAction.CroppedImageReceived -> onCroppedImageReceived(action.uri)
         }
     }
 
@@ -98,39 +98,21 @@ class ProfileViewModel(
     }
 
     private fun onCameraImageTaken(isImageSaved: Boolean) = withViewModelScope {
-        if (isImageSaved) {
-            val outUri = navigator.navigateForResult<String>(
-                Destination.Screen.ImagePreview(cameraCaptureManager.imageUri.toString()),
-                RequestKey.ImageCroppedUriOutput
-            ).toUri()
-
-            _uiState.update { state ->
-                state.copy(
-                    imageUploadLoading = true,
-                    isImagePickerVisible = false
-                )
-            }
-
-            uploadImage(outUri)
-        }
+        if (isImageSaved) openImagePreview(cameraCaptureManager.imageUri.toString())
     }
 
     private fun onGalleryImageObtained(uri: Uri?) = withViewModelScope {
-        if (uri != null) {
-            val outUri = navigator.navigateForResult<String>(
-                Destination.Screen.ImagePreview(uri.toString()),
-                RequestKey.ImageCroppedUriOutput
-            ).toUri()
+        if (uri != null) openImagePreview(uri.toString())
+    }
 
-            _uiState.update { state ->
-                state.copy(
-                    imageUploadLoading = true,
-                    isImagePickerVisible = false
-                )
-            }
+    private suspend fun openImagePreview(uri: String) {
+        _uiState.update { state -> state.copy(isImagePickerVisible = false) }
+        navigator.navigate(Destination.Screen.ImagePreview(uri))
+    }
 
-            uploadImage(outUri)
-        }
+    private fun onCroppedImageReceived(uri: Uri) = withViewModelScope {
+        _uiState.update { state -> state.copy(imageUploadLoading = true) }
+        uploadImage(uri)
     }
 
     private suspend fun uploadImage(outUri: Uri) {

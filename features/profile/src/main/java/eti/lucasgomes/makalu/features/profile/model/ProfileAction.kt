@@ -18,4 +18,5 @@ sealed interface ProfileAction {
     data object ImagePickerDismissed : ProfileAction
     data object PermissionDeniedDialogDismissed : ProfileAction
     data object GoToSystemSettingsClicked : ProfileAction
+    data class CroppedImageReceived(val uri: Uri) : ProfileAction
 }
