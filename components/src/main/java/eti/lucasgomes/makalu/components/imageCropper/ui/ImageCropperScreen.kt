@@ -1,5 +1,6 @@
 package eti.lucasgomes.makalu.components.imageCropper.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -12,7 +13,6 @@ import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
@@ -32,6 +32,8 @@ import eti.lucasgomes.makalu.components.CameraPermissionDeniedDialog
 import eti.lucasgomes.makalu.components.R
 import eti.lucasgomes.makalu.components.appBars.ConfigureTopBar
 import eti.lucasgomes.makalu.components.appBars.TopBarAction
+import eti.lucasgomes.makalu.components.banners.ErrorBanner
+import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.imageCropper.model.ImageCropperAction
 import eti.lucasgomes.makalu.components.imageCropper.model.ImageCropperUiState
 import eti.lucasgomes.makalu.components.pickers.SelectOrCaptureImagePicker
@@ -42,11 +44,6 @@ internal fun ImageCropperScreen(
     uiState: ImageCropperUiState,
     onAction: (ImageCropperAction) -> Unit
 ) {
-
-    DisposableEffect(Unit) {
-        onAction(ImageCropperAction.ScreenCreated)
-        onDispose { onAction(ImageCropperAction.ScreenDestroyed) }
-    }
 
     ConfigureTopBar(
         title = stringResource(R.string.select_image_area), navigationActions = listOf(
@@ -130,6 +127,15 @@ internal fun ImageCropperScreen(
                 }
             }
         )
+        AnimatedVisibility(
+            visible = uiState.error != UiText.Empty,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(16.dp)
+                .zIndex(2f),
+        ) {
+            ErrorBanner(uiState.error.asString()) { onAction(ImageCropperAction.ErrorDismissed) }
+        }
         ImageCropper(
             modifier = Modifier
                 .fillMaxSize()
