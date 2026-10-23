@@ -22,6 +22,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import eti.lucasgomes.makalu.components.format.formatMoney
+import eti.lucasgomes.makalu.components.format.formatMoneyAddition
 import java.math.BigDecimal
 
 @Composable
@@ -34,7 +36,6 @@ fun ItemCard(
     modifier: Modifier = Modifier,
     footer: @Composable ColumnScope.() -> Unit = {},
 ) {
-    val currency = stringResource(R.string.currency_symbol)
     Card(modifier) {
         Column(
             modifier = Modifier.padding(8.dp),
@@ -55,7 +56,7 @@ fun ItemCard(
                 },
                 supportingContent = {
                     Text(
-                        "$currency $price",
+                        formatMoney(price),
                         style = typography.labelMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -105,7 +106,7 @@ fun ItemCard(
                                         overflow = TextOverflow.Ellipsis
                                     )
                                     Text(
-                                        "+$currency ${option.additionalPrice}",
+                                        formatMoneyAddition(option.additionalPrice),
                                         style = typography.bodyMedium,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis

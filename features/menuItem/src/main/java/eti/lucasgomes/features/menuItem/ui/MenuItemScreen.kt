@@ -56,6 +56,8 @@ import eti.lucasgomes.makalu.components.appBars.ExpandableTopAppBar
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
 import eti.lucasgomes.makalu.components.buttons.ConfigureFab
 import eti.lucasgomes.makalu.components.dsl.UiText
+import eti.lucasgomes.makalu.components.format.formatMoney
+import eti.lucasgomes.makalu.components.format.formatMoneyAddition
 import java.math.BigDecimal
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -67,7 +69,7 @@ internal fun BoxScope.MenuItemScreen(
         icon = painterResource(R.drawable.add_shopping_cart),
         contentDescription = "Add do cart icon",
         isExtended = true,
-        label = "${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${uiState.totalPrice}",
+        label = formatMoney(uiState.totalPrice),
         isEnabled = uiState.isAddToCartEnabled
     ) { onAction(MenuItemAction.AddToCartClicked) }
 
@@ -107,10 +109,10 @@ internal fun BoxScope.MenuItemScreen(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
                     CardItem(headlineContent = {
-                        Text(text = "Price", style = typography.bodyMedium)
+                        Text(text = stringResource(R.string.menu_item_price), style = typography.bodyMedium)
                     }, supportingContent = {
                         Text(
-                            "${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${uiState.price}",
+                            formatMoney(uiState.price),
                             style = typography.titleMedium
                         )
                     })
@@ -230,7 +232,7 @@ private fun SingleChoiceSection(
                     Column {
                         Text(option.label, style = typography.titleMedium)
                         Text(
-                            "+${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)}${option.additionalPrice}",
+                            formatMoneyAddition(option.additionalPrice),
                             style = typography.labelMedium
                         )
                     }
@@ -268,7 +270,7 @@ private fun MultipleChoiceSection(
                     Column {
                         Text(option.label, style = typography.titleMedium)
                         Text(
-                            "+${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)}${option.additionalPrice}",
+                            formatMoneyAddition(option.additionalPrice),
                             style = typography.labelMedium
                         )
                     }
@@ -296,7 +298,7 @@ private fun LazyItemScope.QuantityItem(
             },
             supportingContent = {
                 Text(
-                    "+${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)}$additionalPrice",
+                    formatMoneyAddition(additionalPrice),
                     style = typography.labelMedium
                 )
             },

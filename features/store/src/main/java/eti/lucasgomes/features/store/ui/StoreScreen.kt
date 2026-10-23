@@ -43,6 +43,7 @@ import eti.lucasgomes.makalu.components.appBars.TopBarUiController
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
 import eti.lucasgomes.makalu.components.buttons.ConfigureFab
 import eti.lucasgomes.makalu.components.dsl.UiText
+import eti.lucasgomes.makalu.components.format.formatMoney
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -100,7 +101,7 @@ internal fun BoxScope.StoreScreen(uiState: StoreUiState, onAction: (StoreAction)
                         },
                         supportingContent = {
                             Text(
-                                "${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${uiState.deliveryFee}",
+                                formatMoney(uiState.deliveryFee),
                                 style = typography.titleMedium
                             )
                         },
@@ -140,7 +141,7 @@ private fun LazyItemScope.MenuListItem(item: MenuItemUiState, onClick: () -> Uni
         },
         supportingContent = {
             Text(
-                "${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${item.price}",
+                formatMoney(item.price),
                 style = typography.labelMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

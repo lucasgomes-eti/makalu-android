@@ -23,11 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import eti.lucasgomes.makalu.components.dsl.UiText
+import eti.lucasgomes.makalu.components.format.formatMoney
+import eti.lucasgomes.makalu.features.orders.R
 import eti.lucasgomes.makalu.shared.model.OrderStatus
 import java.math.BigDecimal
 
@@ -102,10 +105,15 @@ private fun OrderCardContent(uiState: OrderCardUiState) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val currency =
-                stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)
-            Text("${uiState.itemsCount} items - delivery $currency ${uiState.deliveryFee}")
-            Text("Total: $currency ${uiState.totalPrice}")
+            Text(
+                pluralStringResource(
+                    R.plurals.order_card_summary,
+                    uiState.itemsCount,
+                    uiState.itemsCount,
+                    formatMoney(uiState.deliveryFee)
+                )
+            )
+            Text(stringResource(R.string.order_card_total, formatMoney(uiState.totalPrice)))
         }
     }
 }

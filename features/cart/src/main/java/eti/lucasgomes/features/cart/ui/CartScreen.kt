@@ -38,6 +38,7 @@ import eti.lucasgomes.makalu.components.appBars.TopBarAction
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
 import eti.lucasgomes.makalu.components.buttons.ExpressiveLoadingButton
 import eti.lucasgomes.makalu.components.buttons.ExpressiveLoadingTextButton
+import eti.lucasgomes.makalu.components.format.formatMoney
 
 @Composable
 internal fun BoxScope.CartScreen(uiState: CartUiState, onAction: (CartAction) -> Unit) {
@@ -99,7 +100,7 @@ private fun CartList(
                 }
             )
         }
-        item { Text("Total", style = typography.titleLarge) }
+        item { Text(stringResource(R.string.cart_total), style = typography.titleLarge) }
         item {
             CardItem(
                 modifier = Modifier
@@ -107,13 +108,13 @@ private fun CartList(
                     .height(80.dp),
                 headlineContent = {
                     Text(
-                        "${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${uiState.totalPrice}",
+                        formatMoney(uiState.totalPrice),
                         style = typography.bodyLarge
                     )
                 },
                 supportingContent = {
                     Text(
-                        "Delivery fee: ${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${uiState.deliveryFee}",
+                        stringResource(R.string.cart_delivery_fee, formatMoney(uiState.deliveryFee)),
                         style = typography.labelMedium
                     )
                 },
@@ -140,7 +141,7 @@ private fun CartList(
                 onClick = onMakeOrderClicked,
                 isLoading = uiState.isMakingOrder
             ) {
-                Text("Make order - ${stringResource(eti.lucasgomes.makalu.components.R.string.currency_symbol)} ${uiState.totalPrice}")
+                Text(stringResource(R.string.cart_make_order, formatMoney(uiState.totalPrice)))
             }
         }
     }

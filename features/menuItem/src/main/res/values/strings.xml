@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="ingredients">Ingredients</string>
+    <string name="menu_item_price">Price</string>
 </resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cart_total">Total</string>
+    <string name="cart_delivery_fee">Delivery fee: %1$s</string>
+    <string name="cart_make_order">Make order - %1$s</string>
+</resources>
