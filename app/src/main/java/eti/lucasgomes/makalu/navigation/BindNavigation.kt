@@ -1,7 +1,6 @@
 package eti.lucasgomes.makalu.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.Observer
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
 import eti.lucasgomes.makalu.shared.navigation.NavOptions
@@ -15,21 +14,6 @@ fun bindNavigationEvents(navHostController: NavHostController): (NavigationActio
                 action.destination,
                 bindNavigateOptions(action.navOptions)
             )
-
-            is NavigationAction.NavigateForResult -> {
-                navHostController.currentBackStackEntry?.let { entry ->
-                    val key = action.requestKey.toString()
-                    val liveData = entry.savedStateHandle.getLiveData<Any?>(key)
-                    liveData.observe(entry, object : Observer<Any?> {
-                        override fun onChanged(value: Any?) {
-                            liveData.removeObserver(this)
-                            entry.savedStateHandle.remove<Any?>(key)
-                            action.onResult(value)
-                        }
-                    })
-                }
-                navHostController.navigate(action.destination)
-            }
 
             NavigationAction.NavigateUp -> navHostController.navigateUp()
 

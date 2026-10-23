@@ -1,6 +1,5 @@
 package eti.lucasgomes.makalu.shared.navigation
 
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 
@@ -13,18 +12,6 @@ class DefaultNavigator : Navigator {
         navOptions: NavOptions?
     ) {
         _navigationActions.send(NavigationAction.Navigate(destination, navOptions))
-    }
-
-    override suspend fun <T> navigateForResult(
-        destination: Destination,
-        requestKey: RequestKey
-    ): T {
-        val result = CompletableDeferred<Any?>()
-        _navigationActions.send(NavigationAction.NavigateForResult(destination, requestKey) {
-            result.complete(it)
-        })
-
-        return result.await() as T
     }
 
     override suspend fun navigateUp() {

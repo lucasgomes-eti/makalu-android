@@ -7,12 +7,6 @@ sealed interface NavigationAction {
         val navOptions: NavOptions?
     ) : NavigationAction
 
-    data class NavigateForResult(
-        val destination: Destination,
-        val requestKey: RequestKey,
-        val onResult: (result: Any?) -> Unit
-    ) : NavigationAction
-
     data object NavigateUp : NavigationAction
 
     data class NavigateUpWithResult<T>(val requestKey: RequestKey, val result: T) : NavigationAction
