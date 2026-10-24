@@ -30,6 +30,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "Makalu"
 include(":app")
 include(":shared")
+include(":testing")
 include(":features:home")
 include(":features:auth")
 include(":components")

@@ -67,4 +67,7 @@ dependencies {
     api(libs.bundles.ktor)
     // DataStore
     api(libs.datastore)
+
+    // Test
+    testImplementation(projects.testing)
 }

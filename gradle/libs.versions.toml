@@ -28,6 +28,9 @@ espressoCore = "3.7.0"
 appcompat = "1.8.0"
 material = "1.14.0"
 secrets = "2.0.1"
+mockk = "1.14.11"
+robolectric = "4.17"
+androidxTestCore = "1.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -57,6 +60,11 @@ ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version
 ktor-client-auth = { group = "io.ktor", name = "ktor-client-auth", version.ref = "ktor" }
 datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-test-core = { group = "androidx.test", name = "core-ktx", version.ref = "androidxTestCore" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesCore" }
+ktor-client-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
@@ -91,4 +99,15 @@ ktor = [
     "ktor-client-content-negotiation",
     "ktor-client-logging",
     "ktor-client-auth"
+]
+testing = [
+    "junit",
+    "mockk",
+    "kotlinx-coroutines-test",
+    "ktor-client-mock"
+]
+android-testing = [
+    "robolectric",
+    "androidx-test-core",
+    "androidx-junit"
 ]

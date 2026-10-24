@@ -34,6 +34,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            all { test ->
+                test.jvmArgs("--add-opens=java.base/jdk.internal.access=ALL-UNNAMED")
+            }
+        }
+    }
 }
 
 dependencies {
@@ -54,4 +62,8 @@ dependencies {
 
     // Image Loading
     implementation(libs.bundles.coil)
+
+    // Test
+    testImplementation(projects.testing)
+    testImplementation(libs.bundles.android.testing)
 }
