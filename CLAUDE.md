@@ -15,11 +15,22 @@ to a separate backend API.
 ./gradlew installDebug                      # install on a connected device/emulator
 ./gradlew :features:orders:compileDebugKotlin   # fast compile check for one module
 ./gradlew test                              # all JVM unit tests
-./gradlew :app:testDebugUnitTest --tests "eti.lucasgomes.makalu.ExampleUnitTest"  # single test
+./gradlew :features:orders:testDebugUnitTest   # unit tests of one Android module
+./gradlew :shared:test                      # unit tests of the JVM module
+./gradlew :features:orders:testDebugUnitTest --tests "*OrdersViewModelTest"  # single test class
 ```
 
-There is no lint/format tooling configured beyond the default `./gradlew lint`. Test coverage is
-effectively nil (only the template `ExampleUnitTest`).
+There is no lint/format tooling configured beyond the default `./gradlew lint`.
+
+### Unit tests
+
+Only JVM unit tests (`src/test`), no instrumented tests. JUnit 4, MockK, kotlinx-coroutines-test,
+ktor-client-mock, and Robolectric (only where real Android classes are needed). The `:testing`
+module (`testImplementation(projects.testing)` in every module) provides `MainDispatcherRule` and
+`mockHttpClientManager { request -> respondJson(...) }`, a mocked `HttpClientManager` backed by a Ktor
+`MockEngine` for `XxxClient` tests. ViewModel tests mock the feature client with `coEvery` instead of
+using `MockEngine`. Tests live in the same package as the class under test so `internal` classes are
+reachable.
 
 ### Required `local.properties` entries
 
