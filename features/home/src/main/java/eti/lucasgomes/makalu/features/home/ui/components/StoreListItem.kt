@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import eti.lucasgomes.makalu.features.home.ui.model.StoreUiState
+import eti.lucasgomes.makalu.shared.ExcludeFromGeneratedCoverageReport
 
 @Composable
 internal fun LazyItemScope.StoreListItem(store: StoreUiState.Data, onStoreClicked: () -> Unit) {
@@ -69,6 +70,7 @@ internal fun LazyItemScope.StoreListItem(store: StoreUiState.Data, onStoreClicke
 
 @Composable
 @Preview
+@ExcludeFromGeneratedCoverageReport
 private fun StoreListItemPreview() {
     LazyColumn {
         item {

@@ -29,6 +29,7 @@ import eti.lucasgomes.makalu.features.orders.R
 import eti.lucasgomes.makalu.features.orders.components.OrderCard
 import eti.lucasgomes.makalu.features.orders.components.OrderCardUiState
 import eti.lucasgomes.makalu.features.orders.components.toUiStatus
+import eti.lucasgomes.makalu.shared.ExcludeFromGeneratedCoverageReport
 import eti.lucasgomes.makalu.shared.model.OrderStatus
 import java.math.BigDecimal
 import kotlin.time.Instant
@@ -84,6 +85,7 @@ private fun EmptyOrders() {
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrdersPreview() {
     OrdersScreen(
@@ -111,12 +113,14 @@ private fun OrdersPreview() {
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrdersEmptyPreview() {
     OrdersScreen(OrdersUiState(), onAction = {})
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrdersErrorPreview() {
     OrdersScreen(

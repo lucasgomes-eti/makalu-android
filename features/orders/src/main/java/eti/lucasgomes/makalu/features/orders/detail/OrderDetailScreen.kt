@@ -31,6 +31,7 @@ import eti.lucasgomes.makalu.features.orders.R
 import eti.lucasgomes.makalu.features.orders.components.OrderCard
 import eti.lucasgomes.makalu.features.orders.components.OrderCardUiState
 import eti.lucasgomes.makalu.features.orders.components.toUiStatus
+import eti.lucasgomes.makalu.shared.ExcludeFromGeneratedCoverageReport
 import eti.lucasgomes.makalu.shared.model.OrderStatus
 import java.math.BigDecimal
 
@@ -76,6 +77,7 @@ internal fun OrderDetailScreen(
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrderDetailPreview() {
     CompositionLocalProvider(LocalTopBarUiController provides TopBarUiController()) {
@@ -122,6 +124,7 @@ private fun OrderDetailPreview() {
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrderDetailLoadingPreview() {
     CompositionLocalProvider(LocalTopBarUiController provides TopBarUiController()) {
@@ -130,6 +133,7 @@ private fun OrderDetailLoadingPreview() {
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrderDetailErrorPreview() {
     CompositionLocalProvider(LocalTopBarUiController provides TopBarUiController()) {

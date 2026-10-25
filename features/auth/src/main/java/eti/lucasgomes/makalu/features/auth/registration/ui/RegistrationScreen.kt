@@ -53,6 +53,7 @@ import eti.lucasgomes.makalu.components.pickers.SelectOrCaptureImagePicker
 import eti.lucasgomes.makalu.features.auth.R
 import eti.lucasgomes.makalu.features.auth.registration.model.RegistrationAction
 import eti.lucasgomes.makalu.features.auth.registration.model.RegistrationUiState
+import eti.lucasgomes.makalu.shared.ExcludeFromGeneratedCoverageReport
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -304,6 +305,7 @@ internal fun RegistrationScreen(
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun RegistrationPreview() {
     RegistrationScreen(RegistrationUiState()) {}

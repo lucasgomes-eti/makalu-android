@@ -44,6 +44,7 @@ import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.pickers.SelectOrCaptureImagePicker
 import eti.lucasgomes.makalu.features.profile.R
 import eti.lucasgomes.makalu.features.profile.model.ProfileAction
+import eti.lucasgomes.makalu.shared.ExcludeFromGeneratedCoverageReport
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -203,6 +204,7 @@ private fun LogoutDoubleCheckDialog(onDismissRequest: () -> Unit, onLogout: () -
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun ProfilePreview() {
     ProfileScreen(

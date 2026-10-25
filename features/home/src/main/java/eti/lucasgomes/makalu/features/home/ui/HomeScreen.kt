@@ -62,6 +62,7 @@ import eti.lucasgomes.makalu.features.home.ui.model.CategoryUiState
 import eti.lucasgomes.makalu.features.home.ui.model.HomeAction
 import eti.lucasgomes.makalu.features.home.ui.model.HomeUiState
 import eti.lucasgomes.makalu.features.home.ui.model.StoreUiState
+import eti.lucasgomes.makalu.shared.ExcludeFromGeneratedCoverageReport
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -190,6 +191,7 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun HomePreview() {
 

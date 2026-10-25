@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import eti.lucasgomes.makalu.shared.ExcludeFromGeneratedCoverageReport
 
 @Composable
 fun CardItem(
@@ -88,6 +89,7 @@ private fun SurfaceWithOptionalClick(
 
 @Composable
 @Preview()
+@ExcludeFromGeneratedCoverageReport
 private fun CardItemPreview() {
     CardItem(modifier = Modifier.height(80.dp), headlineContent = {
         Text("Delivery time", maxLines = 1, overflow = TextOverflow.Ellipsis)

@@ -31,6 +31,7 @@ import coil3.compose.AsyncImage
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.format.formatMoney
 import eti.lucasgomes.makalu.features.orders.R
+import eti.lucasgomes.makalu.shared.ExcludeFromGeneratedCoverageReport
 import eti.lucasgomes.makalu.shared.model.OrderStatus
 import java.math.BigDecimal
 
@@ -119,6 +120,7 @@ private fun OrderCardContent(uiState: OrderCardUiState) {
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrderCardPreview() {
     OrderCard(

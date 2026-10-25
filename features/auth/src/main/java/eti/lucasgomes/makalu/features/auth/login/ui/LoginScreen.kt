@@ -40,6 +40,7 @@ import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.features.auth.R
 import eti.lucasgomes.makalu.features.auth.login.model.LoginAction
 import eti.lucasgomes.makalu.features.auth.login.model.LoginUiState
+import eti.lucasgomes.makalu.shared.ExcludeFromGeneratedCoverageReport
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -154,6 +155,7 @@ internal fun LoginScreen(uiState: LoginUiState, onAction: (LoginAction) -> Unit)
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun LoginPreview() {
     LoginScreen(LoginUiState()) {}

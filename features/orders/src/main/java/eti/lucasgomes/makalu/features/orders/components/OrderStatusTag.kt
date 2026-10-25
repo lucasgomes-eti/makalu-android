@@ -15,6 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import eti.lucasgomes.makalu.components.dsl.UiText
+import eti.lucasgomes.makalu.shared.ExcludeFromGeneratedCoverageReport
 import eti.lucasgomes.makalu.shared.model.OrderStatus
 
 @Composable
@@ -41,30 +42,35 @@ internal fun OrderStatusTag(status: OrderStatusUiState) {
 }
 
 @Preview
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrderStatusTagPendingPreview() {
     OrderStatusTag(status = OrderStatusUiState(OrderStatus.PENDING, UiText.PlainText("Pending")))
 }
 
 @Preview
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrderStatusTagAcceptedPreview() {
     OrderStatusTag(status = OrderStatusUiState(OrderStatus.ACCEPTED, UiText.PlainText("Accepted")))
 }
 
 @Preview
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrderStatusTagCanceledPreview() {
     OrderStatusTag(status = OrderStatusUiState(OrderStatus.CANCELLED, UiText.PlainText("Cancelled")))
 }
 
 @Preview
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrderStatusTagInRoutePreview() {
     OrderStatusTag(status = OrderStatusUiState(OrderStatus.IN_ROUTE, UiText.PlainText("In route")))
 }
 
 @Preview
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrderStatusTagFinishedPreview() {
     OrderStatusTag(status = OrderStatusUiState(OrderStatus.FINISHED, UiText.PlainText("Finished")))

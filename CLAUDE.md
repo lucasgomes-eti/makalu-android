@@ -32,6 +32,17 @@ module (`testImplementation(projects.testing)` in every module) provides `MainDi
 using `MockEngine`. Tests live in the same package as the class under test so `internal` classes are
 reachable.
 
+### Coverage
+
+JaCoCo is configured once in the root `build.gradle.kts` for every module except `:testing`
+(Android modules get `enableUnitTestCoverage` on `debug`; the version is `jacoco` in the catalog).
+
+```bash
+./gradlew jacocoAggregatedReport                          # all modules → build/reports/jacoco/aggregated/
+./gradlew :features:orders:createDebugUnitTestCoverageReport  # one Android module → build/reports/coverage/test/debug/
+./gradlew :shared:jacocoTestReport                        # JVM module → build/reports/jacoco/test/
+```
+
 ### Required `local.properties` entries
 
 - `BASE_URL` – backend base URL. The `:shared` module's `generateConfig` task reads it and generates

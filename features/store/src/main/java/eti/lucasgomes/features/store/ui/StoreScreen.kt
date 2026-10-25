@@ -44,6 +44,7 @@ import eti.lucasgomes.makalu.components.banners.ErrorBanner
 import eti.lucasgomes.makalu.components.buttons.ConfigureFab
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.format.formatMoney
+import eti.lucasgomes.makalu.shared.ExcludeFromGeneratedCoverageReport
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -160,6 +161,7 @@ private fun LazyItemScope.MenuListItem(item: MenuItemUiState, onClick: () -> Uni
 
 @Composable
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 private fun StoreScreenPreview() {
     val topBarUiController = remember { TopBarUiController() }
     CompositionLocalProvider(

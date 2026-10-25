@@ -18,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import eti.lucasgomes.makalu.features.orders.R
+import eti.lucasgomes.makalu.shared.ExcludeFromGeneratedCoverageReport
 import eti.lucasgomes.makalu.shared.model.OrderStatus
 import eti.lucasgomes.makalu.shared.model.OrderStatus.ACCEPTED
 import eti.lucasgomes.makalu.shared.model.OrderStatus.CANCELLED
@@ -115,30 +116,35 @@ private fun connectorColor(currentStatus: OrderStatus, atIndex: Int): Color =
     else colorScheme.outlineVariant
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrderTimelinePendingPreview() {
     OrderTimeline(status = PENDING)
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrderTimelineAcceptedPreview() {
     OrderTimeline(status = ACCEPTED)
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrderTimelineCanceledPreview() {
     OrderTimeline(status = CANCELLED)
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrderTimelineInRoutePreview() {
     OrderTimeline(status = IN_ROUTE)
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrderTimelineFinishedPreview() {
     OrderTimeline(status = FINISHED)

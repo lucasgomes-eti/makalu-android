@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import eti.lucasgomes.makalu.components.format.formatMoney
 import eti.lucasgomes.makalu.components.format.formatMoneyAddition
+import eti.lucasgomes.makalu.shared.ExcludeFromGeneratedCoverageReport
 import java.math.BigDecimal
 
 @Composable
@@ -160,6 +161,7 @@ private val previewConfigurations = listOf(
 )
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun ItemCardOptionsAndNotesPreview() {
     ItemCard(
@@ -172,6 +174,7 @@ private fun ItemCardOptionsAndNotesPreview() {
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun ItemCardOptionsOnlyPreview() {
     ItemCard(
@@ -184,6 +187,7 @@ private fun ItemCardOptionsOnlyPreview() {
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun ItemCardNotesOnlyPreview() {
     ItemCard(
@@ -196,6 +200,7 @@ private fun ItemCardNotesOnlyPreview() {
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun ItemCardPlainPreview() {
     ItemCard(
@@ -208,6 +213,7 @@ private fun ItemCardPlainPreview() {
 }
 
 @Preview(showBackground = true)
+@ExcludeFromGeneratedCoverageReport
 @Composable
 private fun ItemCardWithFooterPreview() {
     ItemCard(
