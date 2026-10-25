@@ -49,6 +49,7 @@ fun localOrEnv(name: String): String? =
 val sonarHostUrl = localOrEnv("SONAR_HOST_URL")
 val sonarToken = localOrEnv("SONAR_TOKEN")
 val sonarProjectKey = localOrEnv("SONAR_PROJECT_KEY")
+val sonarProjectName = localOrEnv("SONAR_PROJECT_NAME")
 
 val aggregatedCoverageXml = layout.buildDirectory.file("reports/jacoco/aggregated/jacoco.xml")
 
@@ -71,6 +72,7 @@ sonar {
     properties {
         property("sonar.sources", existing("build.gradle.kts", "settings.gradle.kts"))
         sonarProjectKey?.let { property("sonar.projectKey", it) }
+        sonarProjectName?.let { property("sonar.projectName", it) }
         sonarHostUrl?.let { property("sonar.host.url", it) }
         sonarToken?.let { property("sonar.token", it) }
     }

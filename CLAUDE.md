@@ -58,8 +58,9 @@ with AGP 9 built-in Kotlin, so the root build script sets `sonar.sources`/`sonar
 - `BASE_URL` – backend base URL. The `:shared` module's `generateConfig` task reads it and generates
   a top-level `MakaluConfig` object (`import MakaluConfig`), used by `HttpClientManager`.
 - `MAPS_API_KEY` – injected into `:features:address`'s manifest by the Google secrets Gradle plugin.
-- `SONAR_HOST_URL`, `SONAR_TOKEN`, `SONAR_PROJECT_KEY` – only needed by `./gradlew sonar`;
-  environment variables of the same name are used as a fallback.
+- `SONAR_HOST_URL`, `SONAR_TOKEN`, `SONAR_PROJECT_KEY`, `SONAR_PROJECT_NAME` – only needed by
+  `./gradlew sonar`; environment variables of the same name are used as a fallback. The project
+  name is optional and defaults to the Gradle root project name (`Makalu`).
 
 ### Build setup notes
 
