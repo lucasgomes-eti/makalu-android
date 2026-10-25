@@ -1,5 +1,8 @@
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.LibraryExtension
+import org.sonarqube.gradle.SonarExtension
+import java.io.StringReader
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application) apply false
@@ -8,6 +11,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.jvm) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.secrets) apply false
+    alias(libs.plugins.sonarqube)
     jacoco
 }
 
@@ -27,6 +31,27 @@ val coverageExclusions = listOf(
     "**/*ModuleKt$*.class",
 )
 
+val sonarCoverageExclusions = listOf(
+    "**/ui/theme/**",
+    "**/components/Color.kt",
+    "**/*Module.kt",
+)
+
+val localProperties = Properties().apply {
+    providers.fileContents(layout.projectDirectory.file("local.properties")).asText.orNull
+        ?.let { text -> StringReader(text).use { load(it) } }
+}
+
+fun localOrEnv(name: String): String? =
+    localProperties.getProperty(name)?.trim()?.takeIf { it.isNotEmpty() }
+        ?: providers.environmentVariable(name).orNull
+
+val sonarHostUrl = localOrEnv("SONAR_HOST_URL")
+val sonarToken = localOrEnv("SONAR_TOKEN")
+val sonarProjectKey = localOrEnv("SONAR_PROJECT_KEY")
+
+val aggregatedCoverageXml = layout.buildDirectory.file("reports/jacoco/aggregated/jacoco.xml")
+
 jacoco {
     toolVersion = jacocoVersion
 }
@@ -37,19 +62,60 @@ val jacocoAggregatedReport = tasks.register<JacocoReport>("jacocoAggregatedRepor
     reports {
         xml.required = true
         html.required = true
-        xml.outputLocation = layout.buildDirectory.file("reports/jacoco/aggregated/jacoco.xml")
+        xml.outputLocation = aggregatedCoverageXml
         html.outputLocation = layout.buildDirectory.dir("reports/jacoco/aggregated/html")
     }
 }
 
+sonar {
+    properties {
+        property("sonar.sources", existing("build.gradle.kts", "settings.gradle.kts"))
+        sonarProjectKey?.let { property("sonar.projectKey", it) }
+        sonarHostUrl?.let { property("sonar.host.url", it) }
+        sonarToken?.let { property("sonar.token", it) }
+    }
+}
+
+tasks.named("sonar") {
+    val isConfigured = sonarHostUrl != null && sonarToken != null && sonarProjectKey != null
+    dependsOn(jacocoAggregatedReport)
+    doFirst {
+        if (!isConfigured) {
+            throw GradleException(
+                "SONAR_HOST_URL, SONAR_TOKEN and SONAR_PROJECT_KEY must be set in local.properties " +
+                    "or as environment variables"
+            )
+        }
+    }
+}
+
 subprojects {
-    if (path == ":testing") return@subprojects
+    if (path == ":testing") {
+        extensions.configure<SonarExtension> { isSkipProject = true }
+        return@subprojects
+    }
+
+    extensions.configure<SonarExtension> {
+        properties {
+            property(
+                "sonar.sources",
+                existing("src/main/java", "src/main/kotlin", "src/main/AndroidManifest.xml", "build.gradle.kts")
+            )
+            property("sonar.tests", existing("src/test/java", "src/test/kotlin"))
+            property(
+                "sonar.coverage.jacoco.xmlReportPaths",
+                aggregatedCoverageXml.get().asFile.absolutePath
+            )
+            property("sonar.coverage.exclusions", sonarCoverageExclusions)
+        }
+    }
 
     plugins.withId("com.android.application") {
         extensions.configure<ApplicationExtension> {
             buildTypes.getByName("debug").enableUnitTestCoverage = true
             testCoverage.jacocoVersion = jacocoVersion
         }
+        configureAndroidSonar()
         configureCoverage(
             testTaskName = "testDebugUnitTest",
             classesDir = "intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes",
@@ -60,6 +126,7 @@ subprojects {
             buildTypes.getByName("debug").enableUnitTestCoverage = true
             testCoverage.jacocoVersion = jacocoVersion
         }
+        configureAndroidSonar()
         configureCoverage(
             testTaskName = "testDebugUnitTest",
             classesDir = "intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes",
@@ -81,6 +148,8 @@ subprojects {
     }
 }
 
+fun Project.existing(vararg paths: String) = paths.map(::file).filter { it.exists() }
+
 fun Project.configureCoverage(testTaskName: String, classesDir: String) {
     apply(plugin = "jacoco")
     extensions.configure<JacocoPluginExtension> { toolVersion = jacocoVersion }
@@ -101,5 +170,26 @@ fun Project.configureCoverage(testTaskName: String, classesDir: String) {
         executionData(testTasks)
         classDirectories.from(classes)
         sourceDirectories.from(sources)
+    }
+}
+
+fun Project.configureAndroidSonar() {
+    val intermediates = layout.buildDirectory.dir("intermediates").get().asFile
+
+    extensions.configure<SonarExtension> {
+        setAndroidVariant("debug")
+        properties {
+            property(
+                "sonar.java.binaries",
+                listOf(
+                    intermediates.resolve("built_in_kotlinc/debug/compileDebugKotlin/classes"),
+                    intermediates.resolve("javac/debug/compileDebugJavaWithJavac/classes"),
+                )
+            )
+            property(
+                "sonar.java.test.binaries",
+                listOf(intermediates.resolve("built_in_kotlinc/debugUnitTest/compileDebugUnitTestKotlin/classes"))
+            )
+        }
     }
 }

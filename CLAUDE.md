@@ -43,11 +43,23 @@ JaCoCo is configured once in the root `build.gradle.kts` for every module except
 ./gradlew :shared:jacocoTestReport                        # JVM module → build/reports/jacoco/test/
 ```
 
+Previews are tagged `@ExcludeFromGeneratedCoverageReport` (`:shared`) so JaCoCo drops them; tag new
+`@Preview` functions too.
+
+### SonarQube
+
+`./gradlew sonar` runs `jacocoAggregatedReport` and uploads the analysis to the self-hosted
+SonarQube server. The plugin's Android source detection doesn't work
+with AGP 9 built-in Kotlin, so the root build script sets `sonar.sources`/`sonar.tests`/
+`sonar.java.binaries` explicitly; keep `sonarCoverageExclusions` in sync with `coverageExclusions`.
+
 ### Required `local.properties` entries
 
 - `BASE_URL` – backend base URL. The `:shared` module's `generateConfig` task reads it and generates
   a top-level `MakaluConfig` object (`import MakaluConfig`), used by `HttpClientManager`.
 - `MAPS_API_KEY` – injected into `:features:address`'s manifest by the Google secrets Gradle plugin.
+- `SONAR_HOST_URL`, `SONAR_TOKEN`, `SONAR_PROJECT_KEY` – only needed by `./gradlew sonar`;
+  environment variables of the same name are used as a fallback.
 
 ### Build setup notes
 
