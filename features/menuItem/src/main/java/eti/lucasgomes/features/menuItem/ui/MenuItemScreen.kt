@@ -62,9 +62,7 @@ import java.math.BigDecimal
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun BoxScope.MenuItemScreen(
-    uiState: MenuItemUiState, onAction: (MenuItemAction) -> Unit
-) {
+internal fun BoxScope.MenuItemScreen(uiState: MenuItemUiState, onAction: (MenuItemAction) -> Unit) {
     ConfigureFab(
         icon = painterResource(R.drawable.add_shopping_cart),
         contentDescription = "Add do cart icon",
@@ -75,14 +73,19 @@ internal fun BoxScope.MenuItemScreen(
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
-            ExpandableTopAppBar(
-                scrollBehavior,
-                backgroundImageUrl = uiState.imageUrl,
-                title = if (uiState.isLoading) stringResource(eti.lucasgomes.makalu.components.R.string.loading) else uiState.name.asString()
-            ) { onAction(MenuItemAction.NavigateBackClicked) }
-        }) { innerPadding ->
+    Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
+        ExpandableTopAppBar(
+            scrollBehavior,
+            backgroundImageUrl = uiState.imageUrl,
+            title = if (uiState.isLoading) {
+                stringResource(
+                    eti.lucasgomes.makalu.components.R.string.loading
+                )
+            } else {
+                uiState.name.asString()
+            }
+        ) { onAction(MenuItemAction.NavigateBackClicked) }
+    }) { innerPadding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = innerPadding + PaddingValues(0.dp, 16.dp, 0.dp, 72.dp)
@@ -98,7 +101,8 @@ internal fun BoxScope.MenuItemScreen(
             if (uiState.isLoading) {
                 item {
                     Row(
-                        Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
                     ) { LoadingIndicator() }
                     Spacer(Modifier.height(16.dp))
                 }
@@ -109,7 +113,10 @@ internal fun BoxScope.MenuItemScreen(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
                     CardItem(headlineContent = {
-                        Text(text = stringResource(R.string.menu_item_price), style = typography.bodyMedium)
+                        Text(
+                            text = stringResource(R.string.menu_item_price),
+                            style = typography.bodyMedium
+                        )
                     }, supportingContent = {
                         Text(
                             formatMoney(uiState.price),
@@ -197,8 +204,8 @@ internal fun BoxScope.MenuItemScreen(
                     onValueChange = { onAction(MenuItemAction.NotesChanged(it)) },
                     label = {
                         Text("Notes")
-                    })
-
+                    }
+                )
             }
         }
     }
@@ -211,7 +218,7 @@ private fun SingleChoiceSection(
 ) {
     FlowRow(
         modifier = Modifier.padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         options.forEach { option ->
             if (option is OptionUiState.SingleChoice) {
@@ -249,7 +256,7 @@ private fun MultipleChoiceSection(
 ) {
     FlowRow(
         modifier = Modifier.padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         options.forEach { option ->
             if (option is OptionUiState.MultipleChoice) {
@@ -312,12 +319,12 @@ private fun LazyItemScope.QuantityItem(
                     ) {
                         AnimatedContent(
                             amount,
-                            modifier = Modifier.align(Alignment.Center),
+                            modifier = Modifier.align(Alignment.Center)
                         ) {
                             Text(
                                 "$it",
                                 style = typography.titleMedium,
-                                color = colorScheme.onPrimary,
+                                color = colorScheme.onPrimary
                             )
                         }
                     }

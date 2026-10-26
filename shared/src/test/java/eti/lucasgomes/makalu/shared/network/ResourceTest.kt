@@ -1,12 +1,12 @@
 package eti.lucasgomes.makalu.shared.network
 
+import java.io.IOException
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
-import java.io.IOException
 
 class ResourceTest {
 
@@ -25,7 +25,10 @@ class ResourceTest {
     fun `map keeps the error and skips the transform on error`() {
         val resource: Resource<Int> = Resource.Error(error)
 
-        val result = resource.map<Int, Int> { fail("transform should not run"); it }
+        val result = resource.map<Int, Int> {
+            fail("transform should not run")
+            it
+        }
 
         assertEquals(Resource.Error(error), result)
     }

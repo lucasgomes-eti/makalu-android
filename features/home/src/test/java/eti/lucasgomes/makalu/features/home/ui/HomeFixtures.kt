@@ -6,11 +6,11 @@ import eti.lucasgomes.makalu.shared.model.CategoryResponse
 import eti.lucasgomes.makalu.shared.model.StoreResponse
 import eti.lucasgomes.makalu.shared.network.MakaluError
 import eti.lucasgomes.makalu.shared.settings.Settings
+import java.math.BigDecimal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.math.BigDecimal
 
 internal class FakeSettingsDataStore(initial: Settings = Settings()) : DataStore<Settings> {
 
@@ -37,25 +37,22 @@ internal fun storeResponse(
     categories: List<CategoryResponse> = listOf(categoryResponse()),
     logoImageId: Long? = 3,
     coverImageId: Long? = null,
-    deliveryFee: BigDecimal = BigDecimal("4.99"),
+    deliveryFee: BigDecimal = BigDecimal("4.99")
 ) = StoreResponse(id, name, categories, logoImageId, coverImageId, deliveryFee)
 
-internal fun addressResponse(
-    id: Long = 5,
-    street: String = "Main St",
-    number: String? = "12",
-) = AddressResponse(
-    id = id,
-    zipCode = "12345-000",
-    street = street,
-    number = number,
-    complement = null,
-    longitude = -46.6,
-    latitude = -23.5,
-)
+internal fun addressResponse(id: Long = 5, street: String = "Main St", number: String? = "12") =
+    AddressResponse(
+        id = id,
+        zipCode = "12345-000",
+        street = street,
+        number = number,
+        complement = null,
+        longitude = -46.6,
+        latitude = -23.5
+    )
 
 internal fun makaluError(httpCode: Int = 500) = MakaluError(
     httpCode = httpCode,
     message = "Something went wrong",
-    internalCode = "MK-1",
+    internalCode = "MK-1"
 )

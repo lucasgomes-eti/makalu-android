@@ -1,11 +1,11 @@
 package eti.lucasgomes.makalu.shared.model
 
 import eti.lucasgomes.makalu.testing.testJson
+import java.math.BigDecimal
+import kotlin.time.Instant
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
-import java.math.BigDecimal
-import kotlin.time.Instant
 
 class ResponseSerializationTest {
 

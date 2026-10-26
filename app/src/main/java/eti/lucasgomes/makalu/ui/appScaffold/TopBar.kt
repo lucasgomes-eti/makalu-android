@@ -48,7 +48,6 @@ fun TopBar(topBarUiController: TopBarUiController) {
                             Icon(icon, contentDescription)
                         }
                     }
-
                 }
             },
             navigationIcon = {
@@ -61,9 +60,15 @@ fun TopBar(topBarUiController: TopBarUiController) {
             },
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                titleContentColor = MaterialTheme.colorScheme.contentColorFor(MaterialTheme.colorScheme.surfaceContainer),
-                actionIconContentColor = MaterialTheme.colorScheme.contentColorFor(MaterialTheme.colorScheme.surfaceContainer),
-                navigationIconContentColor = MaterialTheme.colorScheme.contentColorFor(MaterialTheme.colorScheme.surfaceContainer),
+                titleContentColor = MaterialTheme.colorScheme.contentColorFor(
+                    MaterialTheme.colorScheme.surfaceContainer
+                ),
+                actionIconContentColor = MaterialTheme.colorScheme.contentColorFor(
+                    MaterialTheme.colorScheme.surfaceContainer
+                ),
+                navigationIconContentColor = MaterialTheme.colorScheme.contentColorFor(
+                    MaterialTheme.colorScheme.surfaceContainer
+                )
             )
         )
     }

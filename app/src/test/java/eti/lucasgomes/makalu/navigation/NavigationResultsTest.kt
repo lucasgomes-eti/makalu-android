@@ -93,7 +93,10 @@ class NavigationResultsTest {
     private fun TestScope.collectResults(scope: CoroutineScope): List<String> {
         val emitted = mutableListOf<String>()
         scope.launch(UnconfinedTestDispatcher(testScheduler)) {
-            entry.navigationResults<String>(RequestKey.ImageCroppedUriOutput).collect { emitted += it }
+            entry.navigationResults<String>(RequestKey.ImageCroppedUriOutput).collect {
+                emitted +=
+                    it
+            }
         }
         return emitted
     }

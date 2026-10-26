@@ -17,21 +17,41 @@ internal fun responseOption(id: Long, price: String = "1.00") =
 
 internal fun singleChoiceConfiguration(
     vararg options: MenuItemResponse.Configuration.Option = arrayOf(
-        responseOption(10), responseOption(11), responseOption(12)
+        responseOption(10),
+        responseOption(11),
+        responseOption(12)
     )
-) = MenuItemResponse.Configuration(1, "Size", MenuItemResponse.Configuration.Type.SINGLE_CHOICE, options.toList())
+) = MenuItemResponse.Configuration(
+    1,
+    "Size",
+    MenuItemResponse.Configuration.Type.SINGLE_CHOICE,
+    options.toList()
+)
 
 internal fun multipleChoiceConfiguration(
     vararg options: MenuItemResponse.Configuration.Option = arrayOf(
-        responseOption(20), responseOption(21), responseOption(22)
+        responseOption(20),
+        responseOption(21),
+        responseOption(22)
     )
-) = MenuItemResponse.Configuration(2, "Extras", MenuItemResponse.Configuration.Type.MULTIPLE_CHOICE, options.toList())
+) = MenuItemResponse.Configuration(
+    2,
+    "Extras",
+    MenuItemResponse.Configuration.Type.MULTIPLE_CHOICE,
+    options.toList()
+)
 
 internal fun quantityConfiguration(
     vararg options: MenuItemResponse.Configuration.Option = arrayOf(
-        responseOption(30), responseOption(31)
+        responseOption(30),
+        responseOption(31)
     )
-) = MenuItemResponse.Configuration(3, "Drinks", MenuItemResponse.Configuration.Type.QUANTITY, options.toList())
+) = MenuItemResponse.Configuration(
+    3,
+    "Drinks",
+    MenuItemResponse.Configuration.Type.QUANTITY,
+    options.toList()
+)
 
 internal fun menuItemResponse(
     name: String = "Margherita",

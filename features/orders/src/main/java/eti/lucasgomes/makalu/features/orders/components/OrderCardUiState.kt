@@ -15,7 +15,4 @@ internal data class OrderCardUiState(
     val totalPrice: BigDecimal
 )
 
-internal data class OrderStatusUiState(
-    val data: OrderStatus,
-    val text: UiText
-)
+internal data class OrderStatusUiState(val data: OrderStatus, val text: UiText)

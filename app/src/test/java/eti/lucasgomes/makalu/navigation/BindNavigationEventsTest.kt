@@ -20,6 +20,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import io.mockk.verifyOrder
+import kotlin.coroutines.EmptyCoroutineContext
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -27,7 +28,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
-import kotlin.coroutines.EmptyCoroutineContext
 
 @RunWith(AndroidJUnit4::class)
 @Config(application = Application::class)
@@ -42,7 +42,9 @@ class BindNavigationEventsTest {
         bind()(NavigationAction.Navigate(Destination.Screen.Home, null))
 
         val options = navOptions(builder.captured)
-        verify(exactly = 1) { navHostController.navigate(Destination.Screen.Home, any<NavOptionsBuilder.() -> Unit>()) }
+        verify(exactly = 1) {
+            navHostController.navigate(Destination.Screen.Home, any<NavOptionsBuilder.() -> Unit>())
+        }
         assertNull(options.popUpToRouteObject)
         assertEquals(-1, options.popUpToId)
     }
@@ -114,7 +116,10 @@ class BindNavigationEventsTest {
         bind()(NavigationAction.Navigate(Destination.Screen.Store(42), null))
 
         verify(exactly = 1) {
-            navHostController.navigate(Destination.Screen.Store(42), any<NavOptionsBuilder.() -> Unit>())
+            navHostController.navigate(
+                Destination.Screen.Store(42),
+                any<NavOptionsBuilder.() -> Unit>()
+            )
         }
     }
 
@@ -123,7 +128,9 @@ class BindNavigationEventsTest {
         bind()(NavigationAction.NavigateUp)
 
         verify(exactly = 1) { navHostController.navigateUp() }
-        verify(exactly = 0) { navHostController.navigate(any<Destination>(), any<NavOptionsBuilder.() -> Unit>()) }
+        verify(exactly = 0) {
+            navHostController.navigate(any<Destination>(), any<NavOptionsBuilder.() -> Unit>())
+        }
     }
 
     @Test
@@ -132,7 +139,9 @@ class BindNavigationEventsTest {
         val previousEntry = mockk<NavBackStackEntry> { every { savedStateHandle } returns handle }
         every { navHostController.previousBackStackEntry } returns previousEntry
 
-        bind()(NavigationAction.NavigateUpWithResult(RequestKey.ImageCroppedUriOutput, "content://img"))
+        bind()(
+            NavigationAction.NavigateUpWithResult(RequestKey.ImageCroppedUriOutput, "content://img")
+        )
 
         assertEquals("content://img", handle.get<String>("ImageCroppedUriOutput"))
         verifyOrder {
@@ -145,7 +154,9 @@ class BindNavigationEventsTest {
     fun `navigate up with result without previous entry still navigates up`() {
         every { navHostController.previousBackStackEntry } returns null
 
-        bind()(NavigationAction.NavigateUpWithResult(RequestKey.ImageCroppedUriOutput, "content://img"))
+        bind()(
+            NavigationAction.NavigateUpWithResult(RequestKey.ImageCroppedUriOutput, "content://img")
+        )
 
         verify(exactly = 1) { navHostController.navigateUp() }
     }

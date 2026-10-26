@@ -23,17 +23,17 @@ import eti.lucasgomes.makalu.shared.navigation.OSNavigation
 import eti.lucasgomes.makalu.shared.navigation.PopUpToOptions
 import eti.lucasgomes.makalu.shared.network.onError
 import eti.lucasgomes.makalu.shared.network.onSuccess
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlin.time.Duration.Companion.seconds
 
 class RegistrationViewModel(
     private val navigator: Navigator,
     private val cameraCaptureManager: CameraCaptureManager,
     private val osNavigation: OSNavigation,
-    private val authClient: AuthClient,
+    private val authClient: AuthClient
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegistrationUiState())
@@ -42,27 +42,39 @@ class RegistrationViewModel(
     fun onAction(action: RegistrationAction) {
         when (action) {
             RegistrationAction.ProfileImageClicked -> onProfileImageClicked()
+
             RegistrationAction.ImagePickerDismissed -> onImagePickerDismissed()
+
             is RegistrationAction.GalleryImageObtained -> onGalleryImageObtained(action.uri)
+
             is RegistrationAction.CameraImageTaken -> onCameraImageTaken(action.isImageSaved)
-            is RegistrationAction.PermissionLauncherResultReceived -> onPermissionLauncherResultReceived(
-                action.isGranted,
-                action.launchCamera
-            )
+
+            is RegistrationAction.PermissionLauncherResultReceived ->
+                onPermissionLauncherResultReceived(action.isGranted, action.launchCamera)
 
             RegistrationAction.GoToSystemSettingsClicked -> onGoToSystemSettingsClicked()
-            RegistrationAction.PermissionDeniedDialogDismissed -> onPermissionDeniedDialogDismissed()
+
+            RegistrationAction.PermissionDeniedDialogDismissed ->
+                onPermissionDeniedDialogDismissed()
+
             is RegistrationAction.EmailChanged -> onEmailChanged(action.text)
+
             is RegistrationAction.NameChanged -> onNameChanged(action.text)
+
             is RegistrationAction.PhoneNumberChanged -> onPhoneNumberChanged(action.text)
+
             is RegistrationAction.PasswordChanged -> onPasswordChanged(action.text)
+
             RegistrationAction.ShowPasswordClicked -> onShowPasswordClicked()
+
             is RegistrationAction.PasswordConfirmationChanged -> onPasswordConfirmationChanged(
                 action.text
             )
 
             RegistrationAction.CreateAccountClicked -> onCreateAccountClicked()
+
             RegistrationAction.DismissError -> onDismissError()
+
             is RegistrationAction.CroppedImageReceived -> onCroppedImageReceived(action.uri)
         }
     }
@@ -115,8 +127,9 @@ class RegistrationViewModel(
     }
 
     private fun onNameChanged(text: String) = withViewModelScope {
-        if (text.length > MAX_NAME_LENGTH)
+        if (text.length > MAX_NAME_LENGTH) {
             return@withViewModelScope
+        }
 
         _uiState.update { state ->
             state.copy(
@@ -129,8 +142,9 @@ class RegistrationViewModel(
     }
 
     private fun onEmailChanged(text: String) = withViewModelScope {
-        if (text.length > MAX_EMAIL_LENGTH)
+        if (text.length > MAX_EMAIL_LENGTH) {
             return@withViewModelScope
+        }
 
         _uiState.update { state ->
             state.copy(
@@ -143,8 +157,9 @@ class RegistrationViewModel(
     }
 
     private fun onPhoneNumberChanged(text: String) = withViewModelScope {
-        if (text.length > MAX_PHONE_NUMBER_LENGTH)
+        if (text.length > MAX_PHONE_NUMBER_LENGTH) {
             return@withViewModelScope
+        }
 
         _uiState.update { state ->
             state.copy(
@@ -157,8 +172,9 @@ class RegistrationViewModel(
     }
 
     private fun onPasswordChanged(text: String) = withViewModelScope {
-        if (text.length > MAX_PASSWORD_LENGTH)
+        if (text.length > MAX_PASSWORD_LENGTH) {
             return@withViewModelScope
+        }
 
         _uiState.update { state ->
             state.copy(
@@ -176,8 +192,9 @@ class RegistrationViewModel(
     }
 
     private fun onPasswordConfirmationChanged(text: String) = withViewModelScope {
-        if (text.length > MAX_PASSWORD_LENGTH)
+        if (text.length > MAX_PASSWORD_LENGTH) {
             return@withViewModelScope
+        }
 
         _uiState.update { state ->
             state.copy(
@@ -230,8 +247,10 @@ class RegistrationViewModel(
                     _uiState.update { state ->
                         state.copy(
                             generalError = UiText.StringResource(
-                                R.string.profile_image_upload_failed, listOf(it.formatedMessage)
-                            ), imageUploadLoading = false
+                                R.string.profile_image_upload_failed,
+                                listOf(it.formatedMessage)
+                            ),
+                            imageUploadLoading = false
                         )
                     }
                     delay(5.seconds)
@@ -261,12 +280,12 @@ class RegistrationViewModel(
         val state = uiState.value
         val isStateValid =
             isNameValid(state.name.text) and
-                    isEmailValid(state.email.text) and
-                    isPhoneNumberValid(state.phoneNumber.text) and
-                    isPasswordValid(
-                        state.password.text,
-                        state.passwordConfirmation.text
-                    )
+                isEmailValid(state.email.text) and
+                isPhoneNumberValid(state.phoneNumber.text) and
+                isPasswordValid(
+                    state.password.text,
+                    state.passwordConfirmation.text
+                )
 
         if (isStateValid) {
             block(buildRegisterRequest(state))
@@ -293,7 +312,9 @@ class RegistrationViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    email = state.email.copy(error = UiText.StringResource(R.string.email_is_required))
+                    email = state.email.copy(
+                        error = UiText.StringResource(R.string.email_is_required)
+                    )
                 )
             }
             return false
@@ -302,7 +323,9 @@ class RegistrationViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    email = state.email.copy(error = UiText.StringResource(R.string.email_must_have_valid_format))
+                    email = state.email.copy(
+                        error = UiText.StringResource(R.string.email_must_have_valid_format)
+                    )
                 )
             }
             return false
@@ -315,7 +338,9 @@ class RegistrationViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    phoneNumber = state.phoneNumber.copy(error = UiText.StringResource(R.string.phone_number_is_required))
+                    phoneNumber = state.phoneNumber.copy(
+                        error = UiText.StringResource(R.string.phone_number_is_required)
+                    )
                 )
             }
             return false
@@ -329,7 +354,9 @@ class RegistrationViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    password = state.password.copy(error = UiText.StringResource(R.string.password_is_required))
+                    password = state.password.copy(
+                        error = UiText.StringResource(R.string.password_is_required)
+                    )
                 )
             }
             return false
@@ -352,7 +379,11 @@ class RegistrationViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    password = state.password.copy(error = UiText.StringResource(R.string.password_must_have_letters_and_numbers))
+                    password = state.password.copy(
+                        error = UiText.StringResource(
+                            R.string.password_must_have_letters_and_numbers
+                        )
+                    )
                 )
             }
             return false
@@ -373,14 +404,12 @@ class RegistrationViewModel(
         return true
     }
 
-    private fun buildRegisterRequest(state: RegistrationUiState): RegisterRequest {
-        return RegisterRequest(
-            name = state.name.text,
-            email = state.email.text,
-            phoneNumber = state.phoneNumber.text,
-            password = state.password.text
-        )
-    }
+    private fun buildRegisterRequest(state: RegistrationUiState): RegisterRequest = RegisterRequest(
+        name = state.name.text,
+        email = state.email.text,
+        phoneNumber = state.phoneNumber.text,
+        password = state.password.text
+    )
 
     companion object {
         private const val MAX_NAME_LENGTH = 120

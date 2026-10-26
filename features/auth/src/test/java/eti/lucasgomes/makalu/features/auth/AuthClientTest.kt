@@ -25,6 +25,7 @@ import io.ktor.http.content.TextContent
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import java.io.ByteArrayInputStream
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
@@ -33,7 +34,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.ByteArrayInputStream
 
 @RunWith(AndroidJUnit4::class)
 class AuthClientTest {
@@ -101,7 +101,9 @@ class AuthClientTest {
 
     @Test
     fun `register decodes the created user on success`() = runTest {
-        val result = client(body = registerResponseJson(7, "Ana Silva", "ana@makalu.com", "11999999999"))
+        val result = client(
+            body = registerResponseJson(7, "Ana Silva", "ana@makalu.com", "11999999999")
+        )
             .register(registerRequest)
 
         assertEquals(
@@ -117,15 +119,22 @@ class AuthClientTest {
 
         val result = client(HttpStatusCode.UnprocessableEntity, body).register(registerRequest)
 
-        assertEquals(Resource.Error(makaluError(422, "Validation failed", "MK-422", fieldErrors)), result)
+        assertEquals(
+            Resource.Error(makaluError(422, "Validation failed", "MK-422", fieldErrors)),
+            result
+        )
     }
 
     @Test
-    fun `register returns an unexpected http error when the error body is not parseable`() = runTest {
-        val result = client(HttpStatusCode.InternalServerError, "oops").register(registerRequest)
+    fun `register returns an unexpected http error when the error body is not parseable`() =
+        runTest {
+            val result = client(
+                HttpStatusCode.InternalServerError,
+                "oops"
+            ).register(registerRequest)
 
-        assertEquals(Resource.Error(unexpectedErrorWithHttpStatusCode(500)), result)
-    }
+            assertEquals(Resource.Error(unexpectedErrorWithHttpStatusCode(500)), result)
+        }
 
     @Test
     fun `login sends POST to auth login path with credentials`() = runTest {
@@ -192,7 +201,10 @@ class AuthClientTest {
         client(body = """{"id":99}""").uploadImage(imageUri)
 
         val sentBody = requests.single().body.toByteArray().decodeToString()
-        assertTrue(sentBody, sentBody.contains("Content-Disposition: form-data; name=\"file\"; filename=pic.jpg"))
+        assertTrue(
+            sentBody,
+            sentBody.contains("Content-Disposition: form-data; name=\"file\"; filename=pic.jpg")
+        )
         assertTrue(sentBody, sentBody.contains("Content-Type: image/jpeg"))
         assertTrue(sentBody, sentBody.contains("fake-jpeg-bytes"))
     }
@@ -207,17 +219,21 @@ class AuthClientTest {
     }
 
     @Test
-    fun `uploadImage returns an unexpected error without sending a request when the file cannot be opened`() = runTest {
-        every { contentResolver.openInputStream(imageUri) } returns null
+    fun `uploadImage returns an unexpected error without sending a request when the file cannot be opened`() =
+        runTest {
+            every { contentResolver.openInputStream(imageUri) } returns null
 
-        val result = client(body = """{"id":99}""").uploadImage(imageUri)
+            val result = client(body = """{"id":99}""").uploadImage(imageUri)
 
-        val error = (result as Resource.Error).error
-        assertEquals(-1, error.httpCode)
-        assertEquals("MK-0", error.internalCode)
-        assertTrue(error.message, error.message.contains("Error while reading file from memory."))
-        assertTrue(requests.isEmpty())
-    }
+            val error = (result as Resource.Error).error
+            assertEquals(-1, error.httpCode)
+            assertEquals("MK-0", error.internalCode)
+            assertTrue(
+                error.message,
+                error.message.contains("Error while reading file from memory.")
+            )
+            assertTrue(requests.isEmpty())
+        }
 
     @Test
     fun `uploadImage returns the backend error on a 4xx response`() = runTest {

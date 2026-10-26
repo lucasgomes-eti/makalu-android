@@ -39,7 +39,12 @@ internal fun option(
     name: String = "Extra cheese",
     additionalPrice: BigDecimal = BigDecimal("1.50"),
     quantity: Int = 1
-) = OrderDetailedResponse.OrderItemResponse.Configuration.Option(id, name, additionalPrice, quantity)
+) = OrderDetailedResponse.OrderItemResponse.Configuration.Option(
+    id,
+    name,
+    additionalPrice,
+    quantity
+)
 
 internal fun configuration(
     id: Long = 10,
@@ -54,8 +59,17 @@ internal fun orderItemResponse(
     name: String = "Salmon roll",
     price: BigDecimal = BigDecimal("12.90"),
     notes: String? = "No wasabi",
-    configurations: List<OrderDetailedResponse.OrderItemResponse.Configuration> = listOf(configuration())
-) = OrderDetailedResponse.OrderItemResponse(id, menuItemId, imageId, name, price, notes, configurations)
+    configurations: List<OrderDetailedResponse.OrderItemResponse.Configuration> =
+        listOf(configuration())
+) = OrderDetailedResponse.OrderItemResponse(
+    id,
+    menuItemId,
+    imageId,
+    name,
+    price,
+    notes,
+    configurations
+)
 
 internal fun orderDetailedResponse(
     id: Long = 42,

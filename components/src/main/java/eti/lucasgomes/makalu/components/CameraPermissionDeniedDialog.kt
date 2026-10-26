@@ -31,7 +31,9 @@ fun CameraPermissionDeniedDialog(onDismissRequest: () -> Unit, onGoToSystemSetti
         dismissButton = {
             TextButton(
                 onClick = onDismissRequest,
-                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
             ) {
                 Text(stringResource(R.string.dismiss))
             }

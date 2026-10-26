@@ -35,7 +35,9 @@ internal class MenuItemViewModel(
     fun onAction(action: MenuItemAction) {
         when (action) {
             MenuItemAction.OnDismissError -> onDismissError()
+
             MenuItemAction.NavigateBackClicked -> onNavigateBackClicked()
+
             is MenuItemAction.OptionSelected -> onOptionSelected(
                 action.configKey,
                 action.optionIndex
@@ -48,6 +50,7 @@ internal class MenuItemViewModel(
             )
 
             is MenuItemAction.NotesChanged -> onNotesChanged(action.value)
+
             MenuItemAction.AddToCartClicked -> onAddToCartClicked()
         }
     }
@@ -75,23 +78,38 @@ internal class MenuItemViewModel(
                             ConfigurationUiState(
                                 name = config.name,
                                 type = when (config.type) {
-                                    MenuItemResponse.Configuration.Type.SINGLE_CHOICE -> ConfigurationUiState.Type.SINGLE_CHOICE
-                                    MenuItemResponse.Configuration.Type.MULTIPLE_CHOICE -> ConfigurationUiState.Type.MULTIPLE_CHOICE
-                                    MenuItemResponse.Configuration.Type.QUANTITY -> ConfigurationUiState.Type.QUANTITY
-                                },
-                            ), config.options.map { option ->
+                                    MenuItemResponse.Configuration.Type.SINGLE_CHOICE ->
+                                        ConfigurationUiState.Type.SINGLE_CHOICE
+
+                                    MenuItemResponse.Configuration.Type.MULTIPLE_CHOICE ->
+                                        ConfigurationUiState.Type.MULTIPLE_CHOICE
+
+                                    MenuItemResponse.Configuration.Type.QUANTITY ->
+                                        ConfigurationUiState.Type.QUANTITY
+                                }
+                            ),
+                            config.options.map { option ->
                                 when (config.type) {
-                                    MenuItemResponse.Configuration.Type.SINGLE_CHOICE -> OptionUiState.SingleChoice(
-                                        option.id, option.name, option.additionalPrice
-                                    )
+                                    MenuItemResponse.Configuration.Type.SINGLE_CHOICE ->
+                                        OptionUiState.SingleChoice(
+                                            option.id,
+                                            option.name,
+                                            option.additionalPrice
+                                        )
 
-                                    MenuItemResponse.Configuration.Type.MULTIPLE_CHOICE -> OptionUiState.MultipleChoice(
-                                        option.id, option.name, option.additionalPrice
-                                    )
+                                    MenuItemResponse.Configuration.Type.MULTIPLE_CHOICE ->
+                                        OptionUiState.MultipleChoice(
+                                            option.id,
+                                            option.name,
+                                            option.additionalPrice
+                                        )
 
-                                    MenuItemResponse.Configuration.Type.QUANTITY -> OptionUiState.Quantity(
-                                        option.id, option.name, option.additionalPrice
-                                    )
+                                    MenuItemResponse.Configuration.Type.QUANTITY ->
+                                        OptionUiState.Quantity(
+                                            option.id,
+                                            option.name,
+                                            option.additionalPrice
+                                        )
                                 }
                             }
                         )
@@ -122,7 +140,9 @@ internal class MenuItemViewModel(
                     }
 
                     is OptionUiState.SingleChoice -> {
-                        newOptions.replaceAll { (it as OptionUiState.SingleChoice).copy(isSelected = false) }
+                        newOptions.replaceAll {
+                            (it as OptionUiState.SingleChoice).copy(isSelected = false)
+                        }
                         newOptions[optionIndex] = option.copy(isSelected = true)
                     }
 

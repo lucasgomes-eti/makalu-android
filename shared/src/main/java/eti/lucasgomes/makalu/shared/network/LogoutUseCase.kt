@@ -9,10 +9,7 @@ import eti.lucasgomes.makalu.shared.settings.Settings
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 
-class LogoutUseCase(
-    private val dataStore: DataStore<Settings>,
-    private val navigator: Navigator
-) {
+class LogoutUseCase(private val dataStore: DataStore<Settings>, private val navigator: Navigator) {
     suspend operator fun invoke() {
         withContext(NonCancellable) {
             var wasLoggedIn = false
@@ -27,7 +24,8 @@ class LogoutUseCase(
             }
             if (wasLoggedIn) {
                 navigator.navigate(
-                    Destination.Graph.Auth, NavOptions(
+                    Destination.Graph.Auth,
+                    NavOptions(
                         popUpTo = PopUpToOptions(
                             Destination.Graph.Root,
                             inclusive = true

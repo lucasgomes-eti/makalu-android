@@ -39,8 +39,14 @@ class RegistrationUiStateTest {
         )
 
         assertEquals(TextFieldState("Ana", UiText.PlainText("Name too short")), result.name)
-        assertEquals(TextFieldState("ana@makalu.com", UiText.PlainText("Email already in use")), result.email)
-        assertEquals(TextFieldState("secret123", UiText.PlainText("Password too weak")), result.password)
+        assertEquals(
+            TextFieldState("ana@makalu.com", UiText.PlainText("Email already in use")),
+            result.email
+        )
+        assertEquals(
+            TextFieldState("secret123", UiText.PlainText("Password too weak")),
+            result.password
+        )
     }
 
     @Test
@@ -51,7 +57,9 @@ class RegistrationUiStateTest {
             password = TextFieldState(error = UiText.PlainText("old password error"))
         )
 
-        val result = state.assignFieldErrors(listOf(MakaluError.FieldError("name", "Name too short")))
+        val result = state.assignFieldErrors(
+            listOf(MakaluError.FieldError("name", "Name too short"))
+        )
 
         assertEquals(UiText.PlainText("Name too short"), result.name.error)
         assertEquals(UiText.Empty, result.email.error)
@@ -70,7 +78,9 @@ class RegistrationUiStateTest {
             generalError = UiText.PlainText("general")
         )
 
-        val result = state.assignFieldErrors(listOf(MakaluError.FieldError("email", "Email already in use")))
+        val result = state.assignFieldErrors(
+            listOf(MakaluError.FieldError("email", "Email already in use"))
+        )
 
         assertEquals(profileImage, result.profileImage)
         assertEquals(confirmation, result.passwordConfirmation)

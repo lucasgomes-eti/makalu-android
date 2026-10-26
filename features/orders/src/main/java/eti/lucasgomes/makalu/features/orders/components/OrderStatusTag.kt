@@ -59,7 +59,9 @@ private fun OrderStatusTagAcceptedPreview() {
 @ExcludeFromGeneratedCoverageReport
 @Composable
 private fun OrderStatusTagCanceledPreview() {
-    OrderStatusTag(status = OrderStatusUiState(OrderStatus.CANCELLED, UiText.PlainText("Cancelled")))
+    OrderStatusTag(
+        status = OrderStatusUiState(OrderStatus.CANCELLED, UiText.PlainText("Cancelled"))
+    )
 }
 
 @Preview

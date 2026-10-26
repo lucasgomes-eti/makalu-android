@@ -19,18 +19,21 @@ data class RegistrationUiState(
     val passwordConfirmation: TextFieldState = TextFieldState(),
     val isLoading: Boolean = false,
     val generalError: UiText = UiText.Empty,
-    val imageUploadLoading: Boolean = false,
+    val imageUploadLoading: Boolean = false
 ) : TextFieldErrorsAssignable {
     val isProfileImageLoaded get() = profileImage != null
 
-    override fun assignFieldErrors(fieldErrors: List<MakaluError.FieldError>): RegistrationUiState {
-        return fieldErrors.withFieldErrorsAsMap {
+    override fun assignFieldErrors(fieldErrors: List<MakaluError.FieldError>): RegistrationUiState =
+        fieldErrors.withFieldErrorsAsMap {
             copy(
                 name = name.copy(error = getOrElse(::name.name) { UiText.Empty }),
                 email = email.copy(error = getOrElse(::email.name) { UiText.Empty }),
-                phoneNumber = phoneNumber.copy(error = getOrElse(::phoneNumber.name) { UiText.Empty }),
-                password = password.copy(error = getOrElse(::password.name) { UiText.Empty }),
+                phoneNumber = phoneNumber.copy(
+                    error = getOrElse(::phoneNumber.name) {
+                        UiText.Empty
+                    }
+                ),
+                password = password.copy(error = getOrElse(::password.name) { UiText.Empty })
             )
         }
-    }
 }

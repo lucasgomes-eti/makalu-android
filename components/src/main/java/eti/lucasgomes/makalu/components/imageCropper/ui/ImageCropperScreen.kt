@@ -49,9 +49,9 @@ internal fun ImageCropperScreen(
     uiState: ImageCropperUiState,
     onAction: (ImageCropperAction) -> Unit
 ) {
-
     ConfigureTopBar(
-        title = stringResource(R.string.select_image_area), navigationActions = listOf(
+        title = stringResource(R.string.select_image_area),
+        navigationActions = listOf(
             TopBarAction(
                 icon = painterResource(R.drawable.add_photo),
                 contentDescription = stringResource(R.string.accessibility_add_image_icon),
@@ -123,7 +123,7 @@ internal fun ImageCropperScreen(
                                 cropController.crop()
                             )
                         )
-                    },
+                    }
                 ) {
                     Icon(
                         painterResource(R.drawable.crop),
@@ -137,7 +137,7 @@ internal fun ImageCropperScreen(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(16.dp)
-                .zIndex(2f),
+                .zIndex(2f)
         ) {
             ErrorBanner(uiState.error.asString()) { onAction(ImageCropperAction.ErrorDismissed) }
         }
@@ -161,7 +161,8 @@ internal fun ImageCropperScreen(
                                 launchCamera(
                                     uri
                                 )
-                            })
+                            }
+                        )
                     )
                 },
                 onDismissRequest = { onAction(ImageCropperAction.ImagePickerDismissed) }
@@ -175,7 +176,8 @@ internal fun ImageCropperScreen(
                     onAction(
                         ImageCropperAction.GoToSystemSettingsClicked
                     )
-                })
+                }
+            )
         }
     }
 }

@@ -1,14 +1,14 @@
 package eti.lucasgomes.makalu.shared.settings
 
 import androidx.datastore.core.CorruptionException
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.SerializationException
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 
 class SettingsSerializerTest {
 
@@ -41,7 +41,10 @@ class SettingsSerializerTest {
 
         SettingsSerializer.writeTo(settings, output)
 
-        assertEquals(settings, SettingsSerializer.readFrom(ByteArrayInputStream(output.toByteArray())))
+        assertEquals(
+            settings,
+            SettingsSerializer.readFrom(ByteArrayInputStream(output.toByteArray()))
+        )
     }
 
     @Test

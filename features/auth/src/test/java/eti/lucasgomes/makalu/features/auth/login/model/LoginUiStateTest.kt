@@ -22,8 +22,14 @@ class LoginUiStateTest {
             )
         ) as LoginUiState
 
-        assertEquals(TextFieldState("ana@makalu.com", UiText.PlainText("Unknown email")), result.email)
-        assertEquals(TextFieldState("secret123", UiText.PlainText("Wrong password")), result.password)
+        assertEquals(
+            TextFieldState("ana@makalu.com", UiText.PlainText("Unknown email")),
+            result.email
+        )
+        assertEquals(
+            TextFieldState("secret123", UiText.PlainText("Wrong password")),
+            result.password
+        )
     }
 
     @Test

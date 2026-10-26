@@ -46,14 +46,14 @@ android {
 }
 
 dependencies {
-    //Project
+    // Project
     implementation(projects.shared)
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
 
-    //DI
+    // DI
     implementation(libs.koin.androidx.compose)
 
     // Tooling

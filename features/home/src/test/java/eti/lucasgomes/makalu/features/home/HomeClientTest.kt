@@ -10,28 +10,30 @@ import eti.lucasgomes.makalu.testing.respondJson
 import io.ktor.client.request.HttpRequestData
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import java.io.IOException
+import java.math.BigDecimal
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.io.IOException
-import java.math.BigDecimal
 
 class HomeClientTest {
 
     private var captured: HttpRequestData? = null
 
-    private fun client(body: String, status: HttpStatusCode = HttpStatusCode.OK) =
-        HomeClient(mockHttpClientManager { request ->
+    private fun client(body: String, status: HttpStatusCode = HttpStatusCode.OK) = HomeClient(
+        mockHttpClientManager { request ->
             captured = request
             respondJson(body, status)
-        })
+        }
+    )
 
     private val errorJson =
         """{"http_code":404,"message":"Address not found","internal_code":"MK-404"}"""
 
-    private val error = MakaluError(httpCode = 404, message = "Address not found", internalCode = "MK-404")
+    private val error =
+        MakaluError(httpCode = 404, message = "Address not found", internalCode = "MK-404")
 
     @Test
     fun `getCategories sends GET to categories path`() = runTest {
@@ -61,13 +63,14 @@ class HomeClientTest {
     }
 
     @Test
-    fun `getStores without categories sends GET to stores path without categories parameter`() = runTest {
-        client("[]").getStores()
+    fun `getStores without categories sends GET to stores path without categories parameter`() =
+        runTest {
+            client("[]").getStores()
 
-        assertEquals(HttpMethod.Get, captured!!.method)
-        assertEquals("/stores", captured!!.url.encodedPath)
-        assertNull(captured!!.url.parameters["categories"])
-    }
+            assertEquals(HttpMethod.Get, captured!!.method)
+            assertEquals("/stores", captured!!.url.encodedPath)
+            assertNull(captured!!.url.parameters["categories"])
+        }
 
     @Test
     fun `getStores with categories sends comma separated categories parameter`() = runTest {

@@ -1,17 +1,18 @@
 package eti.lucasgomes.features.menuItem.ui.model
 
 import MakaluConfig
+import java.math.BigDecimal
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.math.BigDecimal
 
 class MenuItemUiStateTest {
 
     private val singleKey = ConfigurationUiState("Size", ConfigurationUiState.Type.SINGLE_CHOICE)
-    private val multipleKey = ConfigurationUiState("Extras", ConfigurationUiState.Type.MULTIPLE_CHOICE)
+    private val multipleKey =
+        ConfigurationUiState("Extras", ConfigurationUiState.Type.MULTIPLE_CHOICE)
     private val quantityKey = ConfigurationUiState("Drinks", ConfigurationUiState.Type.QUANTITY)
 
     @Test
@@ -27,8 +28,10 @@ class MenuItemUiStateTest {
             id = 1,
             price = BigDecimal("10.00"),
             configurations = mapOf(
-                singleKey to listOf(OptionUiState.SingleChoice(1, additionalPrice = BigDecimal("3.00"))),
-                multipleKey to listOf(OptionUiState.MultipleChoice(2, additionalPrice = BigDecimal("1.00")))
+                singleKey to
+                    listOf(OptionUiState.SingleChoice(1, additionalPrice = BigDecimal("3.00"))),
+                multipleKey to
+                    listOf(OptionUiState.MultipleChoice(2, additionalPrice = BigDecimal("1.00")))
             )
         )
 
@@ -42,11 +45,19 @@ class MenuItemUiStateTest {
             price = BigDecimal("10.00"),
             configurations = mapOf(
                 singleKey to listOf(
-                    OptionUiState.SingleChoice(1, additionalPrice = BigDecimal("1.50"), isSelected = true),
+                    OptionUiState.SingleChoice(
+                        1,
+                        additionalPrice = BigDecimal("1.50"),
+                        isSelected = true
+                    ),
                     OptionUiState.SingleChoice(2, additionalPrice = BigDecimal("5.00"))
                 ),
                 multipleKey to listOf(
-                    OptionUiState.MultipleChoice(3, additionalPrice = BigDecimal("2.25"), isSelected = true)
+                    OptionUiState.MultipleChoice(
+                        3,
+                        additionalPrice = BigDecimal("2.25"),
+                        isSelected = true
+                    )
                 )
             )
         )
@@ -60,7 +71,10 @@ class MenuItemUiStateTest {
             id = 1,
             price = BigDecimal("10.00"),
             configurations = mapOf(
-                quantityKey to listOf(OptionUiState.Quantity(1, additionalPrice = BigDecimal("2.50"), amount = 3))
+                quantityKey to
+                    listOf(
+                        OptionUiState.Quantity(1, additionalPrice = BigDecimal("2.50"), amount = 3)
+                    )
             )
         )
 
@@ -73,7 +87,10 @@ class MenuItemUiStateTest {
             id = 1,
             price = BigDecimal("10.00"),
             configurations = mapOf(
-                quantityKey to listOf(OptionUiState.Quantity(1, additionalPrice = BigDecimal("2.50"), amount = 0))
+                quantityKey to
+                    listOf(
+                        OptionUiState.Quantity(1, additionalPrice = BigDecimal("2.50"), amount = 0)
+                    )
             )
         )
 

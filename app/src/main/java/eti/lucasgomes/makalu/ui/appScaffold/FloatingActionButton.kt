@@ -23,14 +23,23 @@ fun FloatingActionButton(fabUiController: FabUiController) {
     val isEnabled = fabUiController.isEnabled.value
     val onClick = { if (isEnabled) fabUiController.action.value?.onClick?.invoke() }
     val containerColor =
-        if (isEnabled) FloatingActionButtonDefaults.containerColor
-        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+        if (isEnabled) {
+            FloatingActionButtonDefaults.containerColor
+        } else {
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+        }
     val contentColor =
-        if (isEnabled) contentColorFor(FloatingActionButtonDefaults.containerColor)
-        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+        if (isEnabled) {
+            contentColorFor(FloatingActionButtonDefaults.containerColor)
+        } else {
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+        }
     val elevation =
-        if (isEnabled) FloatingActionButtonDefaults.elevation()
-        else FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp)
+        if (isEnabled) {
+            FloatingActionButtonDefaults.elevation()
+        } else {
+            FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp)
+        }
     val modifier = Modifier.semantics { if (!isEnabled) disabled() }
 
     AnimatedVisibility(fabUiController.isFabVisible.value) {
@@ -40,7 +49,7 @@ fun FloatingActionButton(fabUiController: FabUiController) {
                 modifier = modifier,
                 containerColor = containerColor,
                 contentColor = contentColor,
-                elevation = elevation,
+                elevation = elevation
             ) {
                 fabUiController.action.value?.let { action ->
                     Row(
@@ -58,13 +67,12 @@ fun FloatingActionButton(fabUiController: FabUiController) {
                 modifier = modifier,
                 containerColor = containerColor,
                 contentColor = contentColor,
-                elevation = elevation,
+                elevation = elevation
             ) {
                 fabUiController.action.value?.let { action ->
                     Icon(action.icon, action.contentDescription)
                 }
             }
         }
-
     }
 }

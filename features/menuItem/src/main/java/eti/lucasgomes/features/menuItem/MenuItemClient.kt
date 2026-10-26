@@ -19,10 +19,9 @@ internal class MenuItemClient(private val httpClientManager: HttpClientManager) 
         storeId: Long,
         menuItemId: Long,
         request: CartItemRequest
-    ): EmptyResult =
-        httpClientManager.withApiResource {
-            put("/stores/$storeId/menu/$menuItemId/cart") {
-                setBody(request)
-            }
+    ): EmptyResult = httpClientManager.withApiResource {
+        put("/stores/$storeId/menu/$menuItemId/cart") {
+            setBody(request)
         }
+    }
 }

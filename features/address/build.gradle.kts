@@ -50,7 +50,7 @@ android {
 }
 
 dependencies {
-    //Project
+    // Project
     implementation(projects.shared)
     implementation(projects.components)
 
@@ -58,7 +58,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
 
-    //DI
+    // DI
     implementation(libs.koin.androidx.compose)
 
     // Tooling

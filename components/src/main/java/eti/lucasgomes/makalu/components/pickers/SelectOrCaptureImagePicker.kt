@@ -24,7 +24,10 @@ import eti.lucasgomes.makalu.components.R
 fun SelectOrCaptureImagePicker(
     onGalleryImageObtained: (uri: Uri?) -> Unit,
     onCameraImageTaken: (isImageSaved: Boolean) -> Unit,
-    onPermissionLauncherResultReceived: (permissionGranted: Boolean, launchCamera: (Uri) -> Unit) -> Unit,
+    onPermissionLauncherResultReceived: (
+        permissionGranted: Boolean,
+        launchCamera: (Uri) -> Unit
+    ) -> Unit,
     onDismissRequest: () -> Unit
 ) {
     val pickImageFromGalleryLauncher =
@@ -57,7 +60,6 @@ fun SelectOrCaptureImagePicker(
         onDismissRequest = onDismissRequest
     )
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

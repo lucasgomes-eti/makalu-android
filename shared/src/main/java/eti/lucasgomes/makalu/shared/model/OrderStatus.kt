@@ -14,7 +14,7 @@ enum class OrderStatus {
     ACCEPTED,
     CANCELLED,
     IN_ROUTE,
-    FINISHED,
+    FINISHED
 }
 
 internal object OrderStatusSerializer : KSerializer<OrderStatus> {

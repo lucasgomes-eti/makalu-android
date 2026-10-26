@@ -19,7 +19,7 @@ fun ErrorBanner(message: String, onDismissed: (() -> Unit)? = null) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.errorContainer
-        ),
+        )
     ) {
         Row {
             Text(
@@ -27,7 +27,9 @@ fun ErrorBanner(message: String, onDismissed: (() -> Unit)? = null) {
                 modifier = Modifier
                     .padding(16.dp)
                     .weight(1f),
-                style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onErrorContainer)
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.onErrorContainer
+                )
             )
             onDismissed?.let {
                 IconButton(onClick = it, content = {

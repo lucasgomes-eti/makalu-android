@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 internal class HomeViewModel(
     private val navigator: Navigator,
     private val homeClient: HomeClient,
-    private val dataStore: DataStore<Settings>,
+    private val dataStore: DataStore<Settings>
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -92,7 +92,7 @@ internal class HomeViewModel(
                             UiText.PlainText(category.description),
                             false
                         )
-                    },
+                    }
                 )
             }
         }
@@ -114,7 +114,7 @@ internal class HomeViewModel(
             _uiState.update { state ->
                 state.copy(
                     stores = listOf(StoreUiState.NoContent),
-                    isStoresLoading = false,
+                    isStoresLoading = false
                 )
             }
         }.onSuccess {
@@ -122,7 +122,7 @@ internal class HomeViewModel(
                 _uiState.update { state ->
                     state.copy(
                         stores = listOf(StoreUiState.NoContent),
-                        isStoresLoading = false,
+                        isStoresLoading = false
                     )
                 }
                 return@onSuccess
@@ -133,12 +133,14 @@ internal class HomeViewModel(
                         StoreUiState.Data(
                             store.id,
                             store.name,
-                            store.categories.joinToString(", ") { category -> category.description },
+                            store.categories.joinToString(", ") { category ->
+                                category.description
+                            },
                             logoId = store.logoImageId,
                             coverId = store.coverImageId
                         )
                     },
-                    isStoresLoading = false,
+                    isStoresLoading = false
                 )
             }
         }

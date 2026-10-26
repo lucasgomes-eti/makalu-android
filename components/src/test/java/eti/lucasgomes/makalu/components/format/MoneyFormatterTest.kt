@@ -1,13 +1,13 @@
 package eti.lucasgomes.makalu.components.format
 
+import java.math.BigDecimal
+import java.util.Locale
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import java.math.BigDecimal
-import java.util.Locale
 
 class MoneyFormatterTest {
 

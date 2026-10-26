@@ -11,12 +11,12 @@ import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpRequestData
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import java.math.BigDecimal
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.math.BigDecimal
 
 class OrdersClientTest {
 
@@ -44,7 +44,10 @@ class OrdersClientTest {
 
     @Test
     fun `getOrders decodes the order list on success`() = runTest {
-        val client = clientResponding("[${orderSimpleJson(id = 1)}, ${orderSimpleJson(id = 2, status = "IN_ROUTE")}]")
+        val client =
+            clientResponding(
+                "[${orderSimpleJson(id = 1)}, ${orderSimpleJson(id = 2, status = "IN_ROUTE")}]"
+            )
 
         val result = client.getOrders()
 
@@ -89,7 +92,8 @@ class OrdersClientTest {
 
     @Test
     fun `getOrders returns the backend error on a 4xx response`() = runTest {
-        val client = clientResponding(errorJson(404, "Not found", "MK-404"), HttpStatusCode.NotFound)
+        val client =
+            clientResponding(errorJson(404, "Not found", "MK-404"), HttpStatusCode.NotFound)
 
         val result = client.getOrders()
 
@@ -97,15 +101,18 @@ class OrdersClientTest {
     }
 
     @Test
-    fun `getOrders returns an unexpected http error when the error body is not parseable`() = runTest {
-        val client = OrdersClient(
-            mockHttpClientManager { respond("Internal error", HttpStatusCode.InternalServerError) }
-        )
+    fun `getOrders returns an unexpected http error when the error body is not parseable`() =
+        runTest {
+            val client = OrdersClient(
+                mockHttpClientManager {
+                    respond("Internal error", HttpStatusCode.InternalServerError)
+                }
+            )
 
-        val result = client.getOrders()
+            val result = client.getOrders()
 
-        assertEquals(Resource.Error(unexpectedErrorWithHttpStatusCode(500)), result)
-    }
+            assertEquals(Resource.Error(unexpectedErrorWithHttpStatusCode(500)), result)
+        }
 
     @Test
     fun `getOrders returns an unexpected error when the success body is malformed`() = runTest {
@@ -162,7 +169,8 @@ class OrdersClientTest {
 
     @Test
     fun `getOrder returns the backend error on a 4xx response`() = runTest {
-        val client = clientResponding(errorJson(404, "Order not found", "MK-404"), HttpStatusCode.NotFound)
+        val client =
+            clientResponding(errorJson(404, "Order not found", "MK-404"), HttpStatusCode.NotFound)
 
         val result = client.getOrder(42)
 

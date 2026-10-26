@@ -119,7 +119,10 @@ class LoginViewModelTest {
 
         viewModel.onAction(LoginAction.LoginClicked)
 
-        assertEquals(UiText.StringResource(R.string.email_must_have_valid_format), state.email.error)
+        assertEquals(
+            UiText.StringResource(R.string.email_must_have_valid_format),
+            state.email.error
+        )
         assertFalse(state.isLoading)
         coVerify(exactly = 0) { authClient.login(any()) }
     }
@@ -142,7 +145,10 @@ class LoginViewModelTest {
         viewModel.onAction(LoginAction.LoginClicked)
 
         assertEquals(
-            UiText.StringResource(R.string.password_must_have_at_least_characters, listOf(MIN_PASSWORD_LENGTH)),
+            UiText.StringResource(
+                R.string.password_must_have_at_least_characters,
+                listOf(MIN_PASSWORD_LENGTH)
+            ),
             state.password.error
         )
         coVerify(exactly = 0) { authClient.login(any()) }
@@ -154,7 +160,10 @@ class LoginViewModelTest {
 
         viewModel.onAction(LoginAction.LoginClicked)
 
-        assertEquals(UiText.StringResource(R.string.password_must_have_letters_and_numbers), state.password.error)
+        assertEquals(
+            UiText.StringResource(R.string.password_must_have_letters_and_numbers),
+            state.password.error
+        )
         coVerify(exactly = 0) { authClient.login(any()) }
     }
 
@@ -180,7 +189,10 @@ class LoginViewModelTest {
     @Test
     fun `login shows loading while the request is in flight`() = runTest {
         val gate = CompletableDeferred<Unit>()
-        coEvery { authClient.login(any()) } coAnswers { gate.await(); Resource.Success(tokenPair) }
+        coEvery { authClient.login(any()) } coAnswers {
+            gate.await()
+            Resource.Success(tokenPair)
+        }
         typeCredentials()
 
         viewModel.onAction(LoginAction.LoginClicked)
@@ -194,7 +206,10 @@ class LoginViewModelTest {
     @Test
     fun `login clicked while loading is ignored`() = runTest {
         val gate = CompletableDeferred<Unit>()
-        coEvery { authClient.login(any()) } coAnswers { gate.await(); Resource.Success(tokenPair) }
+        coEvery { authClient.login(any()) } coAnswers {
+            gate.await()
+            Resource.Success(tokenPair)
+        }
         typeCredentials()
 
         viewModel.onAction(LoginAction.LoginClicked)
@@ -219,7 +234,7 @@ class LoginViewModelTest {
     @Test
     fun `login failure shows formatted error and stops loading`() = runTest {
         coEvery { authClient.login(any()) } returns
-                Resource.Error(makaluError(401, "Invalid credentials", "MK-12"))
+            Resource.Error(makaluError(401, "Invalid credentials", "MK-12"))
         typeCredentials()
 
         viewModel.onAction(LoginAction.LoginClicked)

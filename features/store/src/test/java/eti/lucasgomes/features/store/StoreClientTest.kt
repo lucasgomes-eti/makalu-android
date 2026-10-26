@@ -10,11 +10,11 @@ import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpRequestData
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import java.math.BigDecimal
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.math.BigDecimal
 
 class StoreClientTest {
 
@@ -36,10 +36,12 @@ class StoreClientTest {
     @Test
     fun `getStore sends GET to stores path with id`() = runTest {
         var captured: HttpRequestData? = null
-        val client = StoreClient(mockHttpClientManager { request ->
-            captured = request
-            respondJson(storeJson)
-        })
+        val client = StoreClient(
+            mockHttpClientManager { request ->
+                captured = request
+                respondJson(storeJson)
+            }
+        )
 
         client.getStore(42)
 
@@ -86,9 +88,11 @@ class StoreClientTest {
 
     @Test
     fun `getStore maps api error body to Resource Error`() = runTest {
-        val client = StoreClient(mockHttpClientManager {
-            respondJson(errorJson, HttpStatusCode.NotFound)
-        })
+        val client = StoreClient(
+            mockHttpClientManager {
+                respondJson(errorJson, HttpStatusCode.NotFound)
+            }
+        )
 
         val result = client.getStore(42)
 
@@ -97,9 +101,11 @@ class StoreClientTest {
 
     @Test
     fun `getStore maps undecodable error body to unexpected http error`() = runTest {
-        val client = StoreClient(mockHttpClientManager {
-            respond("Internal error", HttpStatusCode.InternalServerError)
-        })
+        val client = StoreClient(
+            mockHttpClientManager {
+                respond("Internal error", HttpStatusCode.InternalServerError)
+            }
+        )
 
         val result = client.getStore(42)
 
@@ -121,10 +127,12 @@ class StoreClientTest {
     @Test
     fun `getMenuItems sends GET to store menu path`() = runTest {
         var captured: HttpRequestData? = null
-        val client = StoreClient(mockHttpClientManager { request ->
-            captured = request
-            respondJson("[]")
-        })
+        val client = StoreClient(
+            mockHttpClientManager { request ->
+                captured = request
+                respondJson("[]")
+            }
+        )
 
         client.getMenuItems(7)
 
@@ -221,13 +229,16 @@ class StoreClientTest {
     @Test
     fun `getMenuItems maps api error body to Resource Error`() = runTest {
         val json = """{"http_code": 400, "message": "Invalid store", "internal_code": "MK-400"}"""
-        val client = StoreClient(mockHttpClientManager {
-            respondJson(json, HttpStatusCode.BadRequest)
-        })
+        val client = StoreClient(
+            mockHttpClientManager {
+                respondJson(json, HttpStatusCode.BadRequest)
+            }
+        )
 
         val result = client.getMenuItems(7)
 
-        val expected = makaluError(httpCode = 400, message = "Invalid store", internalCode = "MK-400")
+        val expected =
+            makaluError(httpCode = 400, message = "Invalid store", internalCode = "MK-400")
         assertEquals(Resource.Error(expected), result)
     }
 }

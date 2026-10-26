@@ -10,14 +10,14 @@ import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
 import io.mockk.every
 import io.mockk.mockk
+import java.io.IOException
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.Serializable
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
-import java.io.IOException
-import kotlin.coroutines.cancellation.CancellationException
 
 class HttpClientManagerWithApiResourceTest {
 
@@ -124,7 +124,10 @@ class HttpClientManagerWithApiResourceTest {
             onSuccess = { throw IllegalStateException("x") }
         ) { get("items/1") }
 
-        assertEquals(Resource.Error(unexpectedErrorWithException(IllegalStateException("x"))), result)
+        assertEquals(
+            Resource.Error(unexpectedErrorWithException(IllegalStateException("x"))),
+            result
+        )
     }
 
     @Test

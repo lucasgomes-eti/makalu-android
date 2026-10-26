@@ -64,20 +64,23 @@ import eti.lucasgomes.makalu.features.adress.R
 
 private val LOCATION_PERMISSIONS = arrayOf(
     Manifest.permission.ACCESS_FINE_LOCATION,
-    Manifest.permission.ACCESS_COARSE_LOCATION,
+    Manifest.permission.ACCESS_COARSE_LOCATION
 )
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) -> Unit) {
-
     val permissionLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grants ->
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { grants ->
             onAction(AddressAction.GetCurrentLocationClicked(grants.values.any { it }))
         }
 
     val locationSettingsLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.StartIntentSenderForResult()
+        ) { result ->
             onAction(AddressAction.LocationSettingsResult(result.resultCode == Activity.RESULT_OK))
         }
 
@@ -134,7 +137,7 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
                                 scrollGesturesEnabledDuringRotateOrZoom = false,
                                 tiltGesturesEnabled = false,
                                 zoomControlsEnabled = false,
-                                zoomGesturesEnabled = false,
+                                zoomGesturesEnabled = false
                             )
                         ) {
                             Marker(state = uiState.marker)
@@ -144,9 +147,13 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
                     }
                 }
                 val overlayColor by animateColorAsState(
-                    if (uiState.isLocationLoading) Color.Black.copy(
-                        alpha = .2f
-                    ) else Color.Transparent
+                    if (uiState.isLocationLoading) {
+                        Color.Black.copy(
+                            alpha = .2f
+                        )
+                    } else {
+                        Color.Transparent
+                    }
                 )
                 Box(
                     Modifier
@@ -157,17 +164,29 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
                             role = Role.Button,
                             onClick = {
                                 val isGranted = LOCATION_PERMISSIONS.any {
-                                    ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+                                    ContextCompat.checkSelfPermission(context, it) ==
+                                        PackageManager.PERMISSION_GRANTED
                                 }
-                                val shouldShowRationale = activity != null && LOCATION_PERMISSIONS.any {
-                                    ActivityCompat.shouldShowRequestPermissionRationale(activity, it)
-                                }
+                                val shouldShowRationale =
+                                    activity != null && LOCATION_PERMISSIONS.any {
+                                        ActivityCompat.shouldShowRequestPermissionRationale(
+                                            activity,
+                                            it
+                                        )
+                                    }
                                 when {
-                                    isGranted -> onAction(AddressAction.GetCurrentLocationClicked(true))
-                                    shouldShowRationale -> onAction(AddressAction.PermissionRationaleRequested)
+                                    isGranted -> onAction(
+                                        AddressAction.GetCurrentLocationClicked(true)
+                                    )
+
+                                    shouldShowRationale -> onAction(
+                                        AddressAction.PermissionRationaleRequested
+                                    )
+
                                     else -> permissionLauncher.launch(LOCATION_PERMISSIONS)
                                 }
-                            })
+                            }
+                        )
                 )
                 if (uiState.isLocationLoading) {
                     LoadingIndicator()
@@ -236,7 +255,9 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
                 imeAction = ImeAction.Done,
                 capitalization = KeyboardCapitalization.Words
             ),
-            keyboardActions = KeyboardActions(onDone = { onAction(AddressAction.SaveAddressClicked) })
+            keyboardActions = KeyboardActions(onDone = {
+                onAction(AddressAction.SaveAddressClicked)
+            })
         )
         ExpressiveLoadingButton(
             isLoading = uiState.isLoading,
@@ -250,7 +271,7 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
     if (uiState.isPermissionDeniedDialogVisible) {
         LocationPermissionDeniedDialog(
             onDismissRequest = { onAction(AddressAction.PermissionDeniedDismissed) },
-            onGoToSystemSettings = { onAction(AddressAction.GoToSystemSettingsClicked) },
+            onGoToSystemSettings = { onAction(AddressAction.GoToSystemSettingsClicked) }
         )
     }
 
@@ -260,7 +281,7 @@ internal fun AddressScreen(uiState: AddressUiState, onAction: (AddressAction) ->
             onContinue = {
                 onAction(AddressAction.PermissionRationaleDismissed)
                 permissionLauncher.launch(LOCATION_PERMISSIONS)
-            },
+            }
         )
     }
 }
@@ -280,7 +301,9 @@ fun LocationPermissionDeniedDialog(onDismissRequest: () -> Unit, onGoToSystemSet
         onDismissRequest = onDismissRequest,
         confirmButton = {
             TextButton(onClick = onGoToSystemSettings) {
-                Text(stringResource(eti.lucasgomes.makalu.components.R.string.go_to_system_settings))
+                Text(
+                    stringResource(eti.lucasgomes.makalu.components.R.string.go_to_system_settings)
+                )
             }
         },
         dismissButton = {
@@ -295,7 +318,10 @@ fun LocationPermissionDeniedDialog(onDismissRequest: () -> Unit, onGoToSystemSet
 }
 
 @Composable
-private fun LocationPermissionRationaleDialog(onDismissRequest: () -> Unit, onContinue: () -> Unit) {
+private fun LocationPermissionRationaleDialog(
+    onDismissRequest: () -> Unit,
+    onContinue: () -> Unit
+) {
     AlertDialog(
         title = {
             Text(stringResource(R.string.location_permission_rationale_title))

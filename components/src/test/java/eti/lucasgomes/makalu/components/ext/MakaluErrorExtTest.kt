@@ -37,7 +37,9 @@ class MakaluErrorExtTest {
 
     @Test
     fun `empty field errors give an empty map`() {
-        val result = emptyList<MakaluError.FieldError>().withFieldErrorsAsMap { FakeErrorsAssignable(this) }
+        val result = emptyList<MakaluError.FieldError>().withFieldErrorsAsMap {
+            FakeErrorsAssignable(this)
+        }
 
         assertTrue(result.errors.isEmpty())
     }

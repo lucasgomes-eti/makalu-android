@@ -17,6 +17,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.slot
+import java.math.BigDecimal
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -25,7 +26,6 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import java.math.BigDecimal
 
 class MenuItemViewModelTest {
 
@@ -41,7 +41,8 @@ class MenuItemViewModelTest {
         addToCartResult: EmptyResult = Resource.Success(Unit)
     ): MenuItemViewModel {
         coEvery { menuItemClient.getItem(MENU_ITEM_ID) } returns response
-        coEvery { menuItemClient.addItemToCart(any(), any(), capture(cartRequest)) } returns addToCartResult
+        coEvery { menuItemClient.addItemToCart(any(), any(), capture(cartRequest)) } returns
+            addToCartResult
         return MenuItemViewModel(STORE_ID, MENU_ITEM_ID, navigator, menuItemClient)
     }
 
@@ -56,21 +57,22 @@ class MenuItemViewModelTest {
     }
 
     @Test
-    fun `initial state carries the menu item id and is loading while fetch is in flight`() = runTest {
-        val gate = CompletableDeferred<Unit>()
-        coEvery { menuItemClient.getItem(MENU_ITEM_ID) } coAnswers {
-            gate.await()
-            Resource.Success(menuItemResponse())
+    fun `initial state carries the menu item id and is loading while fetch is in flight`() =
+        runTest {
+            val gate = CompletableDeferred<Unit>()
+            coEvery { menuItemClient.getItem(MENU_ITEM_ID) } coAnswers {
+                gate.await()
+                Resource.Success(menuItemResponse())
+            }
+
+            val viewModel = MenuItemViewModel(STORE_ID, MENU_ITEM_ID, navigator, menuItemClient)
+
+            val state = viewModel.uiState.value
+            assertEquals(MENU_ITEM_ID, state.id)
+            assertTrue(state.isLoading)
+            assertFalse(state.isLoaded)
+            gate.complete(Unit)
         }
-
-        val viewModel = MenuItemViewModel(STORE_ID, MENU_ITEM_ID, navigator, menuItemClient)
-
-        val state = viewModel.uiState.value
-        assertEquals(MENU_ITEM_ID, state.id)
-        assertTrue(state.isLoading)
-        assertFalse(state.isLoaded)
-        gate.complete(Unit)
-    }
 
     @Test
     fun `initial fetch success maps item fields and marks loaded`() = runTest {
@@ -97,51 +99,79 @@ class MenuItemViewModelTest {
     }
 
     @Test
-    fun `initial fetch success maps single choice configuration to unselected single choice options`() = runTest {
-        val response = menuItemResponse(
-            configurations = listOf(singleChoiceConfiguration(responseOption(10, "0.00"), responseOption(11, "3.00")))
-        )
+    fun `initial fetch success maps single choice configuration to unselected single choice options`() =
+        runTest {
+            val response = menuItemResponse(
+                configurations = listOf(
+                    singleChoiceConfiguration(
+                        responseOption(10, "0.00"),
+                        responseOption(11, "3.00")
+                    )
+                )
+            )
 
-        val viewModel = createViewModel(Resource.Success(response))
+            val viewModel = createViewModel(Resource.Success(response))
 
-        val expected = listOf(
-            OptionUiState.SingleChoice(10, "Option 10", BigDecimal("0.00"), isSelected = false),
-            OptionUiState.SingleChoice(11, "Option 11", BigDecimal("3.00"), isSelected = false)
-        )
-        assertEquals(mapOf(singleKey to expected), viewModel.uiState.value.configurations)
-    }
-
-    @Test
-    fun `initial fetch success maps multiple choice configuration to unselected multiple choice options`() = runTest {
-        val response = menuItemResponse(
-            configurations = listOf(multipleChoiceConfiguration(responseOption(20, "1.25"), responseOption(21, "2.00")))
-        )
-
-        val viewModel = createViewModel(Resource.Success(response))
-
-        val expected = listOf(
-            OptionUiState.MultipleChoice(20, "Option 20", BigDecimal("1.25"), isSelected = false),
-            OptionUiState.MultipleChoice(21, "Option 21", BigDecimal("2.00"), isSelected = false)
-        )
-        assertEquals(mapOf(multipleKey to expected), viewModel.uiState.value.configurations)
-    }
+            val expected = listOf(
+                OptionUiState.SingleChoice(10, "Option 10", BigDecimal("0.00"), isSelected = false),
+                OptionUiState.SingleChoice(11, "Option 11", BigDecimal("3.00"), isSelected = false)
+            )
+            assertEquals(mapOf(singleKey to expected), viewModel.uiState.value.configurations)
+        }
 
     @Test
-    fun `initial fetch success maps quantity configuration to quantity options with zero amount`() = runTest {
-        val response = menuItemResponse(
-            configurations = listOf(quantityConfiguration(responseOption(30, "4.50")))
-        )
+    fun `initial fetch success maps multiple choice configuration to unselected multiple choice options`() =
+        runTest {
+            val response = menuItemResponse(
+                configurations = listOf(
+                    multipleChoiceConfiguration(
+                        responseOption(20, "1.25"),
+                        responseOption(21, "2.00")
+                    )
+                )
+            )
 
-        val viewModel = createViewModel(Resource.Success(response))
+            val viewModel = createViewModel(Resource.Success(response))
 
-        val expected = listOf(OptionUiState.Quantity(30, "Option 30", BigDecimal("4.50"), amount = 0))
-        assertEquals(mapOf(quantityKey to expected), viewModel.uiState.value.configurations)
-    }
+            val expected = listOf(
+                OptionUiState.MultipleChoice(
+                    20,
+                    "Option 20",
+                    BigDecimal("1.25"),
+                    isSelected = false
+                ),
+                OptionUiState.MultipleChoice(
+                    21,
+                    "Option 21",
+                    BigDecimal("2.00"),
+                    isSelected = false
+                )
+            )
+            assertEquals(mapOf(multipleKey to expected), viewModel.uiState.value.configurations)
+        }
+
+    @Test
+    fun `initial fetch success maps quantity configuration to quantity options with zero amount`() =
+        runTest {
+            val response = menuItemResponse(
+                configurations = listOf(quantityConfiguration(responseOption(30, "4.50")))
+            )
+
+            val viewModel = createViewModel(Resource.Success(response))
+
+            val expected =
+                listOf(OptionUiState.Quantity(30, "Option 30", BigDecimal("4.50"), amount = 0))
+            assertEquals(mapOf(quantityKey to expected), viewModel.uiState.value.configurations)
+        }
 
     @Test
     fun `initial fetch success keeps configurations in response order`() = runTest {
         val response = menuItemResponse(
-            configurations = listOf(quantityConfiguration(), singleChoiceConfiguration(), multipleChoiceConfiguration())
+            configurations = listOf(
+                quantityConfiguration(),
+                singleChoiceConfiguration(),
+                multipleChoiceConfiguration()
+            )
         )
 
         val viewModel = createViewModel(Resource.Success(response))
@@ -154,7 +184,8 @@ class MenuItemViewModelTest {
 
     @Test
     fun `initial fetch success with no configurations leaves configurations empty`() = runTest {
-        val viewModel = createViewModel(Resource.Success(menuItemResponse(configurations = emptyList())))
+        val viewModel =
+            createViewModel(Resource.Success(menuItemResponse(configurations = emptyList())))
 
         assertTrue(viewModel.uiState.value.configurations.isEmpty())
     }
@@ -222,7 +253,12 @@ class MenuItemViewModelTest {
 
         viewModel.onAction(MenuItemAction.OptionSelected(multipleKey, 1))
 
-        assertEquals(listOf(false, true, false), viewModel.options(multipleKey).map { it.isSelected })
+        assertEquals(
+            listOf(false, true, false),
+            viewModel.options(multipleKey).map {
+                it.isSelected
+            }
+        )
     }
 
     @Test
@@ -232,7 +268,12 @@ class MenuItemViewModelTest {
 
         viewModel.onAction(MenuItemAction.OptionSelected(multipleKey, 1))
 
-        assertEquals(listOf(false, false, false), viewModel.options(multipleKey).map { it.isSelected })
+        assertEquals(
+            listOf(false, false, false),
+            viewModel.options(multipleKey).map {
+                it.isSelected
+            }
+        )
     }
 
     @Test
@@ -242,7 +283,12 @@ class MenuItemViewModelTest {
         viewModel.onAction(MenuItemAction.OptionSelected(multipleKey, 0))
         viewModel.onAction(MenuItemAction.OptionSelected(multipleKey, 2))
 
-        assertEquals(listOf(true, false, true), viewModel.options(multipleKey).map { it.isSelected })
+        assertEquals(
+            listOf(true, false, true),
+            viewModel.options(multipleKey).map {
+                it.isSelected
+            }
+        )
     }
 
     @Test
@@ -407,25 +453,29 @@ class MenuItemViewModelTest {
 
         viewModel.onAction(MenuItemAction.AddToCartClicked)
 
-        assertEquals(emptyList<CartItemRequest.Configuration>(), cartRequest.captured.configurations)
+        assertEquals(
+            emptyList<CartItemRequest.Configuration>(),
+            cartRequest.captured.configurations
+        )
     }
 
     @Test
-    fun `add to cart sends selected single and multiple choice options with quantity 1`() = runTest {
-        val viewModel = createViewModel()
-        viewModel.onAction(MenuItemAction.OptionSelected(singleKey, 1))
-        viewModel.onAction(MenuItemAction.OptionSelected(multipleKey, 0))
-        viewModel.onAction(MenuItemAction.OptionSelected(multipleKey, 2))
+    fun `add to cart sends selected single and multiple choice options with quantity 1`() =
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onAction(MenuItemAction.OptionSelected(singleKey, 1))
+            viewModel.onAction(MenuItemAction.OptionSelected(multipleKey, 0))
+            viewModel.onAction(MenuItemAction.OptionSelected(multipleKey, 2))
 
-        viewModel.onAction(MenuItemAction.AddToCartClicked)
+            viewModel.onAction(MenuItemAction.AddToCartClicked)
 
-        val expected = listOf(
-            CartItemRequest.Configuration(11, 1),
-            CartItemRequest.Configuration(20, 1),
-            CartItemRequest.Configuration(22, 1)
-        )
-        assertEquals(expected, cartRequest.captured.configurations)
-    }
+            val expected = listOf(
+                CartItemRequest.Configuration(11, 1),
+                CartItemRequest.Configuration(20, 1),
+                CartItemRequest.Configuration(22, 1)
+            )
+            assertEquals(expected, cartRequest.captured.configurations)
+        }
 
     @Test
     fun `add to cart sends quantity options with their amount and skips zero amounts`() = runTest {
@@ -434,7 +484,10 @@ class MenuItemViewModelTest {
 
         viewModel.onAction(MenuItemAction.AddToCartClicked)
 
-        assertEquals(listOf(CartItemRequest.Configuration(30, 3)), cartRequest.captured.configurations)
+        assertEquals(
+            listOf(CartItemRequest.Configuration(30, 3)),
+            cartRequest.captured.configurations
+        )
     }
 
     @Test

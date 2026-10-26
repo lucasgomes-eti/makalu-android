@@ -1,9 +1,9 @@
 package eti.lucasgomes.features.store.model
 
 import eti.lucasgomes.makalu.shared.serializer.BigDecimalSerializer
+import java.math.BigDecimal
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.math.BigDecimal
 
 @Serializable
 data class MenuItemResponse(
@@ -23,11 +23,7 @@ data class MenuItemResponse(
     val imageId: Long?
 ) {
     @Serializable
-    data class Configuration(
-        val name: String,
-        val type: Type,
-        val options: List<Option>
-    ) {
+    data class Configuration(val name: String, val type: Type, val options: List<Option>) {
         enum class Type { SINGLE_CHOICE, MULTIPLE_CHOICE, QUANTITY }
 
         @Serializable

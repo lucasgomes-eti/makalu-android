@@ -20,14 +20,14 @@ import eti.lucasgomes.makalu.shared.FILE_PROVIDER_AUTHORITY
 import eti.lucasgomes.makalu.shared.IMAGE_TEMP_FILE_SUFFIX
 import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.shared.navigation.RequestKey
+import java.io.ByteArrayOutputStream
+import java.io.File
+import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
-import java.io.File
-import kotlin.math.roundToInt
 
 class ImageCropperViewModel(
     private val navigator: Navigator,
@@ -48,17 +48,24 @@ class ImageCropperViewModel(
     fun onAction(action: ImageCropperAction) {
         when (action) {
             is ImageCropperAction.ImageCropped -> onImageCropped(action.imageBitmap)
+
             ImageCropperAction.AddImageClicked -> onAddImageClicked()
+
             is ImageCropperAction.CameraImageTaken -> onCameraImageTaken(action.isImageSaved)
+
             is ImageCropperAction.GalleryImageObtained -> onGalleryImageObtained(action.uri)
+
             ImageCropperAction.GoToSystemSettingsClicked -> onGoToSystemSettingsClicked()
+
             ImageCropperAction.ImagePickerDismissed -> onImagePickerDismissed()
+
             ImageCropperAction.ErrorDismissed -> onErrorDismissed()
-            ImageCropperAction.PermissionDeniedDialogDismissed -> onPermissionDeniedDialogDismissed()
-            is ImageCropperAction.PermissionLauncherResultReceived -> onPermissionLauncherResultReceived(
-                action.isGranted,
-                action.launchCamera
-            )
+
+            ImageCropperAction.PermissionDeniedDialogDismissed ->
+                onPermissionDeniedDialogDismissed()
+
+            is ImageCropperAction.PermissionLauncherResultReceived ->
+                onPermissionLauncherResultReceived(action.isGranted, action.launchCamera)
         }
     }
 
@@ -68,7 +75,9 @@ class ImageCropperViewModel(
         }.onSuccess { uri ->
             navigator.navigateUpWithResult(RequestKey.ImageCroppedUriOutput, uri.toString())
         }.onFailure {
-            _uiState.update { state -> state.copy(error = UiText.StringResource(R.string.image_save_error)) }
+            _uiState.update { state ->
+                state.copy(error = UiText.StringResource(R.string.image_save_error))
+            }
         }
     }
 
@@ -106,7 +115,9 @@ class ImageCropperViewModel(
                 _uiState.update { state -> state.copy(bitmap = bitmap, error = UiText.Empty) }
             }
             .onFailure {
-                _uiState.update { state -> state.copy(error = UiText.StringResource(R.string.image_load_error)) }
+                _uiState.update { state ->
+                    state.copy(error = UiText.StringResource(R.string.image_load_error))
+                }
             }
     }
 
@@ -117,7 +128,7 @@ class ImageCropperViewModel(
                 val scale = MAX_IMAGE_EDGE_PX.toFloat() / longEdge
                 setTargetSize(
                     (info.size.width * scale).roundToInt().coerceAtLeast(1),
-                    (info.size.height * scale).roundToInt().coerceAtLeast(1),
+                    (info.size.height * scale).roundToInt().coerceAtLeast(1)
                 )
             }
         }

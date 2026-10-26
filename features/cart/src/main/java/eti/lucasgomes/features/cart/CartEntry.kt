@@ -12,7 +12,6 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun CartEntry(innerPadding: PaddingValues, storeId: Long) {
-
     val viewModel = koinViewModel<CartViewModel> { parametersOf(storeId) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

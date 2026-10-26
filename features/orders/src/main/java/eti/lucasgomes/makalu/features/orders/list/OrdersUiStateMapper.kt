@@ -5,8 +5,7 @@ import eti.lucasgomes.makalu.features.orders.components.toUiStatus
 import eti.lucasgomes.makalu.shared.mapImageUrl
 import eti.lucasgomes.makalu.shared.model.OrderSimpleResponse
 
-internal fun List<OrderSimpleResponse>.toUiItems(): List<OrdersUiState.Item> =
-    map { it.toUiItem() }
+internal fun List<OrderSimpleResponse>.toUiItems(): List<OrdersUiState.Item> = map { it.toUiItem() }
 
 internal fun OrderSimpleResponse.toUiItem(): OrdersUiState.Item = OrdersUiState.Item(
     id = id,

@@ -16,4 +16,3 @@ fun Application.openApplicationSettings() {
         ).addFlags(FLAG_ACTIVITY_NEW_TASK)
     )
 }
-

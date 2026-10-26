@@ -13,7 +13,7 @@ data class ProfileUiState(
     private val imageId: Long? = null,
     val isImagePickerVisible: Boolean = false,
     val isPermissionDeniedDialogVisible: Boolean = false,
-    val imageUploadLoading: Boolean = false,
+    val imageUploadLoading: Boolean = false
 ) {
     val isProfileImageLoaded get() = imageUrl != null
 

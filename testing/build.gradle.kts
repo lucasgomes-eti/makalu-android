@@ -15,7 +15,7 @@ kotlin {
 }
 
 dependencies {
-    //Project
+    // Project
     implementation(projects.shared)
 
     // Test

@@ -65,7 +65,7 @@ internal fun RegistrationScreen(
 
     ConfigureTopBar(
         title = stringResource(R.string.registration),
-        navigationActions = listOf(),
+        navigationActions = listOf()
     )
     Column(
         modifier = Modifier
@@ -81,15 +81,23 @@ internal fun RegistrationScreen(
             }
         }
         Box(contentAlignment = Alignment.Center) {
-            val profilePicturePainter by rememberAsyncImagePainter(uiState.profileImage).state.collectAsStateWithLifecycle()
+            val profilePicturePainter by rememberAsyncImagePainter(
+                uiState.profileImage
+            ).state.collectAsStateWithLifecycle()
             Image(
-                painter = if (uiState.isProfileImageLoaded) profilePicturePainter.painter
-                    ?: painterResource(
-                        eti.lucasgomes.makalu.components.R.drawable.person,
-                    ) else painterResource(
-                    eti.lucasgomes.makalu.components.R.drawable.person
+                painter = if (uiState.isProfileImageLoaded) {
+                    profilePicturePainter.painter
+                        ?: painterResource(
+                            eti.lucasgomes.makalu.components.R.drawable.person
+                        )
+                } else {
+                    painterResource(
+                        eti.lucasgomes.makalu.components.R.drawable.person
+                    )
+                },
+                contentDescription = stringResource(
+                    eti.lucasgomes.makalu.components.R.string.accessibility_profile_picture
                 ),
-                contentDescription = stringResource(eti.lucasgomes.makalu.components.R.string.accessibility_profile_picture),
                 modifier = Modifier
                     .size(128.dp)
                     .clip(CircleShape)
@@ -97,7 +105,8 @@ internal fun RegistrationScreen(
                     .clickable(
                         enabled = uiState.isLoading.not(),
                         role = Role.Image,
-                        onClick = { onAction(RegistrationAction.ProfileImageClicked) })
+                        onClick = { onAction(RegistrationAction.ProfileImageClicked) }
+                    )
             )
             if (uiState.imageUploadLoading) {
                 LoadingIndicator()
@@ -126,7 +135,7 @@ internal fun RegistrationScreen(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next,
                 capitalization = KeyboardCapitalization.Words
-            ),
+            )
         )
         TextField(
             label = { Text(stringResource(eti.lucasgomes.makalu.components.R.string.email)) },
@@ -151,10 +160,12 @@ internal fun RegistrationScreen(
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
-            ),
+            )
         )
         TextField(
-            label = { Text(stringResource(eti.lucasgomes.makalu.components.R.string.phone_number)) },
+            label = {
+                Text(stringResource(eti.lucasgomes.makalu.components.R.string.phone_number))
+            },
             enabled = uiState.isLoading.not(),
             isError = uiState.phoneNumber.hasError,
             supportingText = if (uiState.phoneNumber.hasError) {
@@ -200,7 +211,11 @@ internal fun RegistrationScreen(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Next
             ),
-            visualTransformation = if (uiState.isPasswordVisible.not()) PasswordVisualTransformation() else VisualTransformation.None,
+            visualTransformation = if (uiState.isPasswordVisible.not()) {
+                PasswordVisualTransformation()
+            } else {
+                VisualTransformation.None
+            },
             trailingIcon = {
                 IconButton(onClick = { onAction(RegistrationAction.ShowPasswordClicked) }) {
                     Crossfade(uiState.isPasswordVisible) { isPasswordVisible ->
@@ -242,7 +257,11 @@ internal fun RegistrationScreen(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
             ),
-            visualTransformation = if (uiState.isPasswordVisible.not()) PasswordVisualTransformation() else VisualTransformation.None,
+            visualTransformation = if (uiState.isPasswordVisible.not()) {
+                PasswordVisualTransformation()
+            } else {
+                VisualTransformation.None
+            },
             trailingIcon = {
                 IconButton(onClick = { onAction(RegistrationAction.ShowPasswordClicked) }) {
                     Crossfade(uiState.isPasswordVisible) { isPasswordVisible ->
@@ -263,7 +282,7 @@ internal fun RegistrationScreen(
             keyboardActions = KeyboardActions(onDone = {
                 keyBoardController?.hide()
                 onAction(RegistrationAction.CreateAccountClicked)
-            }),
+            })
         )
         Spacer(Modifier.weight(1f))
         ExpressiveLoadingButton(
@@ -279,7 +298,6 @@ internal fun RegistrationScreen(
             },
             onCameraImageTaken = {
                 onAction(RegistrationAction.CameraImageTaken(it))
-
             },
             onPermissionLauncherResultReceived = { permissionGranted, launchCamera ->
                 onAction(
@@ -287,7 +305,8 @@ internal fun RegistrationScreen(
                         isGranted = permissionGranted,
                         launchCamera = { uri ->
                             launchCamera(uri)
-                        })
+                        }
+                    )
                 )
             },
             onDismissRequest = { onAction(RegistrationAction.ImagePickerDismissed) }
@@ -300,7 +319,8 @@ internal fun RegistrationScreen(
                 onAction(
                     RegistrationAction.GoToSystemSettingsClicked
                 )
-            })
+            }
+        )
     }
 }
 

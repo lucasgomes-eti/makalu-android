@@ -14,14 +14,14 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.mockk.every
 import io.mockk.mockk
+import java.io.ByteArrayInputStream
+import java.io.FileNotFoundException
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.ByteArrayInputStream
-import java.io.FileNotFoundException
 
 @RunWith(AndroidJUnit4::class)
 class ProfileClientTest {
@@ -126,7 +126,10 @@ class ProfileClientTest {
             sentBody = it.body.toByteArray().decodeToString()
         }).uploadImage(imageUri)
 
-        assertTrue(sentBody, sentBody.contains("Content-Disposition: form-data; name=\"file\"; filename=photo.jpg"))
+        assertTrue(
+            sentBody,
+            sentBody.contains("Content-Disposition: form-data; name=\"file\"; filename=photo.jpg")
+        )
         assertTrue(sentBody, sentBody.contains("Content-Type: image/jpeg"))
         assertTrue(sentBody, sentBody.contains("fake-jpeg-bytes"))
     }

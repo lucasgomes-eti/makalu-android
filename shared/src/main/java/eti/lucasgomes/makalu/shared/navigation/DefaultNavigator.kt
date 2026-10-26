@@ -7,10 +7,7 @@ class DefaultNavigator : Navigator {
     private val _navigationActions = Channel<NavigationAction>(Channel.BUFFERED)
     override val navigationActions = _navigationActions.receiveAsFlow()
 
-    override suspend fun navigate(
-        destination: Destination,
-        navOptions: NavOptions?
-    ) {
+    override suspend fun navigate(destination: Destination, navOptions: NavOptions?) {
         _navigationActions.send(NavigationAction.Navigate(destination, navOptions))
     }
 

@@ -45,7 +45,6 @@ import eti.lucasgomes.makalu.shared.ExcludeFromGeneratedCoverageReport
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun LoginScreen(uiState: LoginUiState, onAction: (LoginAction) -> Unit) {
-
     val keyBoardController = LocalSoftwareKeyboardController.current
 
     Column(
@@ -91,7 +90,7 @@ internal fun LoginScreen(uiState: LoginUiState, onAction: (LoginAction) -> Unit)
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
-            ),
+            )
         )
         TextField(
             label = { Text(stringResource(R.string.password)) },
@@ -120,7 +119,11 @@ internal fun LoginScreen(uiState: LoginUiState, onAction: (LoginAction) -> Unit)
                 keyBoardController?.hide()
                 onAction(LoginAction.LoginClicked)
             }),
-            visualTransformation = if (uiState.isPasswordVisible.not()) PasswordVisualTransformation() else VisualTransformation.None,
+            visualTransformation = if (uiState.isPasswordVisible.not()) {
+                PasswordVisualTransformation()
+            } else {
+                VisualTransformation.None
+            },
             trailingIcon = {
                 IconButton(onClick = { onAction(LoginAction.ShowPasswordClicked) }) {
                     Crossfade(uiState.isPasswordVisible) { isPasswordVisible ->
@@ -134,7 +137,6 @@ internal fun LoginScreen(uiState: LoginUiState, onAction: (LoginAction) -> Unit)
                                 painterResource(R.drawable.visibility),
                                 stringResource(R.string.accessibility_show_password_icon)
                             )
-
                         }
                     }
                 }

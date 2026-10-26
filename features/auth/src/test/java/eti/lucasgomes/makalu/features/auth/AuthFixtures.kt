@@ -38,8 +38,11 @@ fun makaluErrorJson(
     internalCode: String,
     fieldErrors: List<MakaluError.FieldError> = emptyList()
 ): String {
-    val fields = fieldErrors.joinToString(",") { """{"field":"${it.field}","message":"${it.message}"}""" }
-    return """{"http_code":$httpCode,"message":"$message","internal_code":"$internalCode","field_errors":[$fields]}"""
+    val fields = fieldErrors.joinToString(",") {
+        """{"field":"${it.field}","message":"${it.message}"}"""
+    }
+    return """{"http_code":$httpCode,"message":"$message",""" +
+        """"internal_code":"$internalCode","field_errors":[$fields]}"""
 }
 
 fun tokenPairJson(accessToken: String, refreshToken: String) =

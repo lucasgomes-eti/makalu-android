@@ -49,13 +49,16 @@ class HomeViewModelTest {
     fun `init shows loading for address filters and stores while requests are pending`() = runTest {
         val gate = CompletableDeferred<Unit>()
         coEvery { homeClient.getSelfAddress() } coAnswers {
-            gate.await(); Resource.Success(addressResponse())
+            gate.await()
+            Resource.Success(addressResponse())
         }
         coEvery { homeClient.getCategories() } coAnswers {
-            gate.await(); Resource.Success(emptyList<CategoryResponse>())
+            gate.await()
+            Resource.Success(emptyList<CategoryResponse>())
         }
         coEvery { homeClient.getStores(any()) } coAnswers {
-            gate.await(); Resource.Success(emptyList<StoreResponse>())
+            gate.await()
+            Resource.Success(emptyList<StoreResponse>())
         }
 
         val state = createViewModel().uiState.value
@@ -75,7 +78,8 @@ class HomeViewModelTest {
 
     @Test
     fun `address success persists address id and label to settings`() = runTest {
-        dataStore = FakeSettingsDataStore(Settings(accessToken = "access", refreshToken = "refresh"))
+        dataStore =
+            FakeSettingsDataStore(Settings(accessToken = "access", refreshToken = "refresh"))
 
         createViewModel()
 
@@ -100,7 +104,8 @@ class HomeViewModelTest {
 
     @Test
     fun `address success without number shows only street`() = runTest {
-        coEvery { homeClient.getSelfAddress() } returns Resource.Success(addressResponse(number = null))
+        coEvery { homeClient.getSelfAddress() } returns
+            Resource.Success(addressResponse(number = null))
 
         val state = createViewModel().uiState.value
 
@@ -156,7 +161,7 @@ class HomeViewModelTest {
         assertEquals(
             listOf(
                 CategoryUiState(1, UiText.PlainText("Pizza"), false),
-                CategoryUiState(2, UiText.PlainText("Coffee"), false),
+                CategoryUiState(2, UiText.PlainText("Coffee"), false)
             ),
             state.categories
         )
@@ -180,16 +185,22 @@ class HomeViewModelTest {
                 storeResponse(
                     id = 9,
                     name = "Scary's",
-                    categories = listOf(categoryResponse(1, "Burger"), categoryResponse(2, "Fries")),
+                    categories = listOf(
+                        categoryResponse(1, "Burger"),
+                        categoryResponse(2, "Fries")
+                    ),
                     logoImageId = 3,
-                    coverImageId = null,
+                    coverImageId = null
                 )
             )
         )
 
         val state = createViewModel().uiState.value
 
-        assertEquals(listOf(StoreUiState.Data(9, "Scary's", "Burger, Fries", 3, null)), state.stores)
+        assertEquals(
+            listOf(StoreUiState.Data(9, "Scary's", "Burger, Fries", 3, null)),
+            state.stores
+        )
         assertFalse(state.isStoresLoading)
     }
 
@@ -229,7 +240,8 @@ class HomeViewModelTest {
         val viewModel = createViewModel()
         val gate = CompletableDeferred<Unit>()
         coEvery { homeClient.getStores(any()) } coAnswers {
-            gate.await(); Resource.Success(emptyList<StoreResponse>())
+            gate.await()
+            Resource.Success(emptyList<StoreResponse>())
         }
 
         viewModel.onAction(HomeAction.RefreshStores)
@@ -241,7 +253,9 @@ class HomeViewModelTest {
     fun `refresh stores replaces stores with new result and stops loading`() = runTest {
         val viewModel = createViewModel()
         coEvery { homeClient.getStores(any()) } returns Resource.Success(
-            listOf(storeResponse(id = 2, name = "Fresh", categories = emptyList(), logoImageId = null))
+            listOf(
+                storeResponse(id = 2, name = "Fresh", categories = emptyList(), logoImageId = null)
+            )
         )
 
         viewModel.onAction(HomeAction.RefreshStores)
@@ -344,7 +358,13 @@ class HomeViewModelTest {
     @Test
     fun `category clicked shows filtered stores`() = runTest {
         coEvery { homeClient.getStores(listOf(1L)) } returns Resource.Success(
-            listOf(storeResponse(id = 4, name = "Pizzeria", categories = listOf(categoryResponse(1, "Pizza"))))
+            listOf(
+                storeResponse(
+                    id = 4,
+                    name = "Pizzeria",
+                    categories = listOf(categoryResponse(1, "Pizza"))
+                )
+            )
         )
         val viewModel = createViewModel()
 

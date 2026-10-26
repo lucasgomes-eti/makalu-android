@@ -44,13 +44,23 @@ class AuthClient(
 
     suspend fun uploadImage(uri: Uri): Resource<ImageUploadResponse> =
         httpClientManager.withApiResource {
-            submitFormWithBinaryData(url = "profile/upload-image", formData = formData {
-                contentResolver.openInputStream(uri)?.use { inputStream ->
-                    append("file", inputStream.readBytes(), Headers.build {
-                        append(HttpHeaders.ContentType, "image/jpeg")
-                        append(HttpHeaders.ContentDisposition, "filename=${uri.lastPathSegment}")
-                    })
-                } ?: throw Exception("Error while reading file from memory.")
-            })
+            submitFormWithBinaryData(
+                url = "profile/upload-image",
+                formData = formData {
+                    contentResolver.openInputStream(uri)?.use { inputStream ->
+                        append(
+                            "file",
+                            inputStream.readBytes(),
+                            Headers.build {
+                                append(HttpHeaders.ContentType, "image/jpeg")
+                                append(
+                                    HttpHeaders.ContentDisposition,
+                                    "filename=${uri.lastPathSegment}"
+                                )
+                            }
+                        )
+                    } ?: throw Exception("Error while reading file from memory.")
+                }
+            )
         }
 }

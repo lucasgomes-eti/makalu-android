@@ -68,7 +68,9 @@ private fun OrderCardContent(uiState: OrderCardUiState) {
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Icon(
-                    painter = painterResource(eti.lucasgomes.makalu.components.R.drawable.outline_receipt),
+                    painter = painterResource(
+                        eti.lucasgomes.makalu.components.R.drawable.outline_receipt
+                    ),
                     contentDescription = null,
                     modifier = Modifier.size(14.dp),
                     tint = colorScheme.primary

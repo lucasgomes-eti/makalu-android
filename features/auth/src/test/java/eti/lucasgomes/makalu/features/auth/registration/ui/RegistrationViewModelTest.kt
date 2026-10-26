@@ -29,6 +29,8 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -40,8 +42,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 @RunWith(AndroidJUnit4::class)
 class RegistrationViewModelTest {
@@ -53,7 +53,8 @@ class RegistrationViewModelTest {
     private val cameraCaptureManager: CameraCaptureManager = mockk()
     private val osNavigation: OSNavigation = mockk(relaxed = true)
     private val authClient: AuthClient = mockk()
-    private val viewModel = RegistrationViewModel(navigator, cameraCaptureManager, osNavigation, authClient)
+    private val viewModel =
+        RegistrationViewModel(navigator, cameraCaptureManager, osNavigation, authClient)
 
     private val imageUri = Uri.parse("content://media/images/pic.jpg")
     private val homeNavOptions = NavOptions(
@@ -111,7 +112,9 @@ class RegistrationViewModelTest {
         viewModel.onAction(RegistrationAction.GalleryImageObtained(imageUri))
 
         assertFalse(state.isImagePickerVisible)
-        coVerify(exactly = 1) { navigator.navigate(Destination.Screen.ImagePreview(imageUri.toString())) }
+        coVerify(exactly = 1) {
+            navigator.navigate(Destination.Screen.ImagePreview(imageUri.toString()))
+        }
     }
 
     @Test
@@ -133,7 +136,9 @@ class RegistrationViewModelTest {
         viewModel.onAction(RegistrationAction.CameraImageTaken(isImageSaved = true))
 
         assertFalse(state.isImagePickerVisible)
-        coVerify(exactly = 1) { navigator.navigate(Destination.Screen.ImagePreview(imageUri.toString())) }
+        coVerify(exactly = 1) {
+            navigator.navigate(Destination.Screen.ImagePreview(imageUri.toString()))
+        }
     }
 
     @Test
@@ -172,7 +177,10 @@ class RegistrationViewModelTest {
 
     @Test
     fun `permission denied shows permission denied dialog`() {
-        viewModel.onAction(RegistrationAction.PermissionLauncherResultReceived(isGranted = false) {})
+        viewModel.onAction(
+            RegistrationAction.PermissionLauncherResultReceived(isGranted = false) {
+            }
+        )
 
         assertTrue(state.isPermissionDeniedDialogVisible)
         coVerify(exactly = 0) { cameraCaptureManager.capture(any(), any()) }
@@ -180,7 +188,10 @@ class RegistrationViewModelTest {
 
     @Test
     fun `go to system settings hides dialog and opens app settings`() {
-        viewModel.onAction(RegistrationAction.PermissionLauncherResultReceived(isGranted = false) {})
+        viewModel.onAction(
+            RegistrationAction.PermissionLauncherResultReceived(isGranted = false) {
+            }
+        )
 
         viewModel.onAction(RegistrationAction.GoToSystemSettingsClicked)
 
@@ -190,7 +201,10 @@ class RegistrationViewModelTest {
 
     @Test
     fun `permission denied dialog dismissed hides dialog`() {
-        viewModel.onAction(RegistrationAction.PermissionLauncherResultReceived(isGranted = false) {})
+        viewModel.onAction(
+            RegistrationAction.PermissionLauncherResultReceived(isGranted = false) {
+            }
+        )
 
         viewModel.onAction(RegistrationAction.PermissionDeniedDialogDismissed)
 
@@ -276,10 +290,14 @@ class RegistrationViewModelTest {
     fun `password longer than max length is ignored`() {
         viewModel.onAction(RegistrationAction.PasswordChanged(PASSWORD))
 
-        viewModel.onAction(RegistrationAction.PasswordChanged("a1".padEnd(MAX_PASSWORD_LENGTH + 1, 'x')))
+        viewModel.onAction(
+            RegistrationAction.PasswordChanged("a1".padEnd(MAX_PASSWORD_LENGTH + 1, 'x'))
+        )
         assertEquals(PASSWORD, state.password.text)
 
-        viewModel.onAction(RegistrationAction.PasswordChanged("a1".padEnd(MAX_PASSWORD_LENGTH, 'x')))
+        viewModel.onAction(
+            RegistrationAction.PasswordChanged("a1".padEnd(MAX_PASSWORD_LENGTH, 'x'))
+        )
         assertEquals("a1".padEnd(MAX_PASSWORD_LENGTH, 'x'), state.password.text)
     }
 
@@ -298,10 +316,16 @@ class RegistrationViewModelTest {
     fun `password confirmation longer than max length is ignored`() {
         viewModel.onAction(RegistrationAction.PasswordConfirmationChanged(PASSWORD))
 
-        viewModel.onAction(RegistrationAction.PasswordConfirmationChanged("a1".padEnd(MAX_PASSWORD_LENGTH + 1, 'x')))
+        viewModel.onAction(
+            RegistrationAction.PasswordConfirmationChanged(
+                "a1".padEnd(MAX_PASSWORD_LENGTH + 1, 'x')
+            )
+        )
         assertEquals(PASSWORD, state.passwordConfirmation.text)
 
-        viewModel.onAction(RegistrationAction.PasswordConfirmationChanged("a1".padEnd(MAX_PASSWORD_LENGTH, 'x')))
+        viewModel.onAction(
+            RegistrationAction.PasswordConfirmationChanged("a1".padEnd(MAX_PASSWORD_LENGTH, 'x'))
+        )
         assertEquals("a1".padEnd(MAX_PASSWORD_LENGTH, 'x'), state.passwordConfirmation.text)
     }
 
@@ -331,7 +355,10 @@ class RegistrationViewModelTest {
 
         assertEquals(UiText.StringResource(R.string.name_is_required), state.name.error)
         assertEquals(UiText.StringResource(R.string.email_is_required), state.email.error)
-        assertEquals(UiText.StringResource(R.string.phone_number_is_required), state.phoneNumber.error)
+        assertEquals(
+            UiText.StringResource(R.string.phone_number_is_required),
+            state.phoneNumber.error
+        )
         assertEquals(UiText.StringResource(R.string.password_is_required), state.password.error)
         assertFalse(state.isLoading)
         coVerify(exactly = 0) { authClient.register(any()) }
@@ -343,7 +370,10 @@ class RegistrationViewModelTest {
 
         viewModel.onAction(RegistrationAction.CreateAccountClicked)
 
-        assertEquals(UiText.StringResource(R.string.email_must_have_valid_format), state.email.error)
+        assertEquals(
+            UiText.StringResource(R.string.email_must_have_valid_format),
+            state.email.error
+        )
         assertFalse(state.isLoading)
         coVerify(exactly = 0) { authClient.register(any()) }
     }
@@ -355,7 +385,10 @@ class RegistrationViewModelTest {
         viewModel.onAction(RegistrationAction.CreateAccountClicked)
 
         assertEquals(
-            UiText.StringResource(R.string.password_must_have_at_least_characters, listOf(MIN_PASSWORD_LENGTH)),
+            UiText.StringResource(
+                R.string.password_must_have_at_least_characters,
+                listOf(MIN_PASSWORD_LENGTH)
+            ),
             state.password.error
         )
         coVerify(exactly = 0) { authClient.register(any()) }
@@ -367,7 +400,10 @@ class RegistrationViewModelTest {
 
         viewModel.onAction(RegistrationAction.CreateAccountClicked)
 
-        assertEquals(UiText.StringResource(R.string.password_must_have_letters_and_numbers), state.password.error)
+        assertEquals(
+            UiText.StringResource(R.string.password_must_have_letters_and_numbers),
+            state.password.error
+        )
         coVerify(exactly = 0) { authClient.register(any()) }
     }
 
@@ -395,7 +431,11 @@ class RegistrationViewModelTest {
     @Test
     fun `create account shows loading while registering`() = runTest {
         val gate = CompletableDeferred<Unit>()
-        coEvery { authClient.register(any()) } coAnswers { gate.await(); Resource.Error(makaluError()) }
+        coEvery { authClient.register(any()) } coAnswers
+            {
+                gate.await()
+                Resource.Error(makaluError())
+            }
         fillForm()
 
         viewModel.onAction(RegistrationAction.CreateAccountClicked)
@@ -409,7 +449,11 @@ class RegistrationViewModelTest {
     @Test
     fun `create account clicked while loading is ignored`() = runTest {
         val gate = CompletableDeferred<Unit>()
-        coEvery { authClient.register(any()) } coAnswers { gate.await(); Resource.Error(makaluError()) }
+        coEvery { authClient.register(any()) } coAnswers
+            {
+                gate.await()
+                Resource.Error(makaluError())
+            }
         fillForm()
 
         viewModel.onAction(RegistrationAction.CreateAccountClicked)
@@ -459,7 +503,10 @@ class RegistrationViewModelTest {
 
         viewModel.onAction(RegistrationAction.CreateAccountClicked)
 
-        assertEquals(UiText.StringResource(R.string.account_created_but_login_failed), state.generalError)
+        assertEquals(
+            UiText.StringResource(R.string.account_created_but_login_failed),
+            state.generalError
+        )
         assertFalse(state.isLoading)
         advanceTimeBy(5.seconds - 1.milliseconds)
         coVerify(exactly = 0) { navigator.navigateUp() }
@@ -497,7 +544,11 @@ class RegistrationViewModelTest {
     fun `image upload shows upload loading while in flight`() = runTest {
         val gate = CompletableDeferred<Unit>()
         givenRegisterAndLoginSucceed()
-        coEvery { authClient.uploadImage(any()) } coAnswers { gate.await(); Resource.Success(ImageUploadResponse(9)) }
+        coEvery { authClient.uploadImage(any()) } coAnswers
+            {
+                gate.await()
+                Resource.Success(ImageUploadResponse(9))
+            }
         viewModel.onAction(RegistrationAction.CroppedImageReceived(imageUri))
         fillForm()
 
@@ -527,14 +578,17 @@ class RegistrationViewModelTest {
     fun `image upload failure shows error then navigates home after five seconds`() = runTest {
         givenRegisterAndLoginSucceed()
         coEvery { authClient.uploadImage(any()) } returns
-                Resource.Error(makaluError(500, "Upload failed", "MK-500"))
+            Resource.Error(makaluError(500, "Upload failed", "MK-500"))
         viewModel.onAction(RegistrationAction.CroppedImageReceived(imageUri))
         fillForm()
 
         viewModel.onAction(RegistrationAction.CreateAccountClicked)
 
         assertEquals(
-            UiText.StringResource(R.string.profile_image_upload_failed, listOf("MK-500 - Upload failed")),
+            UiText.StringResource(
+                R.string.profile_image_upload_failed,
+                listOf("MK-500 - Upload failed")
+            ),
             state.generalError
         )
         assertFalse(state.imageUploadLoading)

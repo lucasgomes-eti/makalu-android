@@ -7,8 +7,8 @@ import eti.lucasgomes.makalu.shared.navigation.NavOptions
 import eti.lucasgomes.makalu.shared.navigation.NavigationAction
 
 @Composable
-fun bindNavigationEvents(navHostController: NavHostController): (NavigationAction) -> Unit {
-    return { action ->
+fun bindNavigationEvents(navHostController: NavHostController): (NavigationAction) -> Unit =
+    { action ->
         when (action) {
             is NavigationAction.Navigate -> navHostController.navigate(
                 action.destination,
@@ -26,16 +26,13 @@ fun bindNavigationEvents(navHostController: NavHostController): (NavigationActio
             }
         }
     }
-}
 
-private fun bindNavigateOptions(navOptions: NavOptions?): NavOptionsBuilder.() -> Unit {
-    return {
-        navOptions?.let { options ->
-            options.popUpTo?.let { popUpToOptions ->
-                popUpTo(popUpToOptions.destination) {
-                    inclusive = popUpToOptions.inclusive
-                    saveState = popUpToOptions.saveState
-                }
+private fun bindNavigateOptions(navOptions: NavOptions?): NavOptionsBuilder.() -> Unit = {
+    navOptions?.let { options ->
+        options.popUpTo?.let { popUpToOptions ->
+            popUpTo(popUpToOptions.destination) {
+                inclusive = popUpToOptions.inclusive
+                saveState = popUpToOptions.saveState
             }
         }
     }

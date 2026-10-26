@@ -7,11 +7,11 @@ import eti.lucasgomes.makalu.features.orders.components.toUiStatus
 import eti.lucasgomes.makalu.features.orders.orderSimpleResponse
 import eti.lucasgomes.makalu.shared.model.OrderSimpleResponse
 import eti.lucasgomes.makalu.shared.model.OrderStatus
+import java.math.BigDecimal
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.math.BigDecimal
 
 class OrdersUiStateMapperTest {
 
@@ -63,7 +63,10 @@ class OrdersUiStateMapperTest {
 
     @Test
     fun `toUiItem keeps the money values untouched`() {
-        val card = orderSimpleResponse(deliveryFee = BigDecimal("2.50"), total = BigDecimal("24.00")).toUiItem().card
+        val card = orderSimpleResponse(
+            deliveryFee = BigDecimal("2.50"),
+            total = BigDecimal("24.00")
+        ).toUiItem().card
 
         assertEquals(BigDecimal("2.50"), card.deliveryFee)
         assertEquals(2, card.deliveryFee.scale())
@@ -73,7 +76,12 @@ class OrdersUiStateMapperTest {
 
     @Test
     fun `toUiItems preserves order and size`() {
-        val responses = listOf(orderSimpleResponse(id = 3), orderSimpleResponse(id = 1), orderSimpleResponse(id = 2))
+        val responses =
+            listOf(
+                orderSimpleResponse(id = 3),
+                orderSimpleResponse(id = 1),
+                orderSimpleResponse(id = 2)
+            )
 
         val items = responses.toUiItems()
 

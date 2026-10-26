@@ -29,7 +29,7 @@ fun CardItem(
     headlineContent: @Composable ColumnScope.() -> Unit,
     supportingContent: @Composable ColumnScope.() -> Unit = {},
     trailingContent: @Composable (RowScope.() -> Unit)? = null,
-    leadingContent: @Composable (RowScope.() -> Unit)? = null,
+    leadingContent: @Composable (RowScope.() -> Unit)? = null
 ) {
     SurfaceWithOptionalClick(
         onClick = onClick
@@ -49,7 +49,9 @@ fun CardItem(
                 modifier = Modifier.then(
                     if (contentWeight != null) {
                         Modifier.weight(contentWeight)
-                    } else Modifier
+                    } else {
+                        Modifier
+                    }
                 )
             ) {
                 headlineContent()
@@ -72,7 +74,7 @@ private fun SurfaceWithOptionalClick(
     if (onClick == null) {
         Surface(
             border = BorderStroke(1.dp, colorScheme.outline),
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(12.dp)
         ) {
             content()
         }

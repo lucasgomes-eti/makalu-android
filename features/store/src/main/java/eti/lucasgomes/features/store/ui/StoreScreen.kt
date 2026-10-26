@@ -61,7 +61,13 @@ internal fun BoxScope.StoreScreen(uiState: StoreUiState, onAction: (StoreAction)
             ExpandableTopAppBar(
                 scrollBehavior,
                 backgroundImageUrl = uiState.coverImageUrl,
-                if (uiState.isLoading) stringResource(eti.lucasgomes.makalu.components.R.string.loading) else uiState.name.asString()
+                if (uiState.isLoading) {
+                    stringResource(
+                        eti.lucasgomes.makalu.components.R.string.loading
+                    )
+                } else {
+                    uiState.name.asString()
+                }
             ) { onAction(StoreAction.NavigateBackClicked) }
         }
     ) { innerPadding ->
@@ -105,7 +111,7 @@ internal fun BoxScope.StoreScreen(uiState: StoreUiState, onAction: (StoreAction)
                                 formatMoney(uiState.deliveryFee),
                                 style = typography.titleMedium
                             )
-                        },
+                        }
                     )
                 }
             }
@@ -165,7 +171,7 @@ private fun LazyItemScope.MenuListItem(item: MenuItemUiState, onClick: () -> Uni
 private fun StoreScreenPreview() {
     val topBarUiController = remember { TopBarUiController() }
     CompositionLocalProvider(
-        LocalTopBarUiController provides topBarUiController,
+        LocalTopBarUiController provides topBarUiController
     ) {
         Box {
             StoreScreen(
@@ -177,7 +183,7 @@ private fun StoreScreenPreview() {
                                 1,
                                 "Pizza",
                                 "Margerita",
-                                10.0.toBigDecimal(),
+                                10.0.toBigDecimal()
                             )
                         )
                     )
@@ -185,5 +191,4 @@ private fun StoreScreenPreview() {
             ) { }
         }
     }
-
 }

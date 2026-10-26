@@ -41,13 +41,14 @@ class LogoutUseCaseTest {
     }
 
     @Test
-    fun `navigates to the auth graph popping the root graph inclusively when logged in`() = runTest {
-        val dataStore = FakeSettingsDataStore(Settings(accessToken = "access"))
+    fun `navigates to the auth graph popping the root graph inclusively when logged in`() =
+        runTest {
+            val dataStore = FakeSettingsDataStore(Settings(accessToken = "access"))
 
-        LogoutUseCase(dataStore, navigator)()
+            LogoutUseCase(dataStore, navigator)()
 
-        coVerify(exactly = 1) { navigator.navigate(Destination.Graph.Auth, authNavOptions) }
-    }
+            coVerify(exactly = 1) { navigator.navigate(Destination.Graph.Auth, authNavOptions) }
+        }
 
     @Test
     fun `navigates when only a refresh token was stored`() = runTest {

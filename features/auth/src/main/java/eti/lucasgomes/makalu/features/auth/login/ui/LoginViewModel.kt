@@ -21,10 +21,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class LoginViewModel(
-    private val authClient: AuthClient,
-    private val navigator: Navigator
-) : ViewModel() {
+class LoginViewModel(private val authClient: AuthClient, private val navigator: Navigator) :
+    ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
@@ -110,7 +108,9 @@ class LoginViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    email = state.email.copy(error = UiText.StringResource(R.string.email_is_required))
+                    email = state.email.copy(
+                        error = UiText.StringResource(R.string.email_is_required)
+                    )
                 )
             }
             return false
@@ -119,7 +119,9 @@ class LoginViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    email = state.email.copy(error = UiText.StringResource(R.string.email_must_have_valid_format))
+                    email = state.email.copy(
+                        error = UiText.StringResource(R.string.email_must_have_valid_format)
+                    )
                 )
             }
             return false
@@ -132,7 +134,9 @@ class LoginViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    password = state.password.copy(error = UiText.StringResource(R.string.password_is_required))
+                    password = state.password.copy(
+                        error = UiText.StringResource(R.string.password_is_required)
+                    )
                 )
             }
             return false
@@ -155,7 +159,11 @@ class LoginViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    password = state.password.copy(error = UiText.StringResource(R.string.password_must_have_letters_and_numbers))
+                    password = state.password.copy(
+                        error = UiText.StringResource(
+                            R.string.password_must_have_letters_and_numbers
+                        )
+                    )
                 )
             }
             return false

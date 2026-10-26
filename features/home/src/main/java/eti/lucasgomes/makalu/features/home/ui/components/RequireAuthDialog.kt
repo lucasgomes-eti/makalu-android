@@ -13,10 +13,7 @@ import eti.lucasgomes.makalu.components.buttons.ExpressiveTextButton
 import eti.lucasgomes.makalu.features.home.R
 
 @Composable
-internal fun RequireAuthDialog(
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-) {
+internal fun RequireAuthDialog(onDismissRequest: () -> Unit, onConfirmation: () -> Unit) {
     AlertDialog(
         icon = {
             Icon(

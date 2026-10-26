@@ -33,16 +33,19 @@ fun ExpandableTopAppBar(
     title: String,
     onNavigateBack: () -> Unit
 ) {
-
     val maxHeight = 152.dp
     val minHeight = 64.dp
     val collapseFraction = scrollBehavior.state.collapsedFraction
     val height = maxHeight - (maxHeight - minHeight) * collapseFraction
     val isCollapsed = collapseFraction == 1f
     val topAppBarTitleContentColor by animateColorAsState(
-        if (isCollapsed) colorScheme.contentColorFor(
-            colorScheme.surfaceContainer
-        ) else Color.White
+        if (isCollapsed) {
+            colorScheme.contentColorFor(
+                colorScheme.surfaceContainer
+            )
+        } else {
+            Color.White
+        }
     )
 
     Box(
@@ -64,7 +67,7 @@ fun ExpandableTopAppBar(
                         colors = listOf(
                             Color.Transparent,
                             Color.Black.copy(alpha = 0.4f),
-                            Color.Black.copy(alpha = 0.8f),
+                            Color.Black.copy(alpha = 0.8f)
                         )
                     )
                 )
@@ -74,7 +77,7 @@ fun ExpandableTopAppBar(
                 Text(
                     title,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    overflow = TextOverflow.Ellipsis
                 )
             },
             expandedHeight = maxHeight,
@@ -88,11 +91,13 @@ fun ExpandableTopAppBar(
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         painterResource(eti.lucasgomes.makalu.components.R.drawable.arrow_back),
-                        stringResource(eti.lucasgomes.makalu.components.R.string.accessibility_back_button),
+                        stringResource(
+                            eti.lucasgomes.makalu.components.R.string.accessibility_back_button
+                        ),
                         tint = topAppBarTitleContentColor
                     )
                 }
-            },
+            }
         )
     }
 }

@@ -14,13 +14,13 @@ import eti.lucasgomes.makalu.shared.MkLogger
 import eti.lucasgomes.makalu.shared.navigation.OSNavigation
 import eti.lucasgomes.makalu.shared.settings.Settings
 import eti.lucasgomes.makalu.shared.settings.SettingsSerializer
+import java.io.File
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
-import java.io.File
 
 private val Context.dataStore: DataStore<Settings> by dataStore(
     fileName = "settings.json",
-    serializer = SettingsSerializer,
+    serializer = SettingsSerializer
 )
 
 val appModule = module {

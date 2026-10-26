@@ -67,7 +67,8 @@ class AddressViewModelTest {
 
     @Before
     fun setUp() {
-        coEvery { addressClient.getSelfAddress() } returns Resource.Error(makaluError(404, "Not found", "MK-404"))
+        coEvery { addressClient.getSelfAddress() } returns
+            Resource.Error(makaluError(404, "Not found", "MK-404"))
     }
 
     private fun createViewModel() = AddressViewModel(
@@ -103,8 +104,16 @@ class AddressViewModelTest {
     }
 
     private fun resolvableException(): Pair<ResolvableApiException, PendingIntent> {
-        val pendingIntent = PendingIntent.getActivity(app, 0, Intent(), PendingIntent.FLAG_IMMUTABLE)
-        val exception = ResolvableApiException(Status(CommonStatusCodes.RESOLUTION_REQUIRED, null, pendingIntent))
+        val pendingIntent = PendingIntent.getActivity(
+            app,
+            0,
+            Intent(),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        val exception =
+            ResolvableApiException(
+                Status(CommonStatusCodes.RESOLUTION_REQUIRED, null, pendingIntent)
+            )
         return exception to pendingIntent
     }
 
@@ -181,7 +190,8 @@ class AddressViewModelTest {
 
     @Test
     fun `init failure other than not found sets the formatted general error`() = runTest {
-        coEvery { addressClient.getSelfAddress() } returns Resource.Error(makaluError(500, "Boom", "MK-500"))
+        coEvery { addressClient.getSelfAddress() } returns
+            Resource.Error(makaluError(500, "Boom", "MK-500"))
 
         val viewModel = createViewModel()
 
@@ -258,22 +268,23 @@ class AddressViewModelTest {
     }
 
     @Test
-    fun `save with blank zip code sets zip code required error and does not call the client`() = runTest {
-        stubLocationFlow()
-        val viewModel = createViewModel()
-        viewModel.obtainLocation()
-        viewModel.onAction(AddressAction.StreetChanged("Rua A"))
+    fun `save with blank zip code sets zip code required error and does not call the client`() =
+        runTest {
+            stubLocationFlow()
+            val viewModel = createViewModel()
+            viewModel.obtainLocation()
+            viewModel.onAction(AddressAction.StreetChanged("Rua A"))
 
-        viewModel.onAction(AddressAction.SaveAddressClicked)
+            viewModel.onAction(AddressAction.SaveAddressClicked)
 
-        val state = viewModel.uiState.value
-        assertEquals(UiText.StringResource(R.string.zip_code_is_required), state.zipCode.error)
-        assertEquals(UiText.Empty, state.street.error)
-        assertEquals(UiText.Empty, state.locationError)
-        assertFalse(state.isLoading)
-        coVerify(exactly = 0) { addressClient.saveAddress(any()) }
-        coVerify(exactly = 0) { addressClient.updateAddress(any(), any()) }
-    }
+            val state = viewModel.uiState.value
+            assertEquals(UiText.StringResource(R.string.zip_code_is_required), state.zipCode.error)
+            assertEquals(UiText.Empty, state.street.error)
+            assertEquals(UiText.Empty, state.locationError)
+            assertFalse(state.isLoading)
+            coVerify(exactly = 0) { addressClient.saveAddress(any()) }
+            coVerify(exactly = 0) { addressClient.updateAddress(any(), any()) }
+        }
 
     @Test
     fun `save with blank street sets street required error`() = runTest {
@@ -386,7 +397,10 @@ class AddressViewModelTest {
 
         viewModel.onAction(AddressAction.SaveAddressClicked)
 
-        assertEquals(Settings(accessToken = "token", addressId = 9, addressName = "Rua A, 42"), dataStore.current)
+        assertEquals(
+            Settings(accessToken = "token", addressId = 9, addressName = "Rua A, 42"),
+            dataStore.current
+        )
         assertFalse(viewModel.uiState.value.isLoading)
         coVerify(exactly = 1) { navigator.navigateUp() }
     }
@@ -395,7 +409,8 @@ class AddressViewModelTest {
     fun `save failure sets the formatted general error and does not navigate`() = runTest {
         dataStore = FakeSettingsDataStore(Settings(accessToken = "token"))
         stubLocationFlow()
-        coEvery { addressClient.saveAddress(any()) } returns Resource.Error(makaluError(400, "Invalid", "MK-1"))
+        coEvery { addressClient.saveAddress(any()) } returns
+            Resource.Error(makaluError(400, "Invalid", "MK-1"))
         val viewModel = createViewModel()
         viewModel.obtainLocation()
         viewModel.fillForm()
@@ -471,40 +486,44 @@ class AddressViewModelTest {
     }
 
     @Test
-    fun `get current location with permission starts location loading and clears the location error`() = runTest {
-        stubLocationSettings(pendingTask())
-        val viewModel = createViewModel()
-        viewModel.onAction(AddressAction.SaveAddressClicked)
+    fun `get current location with permission starts location loading and clears the location error`() =
+        runTest {
+            stubLocationSettings(pendingTask())
+            val viewModel = createViewModel()
+            viewModel.onAction(AddressAction.SaveAddressClicked)
 
-        viewModel.onAction(AddressAction.GetCurrentLocationClicked(true))
+            viewModel.onAction(AddressAction.GetCurrentLocationClicked(true))
 
-        assertTrue(viewModel.uiState.value.isLocationLoading)
-        assertEquals(UiText.Empty, viewModel.uiState.value.locationError)
-        verify(exactly = 1) { settingsClient.checkLocationSettings(any()) }
-        verify(exactly = 0) { fusedClient.getCurrentLocation(any<Int>(), any()) }
-    }
+            assertTrue(viewModel.uiState.value.isLocationLoading)
+            assertEquals(UiText.Empty, viewModel.uiState.value.locationError)
+            verify(exactly = 1) { settingsClient.checkLocationSettings(any()) }
+            verify(exactly = 0) { fusedClient.getCurrentLocation(any<Int>(), any()) }
+        }
 
     @Test
-    fun `satisfied location settings fetch the current location and fill the form from reverse geocode`() = runTest {
-        stubLocationFlow(
-            latitude = -23.5,
-            longitude = -46.6,
-            geocode = ReverseGeocodeResponse("01310100", "Rua A", "42", "Apt 1")
-        )
-        val viewModel = createViewModel()
+    fun `satisfied location settings fetch the current location and fill the form from reverse geocode`() =
+        runTest {
+            stubLocationFlow(
+                latitude = -23.5,
+                longitude = -46.6,
+                geocode = ReverseGeocodeResponse("01310100", "Rua A", "42", "Apt 1")
+            )
+            val viewModel = createViewModel()
 
-        viewModel.onAction(AddressAction.GetCurrentLocationClicked(true))
+            viewModel.onAction(AddressAction.GetCurrentLocationClicked(true))
 
-        val state = viewModel.uiState.value
-        assertEquals(LatLng(-23.5, -46.6), state.location)
-        assertEquals("01310100", state.zipCode.text)
-        assertEquals("Rua A", state.street.text)
-        assertEquals("42", state.number.text)
-        assertEquals("Apt 1", state.complement.text)
-        assertFalse(state.isLoading)
-        assertFalse(state.isLocationLoading)
-        verify(exactly = 1) { fusedClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null) }
-    }
+            val state = viewModel.uiState.value
+            assertEquals(LatLng(-23.5, -46.6), state.location)
+            assertEquals("01310100", state.zipCode.text)
+            assertEquals("Rua A", state.street.text)
+            assertEquals("42", state.number.text)
+            assertEquals("Apt 1", state.complement.text)
+            assertFalse(state.isLoading)
+            assertFalse(state.isLocationLoading)
+            verify(exactly = 1) {
+                fusedClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+            }
+        }
 
     @Test
     fun `reverse geocode shows loading while in flight`() = runTest {
@@ -525,17 +544,18 @@ class AddressViewModelTest {
     }
 
     @Test
-    fun `resolvable location settings failure exposes the resolution without fetching location`() = runTest {
-        val (exception, pendingIntent) = resolvableException()
-        stubLocationSettings(failedTask(exception))
-        val viewModel = createViewModel()
+    fun `resolvable location settings failure exposes the resolution without fetching location`() =
+        runTest {
+            val (exception, pendingIntent) = resolvableException()
+            stubLocationSettings(failedTask(exception))
+            val viewModel = createViewModel()
 
-        viewModel.onAction(AddressAction.GetCurrentLocationClicked(true))
+            viewModel.onAction(AddressAction.GetCurrentLocationClicked(true))
 
-        assertSame(pendingIntent, viewModel.uiState.value.locationSettingsResolution)
-        assertTrue(viewModel.uiState.value.isLocationLoading)
-        verify(exactly = 0) { fusedClient.getCurrentLocation(any<Int>(), any()) }
-    }
+            assertSame(pendingIntent, viewModel.uiState.value.locationSettingsResolution)
+            assertTrue(viewModel.uiState.value.isLocationLoading)
+            verify(exactly = 0) { fusedClient.getCurrentLocation(any<Int>(), any()) }
+        }
 
     @Test
     fun `non resolvable location settings failure still fetches the current location`() = runTest {
@@ -546,7 +566,9 @@ class AddressViewModelTest {
 
         viewModel.onAction(AddressAction.GetCurrentLocationClicked(true))
 
-        verify(exactly = 1) { fusedClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null) }
+        verify(exactly = 1) {
+            fusedClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+        }
         assertEquals(LatLng(-23.5, -46.6), viewModel.uiState.value.location)
         assertNull(viewModel.uiState.value.locationSettingsResolution)
     }
@@ -601,24 +623,30 @@ class AddressViewModelTest {
 
         viewModel.onAction(AddressAction.LocationSettingsResult(true))
 
-        verify(exactly = 1) { fusedClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null) }
+        verify(exactly = 1) {
+            fusedClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+        }
         assertEquals(LatLng(-23.5, -46.6), viewModel.uiState.value.location)
         assertFalse(viewModel.uiState.value.isLocationLoading)
     }
 
     @Test
-    fun `location settings declined sets services disabled error and stops location loading`() = runTest {
-        stubLocationSettings(failedTask(resolvableException().first))
-        val viewModel = createViewModel()
-        viewModel.onAction(AddressAction.GetCurrentLocationClicked(true))
+    fun `location settings declined sets services disabled error and stops location loading`() =
+        runTest {
+            stubLocationSettings(failedTask(resolvableException().first))
+            val viewModel = createViewModel()
+            viewModel.onAction(AddressAction.GetCurrentLocationClicked(true))
 
-        viewModel.onAction(AddressAction.LocationSettingsResult(false))
+            viewModel.onAction(AddressAction.LocationSettingsResult(false))
 
-        val state = viewModel.uiState.value
-        assertFalse(state.isLocationLoading)
-        assertEquals(UiText.StringResource(R.string.location_services_disabled), state.locationError)
-        verify(exactly = 0) { fusedClient.getCurrentLocation(any<Int>(), any()) }
-    }
+            val state = viewModel.uiState.value
+            assertFalse(state.isLocationLoading)
+            assertEquals(
+                UiText.StringResource(R.string.location_services_disabled),
+                state.locationError
+            )
+            verify(exactly = 0) { fusedClient.getCurrentLocation(any<Int>(), any()) }
+        }
 
     @Test
     fun `permission denied dismissed hides the dialog`() = runTest {
@@ -650,16 +678,17 @@ class AddressViewModelTest {
     }
 
     @Test
-    fun `go to system settings hides the denied dialog and opens the app details settings`() = runTest {
-        val viewModel = createViewModel()
-        viewModel.onAction(AddressAction.GetCurrentLocationClicked(false))
+    fun `go to system settings hides the denied dialog and opens the app details settings`() =
+        runTest {
+            val viewModel = createViewModel()
+            viewModel.onAction(AddressAction.GetCurrentLocationClicked(false))
 
-        viewModel.onAction(AddressAction.GoToSystemSettingsClicked)
+            viewModel.onAction(AddressAction.GoToSystemSettingsClicked)
 
-        assertFalse(viewModel.uiState.value.isPermissionDeniedDialogVisible)
-        val intent = shadowOf(app).nextStartedActivity
-        assertEquals(ACTION_APPLICATION_DETAILS_SETTINGS, intent.action)
-        assertEquals(Uri.fromParts("package", app.packageName, null), intent.data)
-        assertTrue(intent.flags and Intent.FLAG_ACTIVITY_NEW_TASK != 0)
-    }
+            assertFalse(viewModel.uiState.value.isPermissionDeniedDialogVisible)
+            val intent = shadowOf(app).nextStartedActivity
+            assertEquals(ACTION_APPLICATION_DETAILS_SETTINGS, intent.action)
+            assertEquals(Uri.fromParts("package", app.packageName, null), intent.data)
+            assertTrue(intent.flags and Intent.FLAG_ACTIVITY_NEW_TASK != 0)
+        }
 }

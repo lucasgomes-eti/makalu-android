@@ -9,7 +9,7 @@ internal data class HomeUiState(
     val isAuthDialogVisible: Boolean = false,
     val isAddressLoading: Boolean = false,
     val isFiltersLoading: Boolean = false,
-    val isStoresLoading: Boolean = false,
+    val isStoresLoading: Boolean = false
 ) {
     val selectedCategoriesIds: List<Long>
         get() = categories.filter { it.isSelected }.map { it.id }

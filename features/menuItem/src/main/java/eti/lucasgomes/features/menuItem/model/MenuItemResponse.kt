@@ -1,9 +1,9 @@
 package eti.lucasgomes.features.menuItem.model
 
 import eti.lucasgomes.makalu.shared.serializer.BigDecimalSerializer
+import java.math.BigDecimal
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.math.BigDecimal
 
 @Serializable
 data class MenuItemResponse(

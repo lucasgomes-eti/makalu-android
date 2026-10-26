@@ -34,7 +34,7 @@ fun ExpressiveButton(
     border: BorderStroke? = null,
     contentPadding: PaddingValues = ButtonDefaults.contentPaddingFor(ButtonDefaults.MinHeight),
     interactionSource: MutableInteractionSource? = null,
-    content: @Composable RowScope.() -> Unit,
+    content: @Composable RowScope.() -> Unit
 ) {
     Button(
         onClick = onClick,
@@ -46,7 +46,7 @@ fun ExpressiveButton(
         border = border,
         contentPadding = contentPadding,
         interactionSource = interactionSource,
-        content = content,
+        content = content
     )
 }
 
@@ -61,7 +61,7 @@ fun ExpressiveLoadingButton(
     border: BorderStroke? = null,
     contentPadding: PaddingValues = ButtonDefaults.contentPaddingFor(ButtonDefaults.MinHeight),
     interactionSource: MutableInteractionSource? = null,
-    content: @Composable RowScope.() -> Unit,
+    content: @Composable RowScope.() -> Unit
 ) {
     LoadingButtonContainer(isLoading, modifier) { buttonModifier ->
         ExpressiveButton(
@@ -73,7 +73,7 @@ fun ExpressiveLoadingButton(
             border = border,
             contentPadding = contentPadding,
             interactionSource = interactionSource,
-            content = content,
+            content = content
         )
     }
 }
@@ -88,7 +88,7 @@ fun ExpressiveTextButton(
     border: BorderStroke? = null,
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
     interactionSource: MutableInteractionSource? = null,
-    content: @Composable RowScope.() -> Unit,
+    content: @Composable RowScope.() -> Unit
 ) {
     TextButton(
         onClick = onClick,
@@ -100,7 +100,7 @@ fun ExpressiveTextButton(
         border = border,
         contentPadding = contentPadding,
         interactionSource = interactionSource,
-        content = content,
+        content = content
     )
 }
 
@@ -115,7 +115,7 @@ fun ExpressiveLoadingTextButton(
     border: BorderStroke? = null,
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
     interactionSource: MutableInteractionSource? = null,
-    content: @Composable RowScope.() -> Unit,
+    content: @Composable RowScope.() -> Unit
 ) {
     LoadingButtonContainer(isLoading, modifier) { buttonModifier ->
         ExpressiveTextButton(
@@ -127,7 +127,7 @@ fun ExpressiveLoadingTextButton(
             border = border,
             contentPadding = contentPadding,
             interactionSource = interactionSource,
-            content = content,
+            content = content
         )
     }
 }
@@ -137,23 +137,23 @@ fun ExpressiveLoadingTextButton(
 private fun LoadingButtonContainer(
     isLoading: Boolean,
     modifier: Modifier,
-    button: @Composable (Modifier) -> Unit,
+    button: @Composable (Modifier) -> Unit
 ) {
     val buttonAlpha by animateFloatAsState(
         targetValue = if (isLoading) 0f else 1f,
         animationSpec = tween(),
-        label = "LoadingButtonAlpha",
+        label = "LoadingButtonAlpha"
     )
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center,
-        propagateMinConstraints = true,
+        propagateMinConstraints = true
     ) {
         button(Modifier.graphicsLayer { alpha = buttonAlpha })
         AnimatedVisibility(
             visible = isLoading,
             enter = fadeIn(tween()),
-            exit = fadeOut(tween()),
+            exit = fadeOut(tween())
         ) {
             Box(contentAlignment = Alignment.Center) {
                 LoadingIndicator(Modifier.size(ButtonDefaults.MinHeight))
@@ -162,9 +162,8 @@ private fun LoadingButtonContainer(
     }
 }
 
-private fun ButtonColors.keepEnabledLookWhile(isLoading: Boolean): ButtonColors =
-    if (isLoading) {
-        copy(disabledContainerColor = containerColor, disabledContentColor = contentColor)
-    } else {
-        this
-    }
+private fun ButtonColors.keepEnabledLookWhile(isLoading: Boolean): ButtonColors = if (isLoading) {
+    copy(disabledContainerColor = containerColor, disabledContentColor = contentColor)
+} else {
+    this
+}

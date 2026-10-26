@@ -18,7 +18,9 @@ fun ProfileEntry(innerPadding: PaddingValues, croppedImageUris: Flow<String>) {
     val viewModel = koinViewModel<ProfileViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(croppedImageUris) {
-        croppedImageUris.collect { viewModel.onAction(ProfileAction.CroppedImageReceived(it.toUri())) }
+        croppedImageUris.collect {
+            viewModel.onAction(ProfileAction.CroppedImageReceived(it.toUri()))
+        }
     }
     ScreenContainer(innerPadding) { ProfileScreen(uiState, viewModel::onAction) }
 }

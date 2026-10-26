@@ -9,7 +9,7 @@ internal sealed class StoreUiState(val key: String) {
         val name: String,
         val category: String,
         private val logoId: Long?,
-        private val coverId: Long?,
+        private val coverId: Long?
     ) : StoreUiState(id.toString()) {
         val logoUrl: String?
             get() = mapImageUrl(logoId)

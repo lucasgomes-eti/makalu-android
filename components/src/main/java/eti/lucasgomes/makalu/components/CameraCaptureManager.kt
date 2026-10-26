@@ -5,14 +5,11 @@ import android.net.Uri
 import androidx.core.content.FileProvider
 import eti.lucasgomes.makalu.shared.FILE_PROVIDER_AUTHORITY
 import eti.lucasgomes.makalu.shared.IMAGE_TEMP_FILE_SUFFIX
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.File
 
-class CameraCaptureManager(
-    private val cacheDir: File,
-    private val app: Application
-) {
+class CameraCaptureManager(private val cacheDir: File, private val app: Application) {
     var imageUri: Uri? = null
         private set
 

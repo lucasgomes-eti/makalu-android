@@ -16,13 +16,13 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.TextContent
 import io.mockk.mockk
+import java.io.IOException
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.io.IOException
 
 class AddressClientTest {
 
@@ -47,7 +47,8 @@ class AddressClientTest {
         }
     """.trimIndent()
 
-    private val errorJson = """{"http_code": 404, "message": "Not found", "internal_code": "MK-404"}"""
+    private val errorJson =
+        """{"http_code": 404, "message": "Not found", "internal_code": "MK-404"}"""
 
     private fun geocodeClient(
         handler: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData
@@ -56,8 +57,9 @@ class AddressClientTest {
     private fun component(longName: String, vararg types: String) =
         """{"long_name": "$longName", "types": [${types.joinToString { "\"$it\"" }}]}"""
 
-    private fun geocodeJson(vararg results: List<String>) =
-        """{"results": [${results.joinToString { """{"address_components": [${it.joinToString()}]}""" }}]}"""
+    private fun geocodeJson(vararg results: List<String>) = """{"results": [${results.joinToString {
+        """{"address_components": [${it.joinToString()}]}"""
+    }}]}"""
 
     private fun HttpRequestData.jsonBody(): JsonObject =
         testJson.parseToJsonElement((body as TextContent).text).jsonObject
@@ -98,7 +100,7 @@ class AddressClientTest {
                         component("1000", "street_number"),
                         component("Apt 12", "subpremise"),
                         component("Av. Paulista", "route"),
-                        component("01310100", "postal_code"),
+                        component("01310100", "postal_code")
                     )
                 )
             )
@@ -115,7 +117,7 @@ class AddressClientTest {
             respondJson(
                 geocodeJson(
                     listOf(component("Rua A", "route"), component("11111111", "postal_code")),
-                    listOf(component("Rua B", "route"), component("22222222", "postal_code")),
+                    listOf(component("Rua B", "route"), component("22222222", "postal_code"))
                 )
             )
         }
@@ -199,10 +201,12 @@ class AddressClientTest {
     @Test
     fun `save address posts the request as json to addresses`() = runTest {
         var captured: HttpRequestData? = null
-        val client = AddressClient(mockHttpClientManager {
-            captured = it
-            respondJson(addressJson, HttpStatusCode.Created)
-        })
+        val client = AddressClient(
+            mockHttpClientManager {
+                captured = it
+                respondJson(addressJson, HttpStatusCode.Created)
+            }
+        )
 
         client.saveAddress(request)
 
@@ -213,7 +217,12 @@ class AddressClientTest {
 
     @Test
     fun `save address decodes the created address`() = runTest {
-        val client = AddressClient(mockHttpClientManager { respondJson(addressJson, HttpStatusCode.Created) })
+        val client =
+            AddressClient(
+                mockHttpClientManager {
+                    respondJson(addressJson, HttpStatusCode.Created)
+                }
+            )
 
         val result = client.saveAddress(request)
 
@@ -222,12 +231,14 @@ class AddressClientTest {
 
     @Test
     fun `save address maps an error response to resource error`() = runTest {
-        val client = AddressClient(mockHttpClientManager {
-            respondJson(
-                """{"http_code": 400, "message": "Invalid", "internal_code": "MK-1"}""",
-                HttpStatusCode.BadRequest
-            )
-        })
+        val client = AddressClient(
+            mockHttpClientManager {
+                respondJson(
+                    """{"http_code": 400, "message": "Invalid", "internal_code": "MK-1"}""",
+                    HttpStatusCode.BadRequest
+                )
+            }
+        )
 
         val result = client.saveAddress(request)
 
@@ -237,10 +248,12 @@ class AddressClientTest {
     @Test
     fun `update address puts the request to the address id path`() = runTest {
         var captured: HttpRequestData? = null
-        val client = AddressClient(mockHttpClientManager {
-            captured = it
-            respond("", HttpStatusCode.NoContent)
-        })
+        val client = AddressClient(
+            mockHttpClientManager {
+                captured = it
+                respond("", HttpStatusCode.NoContent)
+            }
+        )
 
         client.updateAddress(request, 7)
 
@@ -260,7 +273,8 @@ class AddressClientTest {
 
     @Test
     fun `update address maps an error response to resource error`() = runTest {
-        val client = AddressClient(mockHttpClientManager { respondJson(errorJson, HttpStatusCode.NotFound) })
+        val client =
+            AddressClient(mockHttpClientManager { respondJson(errorJson, HttpStatusCode.NotFound) })
 
         val result = client.updateAddress(request, 7)
 
@@ -270,10 +284,12 @@ class AddressClientTest {
     @Test
     fun `get self address sends get to addresses`() = runTest {
         var captured: HttpRequestData? = null
-        val client = AddressClient(mockHttpClientManager {
-            captured = it
-            respondJson(addressJson)
-        })
+        val client = AddressClient(
+            mockHttpClientManager {
+                captured = it
+                respondJson(addressJson)
+            }
+        )
 
         client.getSelfAddress()
 
@@ -283,9 +299,10 @@ class AddressClientTest {
 
     @Test
     fun `get self address decodes snake case fields and null optionals`() = runTest {
-        val client = AddressClient(mockHttpClientManager {
-            respondJson(
-                """
+        val client = AddressClient(
+            mockHttpClientManager {
+                respondJson(
+                    """
                 {
                   "id": 3,
                   "zip_code": "04538133",
@@ -295,9 +312,10 @@ class AddressClientTest {
                   "longitude": -46.68,
                   "latitude": -23.58
                 }
-                """.trimIndent()
-            )
-        })
+                    """.trimIndent()
+                )
+            }
+        )
 
         val result = client.getSelfAddress()
 
@@ -315,7 +333,8 @@ class AddressClientTest {
 
     @Test
     fun `get self address maps not found to resource error`() = runTest {
-        val client = AddressClient(mockHttpClientManager { respondJson(errorJson, HttpStatusCode.NotFound) })
+        val client =
+            AddressClient(mockHttpClientManager { respondJson(errorJson, HttpStatusCode.NotFound) })
 
         val result = client.getSelfAddress()
 

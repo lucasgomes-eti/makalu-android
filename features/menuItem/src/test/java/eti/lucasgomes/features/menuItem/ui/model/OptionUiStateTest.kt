@@ -1,10 +1,10 @@
 package eti.lucasgomes.features.menuItem.ui.model
 
+import java.math.BigDecimal
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.math.BigDecimal
 
 class OptionUiStateTest {
 

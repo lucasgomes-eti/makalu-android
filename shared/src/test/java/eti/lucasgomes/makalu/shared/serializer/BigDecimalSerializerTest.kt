@@ -1,12 +1,12 @@
 package eti.lucasgomes.makalu.shared.serializer
 
 import eti.lucasgomes.makalu.testing.testJson
+import java.math.BigDecimal
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
-import java.math.BigDecimal
 
 class BigDecimalSerializerTest {
 

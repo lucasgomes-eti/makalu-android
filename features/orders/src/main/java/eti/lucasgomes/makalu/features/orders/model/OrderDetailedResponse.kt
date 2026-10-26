@@ -2,10 +2,10 @@ package eti.lucasgomes.makalu.features.orders.model
 
 import eti.lucasgomes.makalu.shared.model.OrderStatus
 import eti.lucasgomes.makalu.shared.serializer.BigDecimalSerializer
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import java.math.BigDecimal
 import kotlin.time.Instant
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class OrderDetailedResponse(
@@ -52,11 +52,7 @@ data class OrderDetailedResponse(
         val configurations: List<Configuration>
     ) {
         @Serializable
-        data class Configuration(
-            val id: Long,
-            val name: String,
-            val options: List<Option>
-        ) {
+        data class Configuration(val id: Long, val name: String, val options: List<Option>) {
             @Serializable
             data class Option(
                 val id: Long,

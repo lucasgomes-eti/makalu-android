@@ -15,7 +15,7 @@ fun addressResponse(
     number: String? = "1000",
     complement: String? = "Apt 12",
     latitude: Double = -23.56,
-    longitude: Double = -46.65,
+    longitude: Double = -46.65
 ) = AddressResponse(
     id = id,
     zipCode = zipCode,

@@ -17,10 +17,10 @@ import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.serialization.kotlinx.json.json
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlin.coroutines.cancellation.CancellationException
 
 class AddressClient(private val httpClientManager: HttpClientManager) {
 
@@ -36,7 +36,9 @@ class AddressClient(private val httpClientManager: HttpClientManager) {
 
     suspend fun reverseGeocode(latitude: Double, longitude: Double): ReverseGeocodeResponse {
         return try {
-            val response = geocodingClient.get("https://maps.googleapis.com/maps/api/geocode/json") {
+            val response = geocodingClient.get(
+                "https://maps.googleapis.com/maps/api/geocode/json"
+            ) {
                 parameter("latlng", "$latitude,$longitude")
                 parameter("key", BuildConfig.MAPS_API_KEY)
             }.body<GeocodeResponse>()
@@ -44,8 +46,7 @@ class AddressClient(private val httpClientManager: HttpClientManager) {
             val components = response.results.firstOrNull()?.addressComponents
                 ?: return ReverseGeocodeResponse()
 
-            fun find(type: String) =
-                components.firstOrNull { it.types.contains(type) }?.longName
+            fun find(type: String) = components.firstOrNull { it.types.contains(type) }?.longName
 
             ReverseGeocodeResponse(
                 zipCode = find("postal_code") ?: "",
@@ -59,7 +60,6 @@ class AddressClient(private val httpClientManager: HttpClientManager) {
             }
             ReverseGeocodeResponse()
         }
-
     }
 
     suspend fun saveAddress(request: AddressRequest): Resource<AddressResponse> =
@@ -81,9 +81,7 @@ class AddressClient(private val httpClientManager: HttpClientManager) {
     }
 
     @Serializable
-    data class GeocodeResponse(
-        val results: List<Result>
-    ) {
+    data class GeocodeResponse(val results: List<Result>) {
         @Serializable
         data class Result(
             @SerialName("address_components")
@@ -102,5 +100,3 @@ class AddressClient(private val httpClientManager: HttpClientManager) {
         private const val TIME_OUT = 6000
     }
 }
-
-

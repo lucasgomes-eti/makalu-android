@@ -9,5 +9,5 @@ data class RegisterResponse(
     val name: String,
     val email: String,
     @SerialName("phone_number")
-    val phoneNumber: String,
+    val phoneNumber: String
 )

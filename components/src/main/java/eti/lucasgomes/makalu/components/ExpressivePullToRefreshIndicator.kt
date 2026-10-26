@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun BoxScope.ExpressivePullToRefreshIndicator(
     pullToRefreshState: PullToRefreshState,
-    isRefreshing: Boolean,
+    isRefreshing: Boolean
 ) {
     PullToRefreshDefaults.IndicatorBox(
         modifier = Modifier.Companion
@@ -28,7 +28,7 @@ fun BoxScope.ExpressivePullToRefreshIndicator(
         elevation = 0.dp
     ) {
         Crossfade(
-            targetState = isRefreshing,
+            targetState = isRefreshing
         ) { refreshing ->
             if (refreshing) {
                 LoadingIndicator(

@@ -25,10 +25,7 @@ import eti.lucasgomes.makalu.navigation.BottomNavigationItem
 import eti.lucasgomes.makalu.shared.navigation.Destination
 
 @Composable
-fun BottomBar(
-    bottomBarUiController: BottomBarUiController,
-    navHostController: NavHostController,
-) {
+fun BottomBar(bottomBarUiController: BottomBarUiController, navHostController: NavHostController) {
     val bottomNavigationItems = listOf(
         BottomNavigationItem(
             name = stringResource(R.string.home),
@@ -40,7 +37,9 @@ fun BottomBar(
         BottomNavigationItem(
             name = stringResource(R.string.orders),
             route = Destination.Screen.Orders,
-            defaultIcon = painterResource(eti.lucasgomes.makalu.components.R.drawable.outline_receipt),
+            defaultIcon = painterResource(
+                eti.lucasgomes.makalu.components.R.drawable.outline_receipt
+            ),
             selectedIcon = painterResource(R.drawable.filled_receipt),
             contentDescription = stringResource(R.string.accessibility_orders_icon)
         ),
@@ -50,7 +49,7 @@ fun BottomBar(
             defaultIcon = painterResource(R.drawable.outline_person),
             selectedIcon = painterResource(R.drawable.filled_person),
             contentDescription = stringResource(R.string.accessibility_profile_icon)
-        ),
+        )
     )
 
     AnimatedVisibility(
@@ -88,7 +87,7 @@ fun BottomBar(
                             // Restore state when re-selecting a previously selected item
                             restoreState = true
                         }
-                    },
+                    }
                 )
             }
         }

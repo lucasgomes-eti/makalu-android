@@ -26,9 +26,9 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.serialization.kotlinx.json.json
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
-import kotlin.coroutines.cancellation.CancellationException
 
 class HttpClientManager(
     private val mkLogger: MkLogger,
@@ -36,11 +36,9 @@ class HttpClientManager(
     private val logoutUseCase: LogoutUseCase
 ) {
 
-    private var _httpClient: HttpClient? = null
+    private var httpClient: HttpClient? = null
 
-    fun getClient(): HttpClient {
-        return _httpClient ?: createHttpClient().also { _httpClient = it }
-    }
+    fun getClient(): HttpClient = httpClient ?: createHttpClient().also { httpClient = it }
 
     private fun createHttpClient(): HttpClient {
         return HttpClient(Android) {
@@ -78,7 +76,10 @@ class HttpClientManager(
             }
             install(Auth) {
                 bearer {
-                    sendWithoutRequest { request -> request.url.host == Url(MakaluConfig.BASE_URL).host }
+                    sendWithoutRequest { request ->
+                        request.url.host ==
+                            Url(MakaluConfig.BASE_URL).host
+                    }
                     loadTokens {
                         val (accessToken, refreshToken) = dataStore.data.first()
                         accessToken?.let { BearerTokens(it, refreshToken) }
@@ -129,8 +130,8 @@ class HttpClientManager(
     }
 
     private fun refreshHttpClient() {
-        _httpClient?.close()
-        _httpClient = createHttpClient()
+        httpClient?.close()
+        httpClient = createHttpClient()
     }
 
     suspend inline fun <reified T> withApiResource(

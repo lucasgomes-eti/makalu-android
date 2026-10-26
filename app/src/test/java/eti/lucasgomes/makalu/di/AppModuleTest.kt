@@ -10,6 +10,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import eti.lucasgomes.makalu.shared.MkLogger
 import eti.lucasgomes.makalu.shared.navigation.OSNavigation
+import java.io.File
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
@@ -24,7 +25,6 @@ import org.koin.core.context.stopKoin
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLog
-import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 @Config(application = Application::class)

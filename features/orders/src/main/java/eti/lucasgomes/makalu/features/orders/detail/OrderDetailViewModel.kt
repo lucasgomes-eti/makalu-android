@@ -10,10 +10,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-internal class OrderDetailViewModel(
-    private val id: Long,
-    private val ordersClient: OrdersClient
-) : ViewModel() {
+internal class OrderDetailViewModel(private val id: Long, private val ordersClient: OrdersClient) :
+    ViewModel() {
 
     private val _uiState = MutableStateFlow(OrderDetailUiState(id))
     val uiState = _uiState.asStateFlow()

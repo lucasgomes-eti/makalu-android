@@ -1,10 +1,10 @@
 package eti.lucasgomes.makalu.shared.model
 
 import eti.lucasgomes.makalu.shared.serializer.BigDecimalSerializer
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import java.math.BigDecimal
 import kotlin.time.Instant
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class OrderSimpleResponse(

@@ -12,18 +12,18 @@ import io.ktor.client.request.HttpRequestData
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.TextContent
+import java.math.BigDecimal
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
-import kotlinx.serialization.json.int
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.math.BigDecimal
 
 class MenuItemClientTest {
 
@@ -72,10 +72,12 @@ class MenuItemClientTest {
     @Test
     fun `get item sends GET to the store menu item path`() = runTest {
         var captured: HttpRequestData? = null
-        val client = MenuItemClient(mockHttpClientManager { request ->
-            captured = request
-            respondJson(menuItemJson)
-        })
+        val client = MenuItemClient(
+            mockHttpClientManager { request ->
+                captured = request
+                respondJson(menuItemJson)
+            }
+        )
 
         client.getItem(42)
 
@@ -98,15 +100,21 @@ class MenuItemClientTest {
             ingredients = "Tomato, mozzarella",
             configurations = listOf(
                 MenuItemResponse.Configuration(
-                    1, "Size", MenuItemResponse.Configuration.Type.SINGLE_CHOICE,
+                    1,
+                    "Size",
+                    MenuItemResponse.Configuration.Type.SINGLE_CHOICE,
                     listOf(MenuItemResponse.Configuration.Option(10, "Large", BigDecimal("3.00")))
                 ),
                 MenuItemResponse.Configuration(
-                    2, "Extras", MenuItemResponse.Configuration.Type.MULTIPLE_CHOICE,
+                    2,
+                    "Extras",
+                    MenuItemResponse.Configuration.Type.MULTIPLE_CHOICE,
                     listOf(MenuItemResponse.Configuration.Option(20, "Olives", BigDecimal("1.25")))
                 ),
                 MenuItemResponse.Configuration(
-                    3, "Drinks", MenuItemResponse.Configuration.Type.QUANTITY,
+                    3,
+                    "Drinks",
+                    MenuItemResponse.Configuration.Type.QUANTITY,
                     listOf(MenuItemResponse.Configuration.Option(30, "Soda", BigDecimal("4.5")))
                 )
             ),
@@ -134,9 +142,11 @@ class MenuItemClientTest {
 
     @Test
     fun `get item maps an error response to Resource Error`() = runTest {
-        val client = MenuItemClient(mockHttpClientManager {
-            respondJson(errorJson, HttpStatusCode.NotFound)
-        })
+        val client = MenuItemClient(
+            mockHttpClientManager {
+                respondJson(errorJson, HttpStatusCode.NotFound)
+            }
+        )
 
         val result = client.getItem(42)
 
@@ -155,10 +165,12 @@ class MenuItemClientTest {
     @Test
     fun `add item to cart sends PUT to the store menu item cart path`() = runTest {
         var captured: HttpRequestData? = null
-        val client = MenuItemClient(mockHttpClientManager { request ->
-            captured = request
-            respond("", HttpStatusCode.OK)
-        })
+        val client = MenuItemClient(
+            mockHttpClientManager { request ->
+                captured = request
+                respond("", HttpStatusCode.OK)
+            }
+        )
 
         client.addItemToCart(7, 42, CartItemRequest(emptyList()))
 
@@ -169,10 +181,12 @@ class MenuItemClientTest {
     @Test
     fun `add item to cart serializes configurations and notes`() = runTest {
         var body: String? = null
-        val client = MenuItemClient(mockHttpClientManager { request ->
-            body = (request.body as TextContent).text
-            respond("", HttpStatusCode.OK)
-        })
+        val client = MenuItemClient(
+            mockHttpClientManager { request ->
+                body = (request.body as TextContent).text
+                respond("", HttpStatusCode.OK)
+            }
+        )
         val request = CartItemRequest(
             configurations = listOf(CartItemRequest.Configuration(5, 3)),
             notes = "No onions"
@@ -182,7 +196,10 @@ class MenuItemClientTest {
 
         val json = testJson.parseToJsonElement(body!!) as JsonObject
         val configuration = json.getValue("configurations").jsonArray.single().jsonObject
-        assertEquals(5L, configuration.getValue("menu_item_configuration_option_id").jsonPrimitive.long)
+        assertEquals(
+            5L,
+            configuration.getValue("menu_item_configuration_option_id").jsonPrimitive.long
+        )
         assertEquals(3, configuration.getValue("quantity").jsonPrimitive.int)
         assertEquals("No onions", json.getValue("notes").jsonPrimitive.content)
     }
@@ -201,9 +218,11 @@ class MenuItemClientTest {
         val json = """
             { "http_code": 400, "message": "Out of stock", "internal_code": "MK-2" }
         """.trimIndent()
-        val client = MenuItemClient(mockHttpClientManager {
-            respondJson(json, HttpStatusCode.BadRequest)
-        })
+        val client = MenuItemClient(
+            mockHttpClientManager {
+                respondJson(json, HttpStatusCode.BadRequest)
+            }
+        )
 
         val result = client.addItemToCart(7, 42, CartItemRequest(emptyList()))
 

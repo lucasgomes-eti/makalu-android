@@ -1,6 +1,6 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.StringReader
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("java-library")
@@ -30,7 +30,9 @@ kotlin {
                 throw GradleException("BASE_URL is missing from local.properties")
             }
             if (!url.endsWith("/")) {
-                throw GradleException("BASE_URL in local.properties must end with '/' (got \"$url\")")
+                throw GradleException(
+                    "BASE_URL in local.properties must end with '/' (got \"$url\")"
+                )
             }
             url
         }
@@ -49,7 +51,7 @@ kotlin {
             object MakaluConfig {
                 const val BASE_URL = "${baseUrl.get()}"
             }
-            """.trimIndent()
+                """.trimIndent()
             )
         }
     }

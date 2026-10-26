@@ -12,5 +12,7 @@ fun testPainter(color: Color = Color.Red): Painter = ColorPainter(color)
 fun fieldError(field: String, message: String) = MakaluError.FieldError(field, message)
 
 data class FakeErrorsAssignable(val errors: Map<String, UiText>) : TextFieldErrorsAssignable {
-    override fun assignFieldErrors(fieldErrors: List<MakaluError.FieldError>): TextFieldErrorsAssignable = this
+    override fun assignFieldErrors(
+        fieldErrors: List<MakaluError.FieldError>
+    ): TextFieldErrorsAssignable = this
 }

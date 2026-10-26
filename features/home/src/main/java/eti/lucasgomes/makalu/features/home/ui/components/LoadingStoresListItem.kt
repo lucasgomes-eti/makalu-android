@@ -19,7 +19,7 @@ internal fun LazyItemScope.LoadingStoresListItem() {
         modifier = Modifier.Companion
             .fillMaxWidth()
             .animateItem(),
-        horizontalAlignment = Alignment.Companion.CenterHorizontally,
+        horizontalAlignment = Alignment.Companion.CenterHorizontally
     ) {
         Column {
             Spacer(Modifier.Companion.height(120.dp))

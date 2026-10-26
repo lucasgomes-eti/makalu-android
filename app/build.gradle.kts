@@ -54,7 +54,7 @@ android {
 }
 
 dependencies {
-    //Project
+    // Project
     implementation(projects.shared)
     implementation(projects.components)
     implementation(projects.features.auth)
@@ -78,7 +78,6 @@ dependencies {
 
     // DI
     implementation(libs.koin.androidx.compose)
-
 
     // Tooling
     debugImplementation(libs.androidx.ui.tooling)

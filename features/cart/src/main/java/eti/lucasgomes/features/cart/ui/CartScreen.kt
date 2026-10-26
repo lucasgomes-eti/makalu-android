@@ -43,7 +43,8 @@ import eti.lucasgomes.makalu.components.format.formatMoney
 @Composable
 internal fun BoxScope.CartScreen(uiState: CartUiState, onAction: (CartAction) -> Unit) {
     ConfigureTopBar(
-        "Cart", navigationActions = listOf(
+        "Cart",
+        navigationActions = listOf(
             TopBarAction(painterResource(R.drawable.delete), contentDescription = "Delete icon") {
                 onAction(CartAction.DeleteAllItemsClicked)
             }
@@ -52,12 +53,15 @@ internal fun BoxScope.CartScreen(uiState: CartUiState, onAction: (CartAction) ->
 
     when (uiState) {
         CartUiState.Empty -> EmptyCart()
+
         is CartUiState.Error -> ErrorBanner(uiState.generalError.asString())
+
         CartUiState.Loading -> LoadingState()
+
         is CartUiState.Data -> CartList(
             uiState,
             onRemoveClicked = { onAction(CartAction.RemoveItemClicked(it)) },
-            onMakeOrderClicked = { onAction(CartAction.MakeOrderClicked) },
+            onMakeOrderClicked = { onAction(CartAction.MakeOrderClicked) }
         )
     }
 }
@@ -94,7 +98,7 @@ private fun CartList(
                                 .size(40.dp)
                                 .background(Color(0xFFE1F5FE), CircleShape)
                                 .padding(8.dp),
-                            tint = Color(0xFF01579B),
+                            tint = Color(0xFF01579B)
                         )
                     }
                 }
@@ -114,7 +118,10 @@ private fun CartList(
                 },
                 supportingContent = {
                     Text(
-                        stringResource(R.string.cart_delivery_fee, formatMoney(uiState.deliveryFee)),
+                        stringResource(
+                            R.string.cart_delivery_fee,
+                            formatMoney(uiState.deliveryFee)
+                        ),
                         style = typography.labelMedium
                     )
                 },
@@ -128,7 +135,7 @@ private fun CartList(
                                 .size(40.dp)
                                 .background(Color(0xFFE8F5E9), CircleShape)
                                 .padding(8.dp),
-                            tint = Color(0xFF1B5E20),
+                            tint = Color(0xFF1B5E20)
                         )
                     }
                 }
@@ -147,13 +154,12 @@ private fun CartList(
     }
 }
 
-
 @Composable
 private fun EmptyCart() {
     Column(
         modifier = Modifier
             .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column {
             Icon(
@@ -171,7 +177,7 @@ private fun EmptyCart() {
 private fun LoadingState() {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.Center
     ) {
         CircularProgressIndicator()
     }
@@ -185,7 +191,7 @@ private fun LazyItemScope.CartItem(uiState: CartItemUiState, onRemoveClicked: ()
         price = uiState.price,
         notes = uiState.notes,
         configurations = uiState.configurations,
-        modifier = Modifier.animateItem(),
+        modifier = Modifier.animateItem()
     ) {
         ExpressiveLoadingTextButton(
             modifier = Modifier.fillMaxWidth(),

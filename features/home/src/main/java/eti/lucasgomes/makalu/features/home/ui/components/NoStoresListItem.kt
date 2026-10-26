@@ -21,7 +21,7 @@ internal fun LazyItemScope.NoStoresListItem() {
         modifier = Modifier.Companion
             .fillMaxWidth()
             .animateItem(),
-        horizontalAlignment = Alignment.Companion.CenterHorizontally,
+        horizontalAlignment = Alignment.Companion.CenterHorizontally
     ) {
         Column {
             Icon(

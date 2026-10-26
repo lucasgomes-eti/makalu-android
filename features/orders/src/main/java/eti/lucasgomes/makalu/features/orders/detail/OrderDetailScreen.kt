@@ -37,10 +37,7 @@ import java.math.BigDecimal
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-internal fun OrderDetailScreen(
-    uiState: OrderDetailUiState,
-    onAction: (OrderDetailAction) -> Unit
-) {
+internal fun OrderDetailScreen(uiState: OrderDetailUiState, onAction: (OrderDetailAction) -> Unit) {
     ConfigureTopBar(
         uiState.card?.let { stringResource(R.string.order_detail_title, it.orderNumber) }
             ?: stringResource(R.string.order_detail_title_empty)
@@ -68,7 +65,9 @@ internal fun OrderDetailScreen(
         }
         uiState.card?.let { card -> item { OrderCard(card) } }
         if (uiState.items.isNotEmpty()) {
-            item { Text(stringResource(R.string.order_detail_items), style = typography.titleLarge) }
+            item {
+                Text(stringResource(R.string.order_detail_items), style = typography.titleLarge)
+            }
             items(uiState.items) {
                 ItemCard(it.name, it.imageUrl, it.price, it.notes, it.configurations)
             }

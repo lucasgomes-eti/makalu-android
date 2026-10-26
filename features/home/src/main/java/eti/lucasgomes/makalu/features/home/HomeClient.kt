@@ -1,16 +1,14 @@
 package eti.lucasgomes.makalu.features.home
 
+import eti.lucasgomes.makalu.shared.model.AddressResponse
 import eti.lucasgomes.makalu.shared.model.CategoryResponse
 import eti.lucasgomes.makalu.shared.model.StoreResponse
-import eti.lucasgomes.makalu.shared.model.AddressResponse
 import eti.lucasgomes.makalu.shared.network.HttpClientManager
 import eti.lucasgomes.makalu.shared.network.Resource
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 
-class HomeClient(
-    private val httpClientManager: HttpClientManager
-) {
+class HomeClient(private val httpClientManager: HttpClientManager) {
 
     suspend fun getCategories(): Resource<List<CategoryResponse>> =
         httpClientManager.withApiResource { get("/categories") }

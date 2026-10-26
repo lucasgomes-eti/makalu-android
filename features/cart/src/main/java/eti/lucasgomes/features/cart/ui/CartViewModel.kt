@@ -61,11 +61,11 @@ internal class CartViewModel(
                             name = itemResponse.name,
                             price = itemResponse.price,
                             notes = itemResponse.notes,
-                            configurations = itemResponse.configurations.map { configurationResponse ->
+                            configurations = itemResponse.configurations.map { configuration ->
                                 ItemConfigurationUiState(
-                                    configurationResponse.configurationId,
-                                    configurationResponse.name,
-                                    configurationResponse.options.map { optionResponse ->
+                                    configuration.configurationId,
+                                    configuration.name,
+                                    configuration.options.map { optionResponse ->
                                         ItemOptionUiState(
                                             optionResponse.id,
                                             optionResponse.name,
@@ -105,7 +105,9 @@ internal class CartViewModel(
                         items = state.items.toMutableList().apply { removeAt(index) },
                         totalPrice = response.total.total
                     )
-                } else state
+                } else {
+                    state
+                }
             }
         }
     }
@@ -113,14 +115,18 @@ internal class CartViewModel(
     private fun setItemRemoving(cartItemId: Long, isRemoving: Boolean) {
         _uiState.update { state ->
             if (state is CartUiState.Data) {
-                state.copy(items = state.items.map { item ->
-                    if (item.id == cartItemId) {
-                        item.copy(isRemoving = isRemoving)
-                    } else {
-                        item
+                state.copy(
+                    items = state.items.map { item ->
+                        if (item.id == cartItemId) {
+                            item.copy(isRemoving = isRemoving)
+                        } else {
+                            item
+                        }
                     }
-                })
-            } else state
+                )
+            } else {
+                state
+            }
         }
     }
 

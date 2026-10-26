@@ -2,11 +2,11 @@ package eti.lucasgomes.features.store.ui.model
 
 import MakaluConfig
 import eti.lucasgomes.makalu.components.dsl.UiText
+import java.math.BigDecimal
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Test
-import java.math.BigDecimal
 
 class StoreUiStateTest {
 

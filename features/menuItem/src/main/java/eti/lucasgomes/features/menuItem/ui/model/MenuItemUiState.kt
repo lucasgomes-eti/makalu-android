@@ -14,7 +14,7 @@ internal data class MenuItemUiState(
     val ingredients: String? = null,
     val price: BigDecimal = BigDecimal.ZERO,
     val configurations: Map<ConfigurationUiState, List<OptionUiState>> = emptyMap(),
-    val notes: String = "",
+    val notes: String = ""
 ) {
 
     val imageUrl: String?
@@ -33,7 +33,7 @@ internal data class MenuItemUiState(
 internal sealed class OptionUiState(
     open val id: Long,
     open val label: String,
-    open val additionalPrice: BigDecimal,
+    open val additionalPrice: BigDecimal
 ) {
 
     abstract val isSelected: Boolean
@@ -63,7 +63,7 @@ internal sealed class OptionUiState(
         override val id: Long,
         override val label: String = "",
         override val additionalPrice: BigDecimal = BigDecimal.ZERO,
-        val amount: Int = 0,
+        val amount: Int = 0
     ) : OptionUiState(id, label, additionalPrice) {
 
         override val isSelected: Boolean

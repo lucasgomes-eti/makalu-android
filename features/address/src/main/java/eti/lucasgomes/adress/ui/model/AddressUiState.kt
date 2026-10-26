@@ -21,7 +21,7 @@ data class AddressUiState(
     val isPermissionDeniedDialogVisible: Boolean = false,
     val isPermissionRationaleDialogVisible: Boolean = false,
     val locationSettingsResolution: PendingIntent? = null,
-    val generalError: UiText = UiText.Empty,
+    val generalError: UiText = UiText.Empty
 ) : TextFieldErrorsAssignable {
 
     val marker: MarkerState
@@ -30,12 +30,12 @@ data class AddressUiState(
     val isLocationProvided: Boolean
         get() = location.latitude != .0
 
-    override fun assignFieldErrors(fieldErrors: List<MakaluError.FieldError>): TextFieldErrorsAssignable {
-        return fieldErrors.withFieldErrorsAsMap {
-            copy(
-                zipCode = zipCode.copy(error = getOrElse(::zipCode.name) { UiText.Empty }),
-                street = street.copy(error = getOrElse(::street.name) { UiText.Empty }),
-            )
-        }
+    override fun assignFieldErrors(
+        fieldErrors: List<MakaluError.FieldError>
+    ): TextFieldErrorsAssignable = fieldErrors.withFieldErrorsAsMap {
+        copy(
+            zipCode = zipCode.copy(error = getOrElse(::zipCode.name) { UiText.Empty }),
+            street = street.copy(error = getOrElse(::street.name) { UiText.Empty })
+        )
     }
 }

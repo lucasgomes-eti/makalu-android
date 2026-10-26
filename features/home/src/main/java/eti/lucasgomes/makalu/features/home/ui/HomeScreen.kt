@@ -79,21 +79,22 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
     }
     Column(
         Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Row(
             Modifier
                 .fillMaxWidth()
                 .padding(PaddingValues(16.dp, 16.dp, 16.dp, 0.dp)),
             horizontalArrangement = Arrangement.Absolute.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             ExpressiveTextButton(
                 onClick = { onAction(HomeAction.AddressClicked) },
                 modifier = Modifier.widthIn(
                     ButtonDefaults.MinWidth,
                     with(LocalDensity.current) {
-                        LocalWindowInfo.current.containerSize.width.toDp() - ButtonDefaults.MinWidth - 32.dp
+                        LocalWindowInfo.current.containerSize.width.toDp() -
+                            ButtonDefaults.MinWidth - 32.dp
                     }
                 )
             ) {
@@ -126,9 +127,9 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
                 enter = fadeIn() + slideIn { IntOffset(0, -it.height) },
                 exit = slideOut(
                     tween(
-                        delayMillis = 0,
+                        delayMillis = 0
                     )
-                ) { IntOffset(0, -it.height) } + fadeOut(),
+                ) { IntOffset(0, -it.height) } + fadeOut()
             ) {
                 LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
@@ -136,10 +137,10 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
                 uiState.isFiltersLoading.not(),
                 enter = fadeIn() + slideIn(
                     tween(
-                        delayMillis = 300,
+                        delayMillis = 300
                     )
                 ) { IntOffset(it.width, 0) },
-                exit = slideOut { IntOffset(it.width, 0) } + fadeOut(),
+                exit = slideOut { IntOffset(it.width, 0) } + fadeOut()
             ) {
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -147,11 +148,12 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
                 ) {
                     itemsIndexed(
                         uiState.categories,
-                        key = { _, category -> category.id }) { i, category ->
+                        key = { _, category -> category.id }
+                    ) { i, category ->
                         FilterChip(
                             selected = category.isSelected,
                             label = { Text(category.label.asString()) },
-                            onClick = { onAction(HomeAction.CategoryClicked(i)) },
+                            onClick = { onAction(HomeAction.CategoryClicked(i)) }
                         )
                     }
                 }
@@ -177,11 +179,15 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
             ) {
                 items(
                     items = uiState.stores,
-                    key = { it.key },
+                    key = { it.key }
                 ) { store ->
                     when (store) {
-                        is StoreUiState.Data -> StoreListItem(store) { onAction(HomeAction.StoreClicked(store.id)) }
+                        is StoreUiState.Data -> StoreListItem(store) {
+                            onAction(HomeAction.StoreClicked(store.id))
+                        }
+
                         StoreUiState.Loading -> LoadingStoresListItem()
+
                         StoreUiState.NoContent -> NoStoresListItem()
                     }
                 }
@@ -194,7 +200,6 @@ internal fun HomeScreen(uiState: HomeUiState, onAction: (HomeAction) -> Unit) {
 @ExcludeFromGeneratedCoverageReport
 @Composable
 private fun HomePreview() {
-
     CompositionLocalProvider(LocalFabUiController provides FabUiController()) {
         HomeScreen(
             HomeUiState(
@@ -202,7 +207,7 @@ private fun HomePreview() {
                 categories = listOf(
                     CategoryUiState(1, UiText.PlainText("All"), true),
                     CategoryUiState(2, UiText.PlainText("Coffee"), false),
-                    CategoryUiState(3, UiText.PlainText("Pizza"), false),
+                    CategoryUiState(3, UiText.PlainText("Pizza"), false)
                 ),
                 stores = listOf(
                     StoreUiState.Data(
@@ -210,11 +215,10 @@ private fun HomePreview() {
                         name = "Scary's",
                         category = "Burger",
                         logoId = 1,
-                        coverId = 1,
+                        coverId = 1
                     )
                 )
             )
         ) {}
     }
-
 }

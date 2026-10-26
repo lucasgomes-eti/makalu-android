@@ -46,7 +46,7 @@ android {
 }
 
 dependencies {
-    //Project
+    // Project
     implementation(projects.shared)
     implementation(projects.components)
 
@@ -57,7 +57,7 @@ dependencies {
     // Image Loading
     implementation(libs.bundles.coil)
 
-    //DI
+    // DI
     implementation(libs.koin.androidx.compose)
 
     // Tooling

@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
 import eti.lucasgomes.makalu.components.CameraPermissionDeniedDialog
+import eti.lucasgomes.makalu.components.R as ComponentsR
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.components.pickers.SelectOrCaptureImagePicker
@@ -49,7 +50,6 @@ import eti.lucasgomes.makalu.shared.ExcludeFromGeneratedCoverageReport
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun ProfileScreen(uiState: ProfileUiState, onAction: (ProfileAction) -> Unit) {
-
     Column(
         Modifier
             .fillMaxSize()
@@ -70,15 +70,23 @@ internal fun ProfileScreen(uiState: ProfileUiState, onAction: (ProfileAction) ->
                     LoadingIndicator()
                 } else {
                     Box(contentAlignment = Alignment.Center) {
-                        val profilePicturePainter by rememberAsyncImagePainter(uiState.imageUrl).state.collectAsStateWithLifecycle()
+                        val profilePicturePainter by rememberAsyncImagePainter(
+                            uiState.imageUrl
+                        ).state.collectAsStateWithLifecycle()
                         Image(
-                            painter = if (uiState.isProfileImageLoaded) profilePicturePainter.painter
-                                ?: painterResource(
-                                    eti.lucasgomes.makalu.components.R.drawable.person,
-                                ) else painterResource(
-                                eti.lucasgomes.makalu.components.R.drawable.person
+                            painter = if (uiState.isProfileImageLoaded) {
+                                profilePicturePainter.painter
+                                    ?: painterResource(
+                                        ComponentsR.drawable.person
+                                    )
+                            } else {
+                                painterResource(
+                                    ComponentsR.drawable.person
+                                )
+                            },
+                            contentDescription = stringResource(
+                                ComponentsR.string.accessibility_profile_picture
                             ),
-                            contentDescription = stringResource(eti.lucasgomes.makalu.components.R.string.accessibility_profile_picture),
                             modifier = Modifier
                                 .size(128.dp)
                                 .clip(CircleShape)
@@ -86,7 +94,8 @@ internal fun ProfileScreen(uiState: ProfileUiState, onAction: (ProfileAction) ->
                                 .clickable(
                                     enabled = uiState.isLoading.not(),
                                     role = Role.Image,
-                                    onClick = { onAction(ProfileAction.ProfileImageClicked) })
+                                    onClick = { onAction(ProfileAction.ProfileImageClicked) }
+                                )
                         )
                         if (uiState.imageUploadLoading) {
                             LoadingIndicator()
@@ -95,7 +104,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, onAction: (ProfileAction) ->
                     Text(uiState.name, style = typography.titleLarge)
                     Column {
                         Text(
-                            stringResource(eti.lucasgomes.makalu.components.R.string.email),
+                            stringResource(ComponentsR.string.email),
                             modifier = Modifier.fillMaxWidth(),
                             style = typography.labelSmall
                         )
@@ -107,7 +116,7 @@ internal fun ProfileScreen(uiState: ProfileUiState, onAction: (ProfileAction) ->
                     }
                     Column {
                         Text(
-                            stringResource(eti.lucasgomes.makalu.components.R.string.phone_number),
+                            stringResource(ComponentsR.string.phone_number),
                             modifier = Modifier.fillMaxWidth(),
                             style = typography.labelSmall
                         )
@@ -140,7 +149,8 @@ internal fun ProfileScreen(uiState: ProfileUiState, onAction: (ProfileAction) ->
     if (uiState.isLogoutDialogVisible) {
         LogoutDoubleCheckDialog(
             onDismissRequest = { onAction(ProfileAction.LogoutDialogDismissed) },
-            onLogout = { onAction(ProfileAction.LogoutConfirmed) })
+            onLogout = { onAction(ProfileAction.LogoutConfirmed) }
+        )
     }
 
     if (uiState.isImagePickerVisible) {
@@ -150,7 +160,6 @@ internal fun ProfileScreen(uiState: ProfileUiState, onAction: (ProfileAction) ->
             },
             onCameraImageTaken = {
                 onAction(ProfileAction.CameraImageTaken(it))
-
             },
             onPermissionLauncherResultReceived = { permissionGranted, launchCamera ->
                 onAction(
@@ -158,7 +167,8 @@ internal fun ProfileScreen(uiState: ProfileUiState, onAction: (ProfileAction) ->
                         isGranted = permissionGranted,
                         launchCamera = { uri ->
                             launchCamera(uri)
-                        })
+                        }
+                    )
                 )
             },
             onDismissRequest = { onAction(ProfileAction.ImagePickerDismissed) }
@@ -171,7 +181,8 @@ internal fun ProfileScreen(uiState: ProfileUiState, onAction: (ProfileAction) ->
                 onAction(
                     ProfileAction.GoToSystemSettingsClicked
                 )
-            })
+            }
+        )
     }
 }
 
@@ -197,7 +208,7 @@ private fun LogoutDoubleCheckDialog(onDismissRequest: () -> Unit, onLogout: () -
                 onClick = onDismissRequest,
                 colors = ButtonDefaults.textButtonColors(contentColor = colorScheme.onSurface)
             ) {
-                Text(stringResource(eti.lucasgomes.makalu.components.R.string.dismiss))
+                Text(stringResource(ComponentsR.string.dismiss))
             }
         }
     )

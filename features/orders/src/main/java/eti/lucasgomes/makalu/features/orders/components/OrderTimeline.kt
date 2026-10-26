@@ -33,10 +33,7 @@ private val StepPadding = 4.dp
 private val ConnectorThickness = 2.dp
 
 @Composable
-internal fun OrderTimeline(
-    modifier: Modifier = Modifier,
-    status: OrderStatus
-) {
+internal fun OrderTimeline(modifier: Modifier = Modifier, status: OrderStatus) {
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -112,8 +109,11 @@ private fun OrderStatus.stateWithin(currentStatus: OrderStatus): StepState {
 
 @Composable
 private fun connectorColor(currentStatus: OrderStatus, atIndex: Int): Color =
-    if (atIndex < currentStatus.timelineIndex) currentStatus.palette().strong
-    else colorScheme.outlineVariant
+    if (atIndex < currentStatus.timelineIndex) {
+        currentStatus.palette().strong
+    } else {
+        colorScheme.outlineVariant
+    }
 
 @Preview(showBackground = true)
 @ExcludeFromGeneratedCoverageReport

@@ -10,7 +10,6 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun OrderDetailEntry(innerPadding: PaddingValues, orderId: Long) {
-
     val viewModel = koinViewModel<OrderDetailViewModel> { parametersOf(orderId) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

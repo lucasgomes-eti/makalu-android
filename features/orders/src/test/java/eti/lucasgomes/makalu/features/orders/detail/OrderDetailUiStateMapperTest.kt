@@ -9,11 +9,11 @@ import eti.lucasgomes.makalu.features.orders.option
 import eti.lucasgomes.makalu.features.orders.orderDetailedResponse
 import eti.lucasgomes.makalu.features.orders.orderItemResponse
 import eti.lucasgomes.makalu.shared.model.OrderStatus
+import java.math.BigDecimal
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.math.BigDecimal
 
 class OrderDetailUiStateMapperTest {
 
@@ -41,7 +41,11 @@ class OrderDetailUiStateMapperTest {
     @Test
     fun `toCardUiState counts the items`() {
         val response = orderDetailedResponse(
-            items = listOf(orderItemResponse(id = 1), orderItemResponse(id = 2), orderItemResponse(id = 3))
+            items = listOf(
+                orderItemResponse(id = 1),
+                orderItemResponse(id = 2),
+                orderItemResponse(id = 3)
+            )
         )
 
         assertEquals(3, response.toCardUiState().itemsCount)
@@ -65,7 +69,13 @@ class OrderDetailUiStateMapperTest {
     fun `toUiItems maps item fields`() {
         val response = orderDetailedResponse(
             items = listOf(
-                orderItemResponse(id = 8, imageId = 9, name = "Salmon roll", price = BigDecimal("12.90"), notes = "No wasabi")
+                orderItemResponse(
+                    id = 8,
+                    imageId = 9,
+                    name = "Salmon roll",
+                    price = BigDecimal("12.90"),
+                    notes = "No wasabi"
+                )
             )
         )
 
@@ -80,7 +90,8 @@ class OrderDetailUiStateMapperTest {
 
     @Test
     fun `toUiItems leaves image url and notes null when absent`() {
-        val response = orderDetailedResponse(items = listOf(orderItemResponse(imageId = null, notes = null)))
+        val response =
+            orderDetailedResponse(items = listOf(orderItemResponse(imageId = null, notes = null)))
 
         val item = response.toUiItems().single()
 
@@ -98,14 +109,31 @@ class OrderDetailUiStateMapperTest {
                             id = 10,
                             name = "Extras",
                             options = listOf(
-                                option(id = 100, name = "Cheese", additionalPrice = BigDecimal("1.50"), quantity = 2),
-                                option(id = 101, name = "Bacon", additionalPrice = BigDecimal("3.00"), quantity = 1)
+                                option(
+                                    id = 100,
+                                    name = "Cheese",
+                                    additionalPrice = BigDecimal("1.50"),
+                                    quantity = 2
+                                ),
+                                option(
+                                    id = 101,
+                                    name = "Bacon",
+                                    additionalPrice = BigDecimal("3.00"),
+                                    quantity = 1
+                                )
                             )
                         ),
                         configuration(
                             id = 11,
                             name = "Sauce",
-                            options = listOf(option(id = 110, name = "Teriyaki", additionalPrice = BigDecimal("0.00"), quantity = 1))
+                            options = listOf(
+                                option(
+                                    id = 110,
+                                    name = "Teriyaki",
+                                    additionalPrice = BigDecimal("0.00"),
+                                    quantity = 1
+                                )
+                            )
                         )
                     )
                 )
@@ -138,14 +166,22 @@ class OrderDetailUiStateMapperTest {
     fun `toUiItems keeps empty configurations and options`() {
         val response = orderDetailedResponse(
             items = listOf(
-                orderItemResponse(id = 1, configurations = listOf(configuration(id = 10, name = "Extras", options = emptyList()))),
+                orderItemResponse(
+                    id = 1,
+                    configurations = listOf(
+                        configuration(id = 10, name = "Extras", options = emptyList())
+                    )
+                ),
                 orderItemResponse(id = 2, configurations = emptyList())
             )
         )
 
         val items = response.toUiItems()
 
-        assertEquals(listOf(ItemConfigurationUiState(10, "Extras", emptyList())), items[0].configurations)
+        assertEquals(
+            listOf(ItemConfigurationUiState(10, "Extras", emptyList())),
+            items[0].configurations
+        )
         assertTrue(items[1].configurations.isEmpty())
     }
 

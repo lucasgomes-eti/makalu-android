@@ -13,14 +13,14 @@ import io.ktor.client.request.HttpRequestData
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.TextContent
+import java.math.BigDecimal
+import kotlin.time.Instant
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.math.BigDecimal
-import kotlin.time.Instant
 
 class CartClientTest {
 
@@ -98,16 +98,19 @@ class CartClientTest {
         { "http_code": 404, "message": "Cart not found", "internal_code": "MK-404" }
     """.trimIndent()
 
-    private val expectedError = MakaluError(httpCode = 404, message = "Cart not found", internalCode = "MK-404")
+    private val expectedError =
+        MakaluError(httpCode = 404, message = "Cart not found", internalCode = "MK-404")
 
     private fun clientRespondingJson(
         body: String,
         status: HttpStatusCode = HttpStatusCode.OK,
         onRequest: (HttpRequestData) -> Unit = {}
-    ) = CartClient(mockHttpClientManager { request ->
-        onRequest(request)
-        respondJson(body, status)
-    })
+    ) = CartClient(
+        mockHttpClientManager { request ->
+            onRequest(request)
+            respondJson(body, status)
+        }
+    )
 
     @Test
     fun `getByStore sends a get to the store cart path`() = runTest {
@@ -170,10 +173,12 @@ class CartClientTest {
     @Test
     fun `deleteAllItemsByStore sends a delete to the store cart items path`() = runTest {
         var captured: HttpRequestData? = null
-        val client = CartClient(mockHttpClientManager { request ->
-            captured = request
-            respond("", HttpStatusCode.NoContent)
-        })
+        val client = CartClient(
+            mockHttpClientManager { request ->
+                captured = request
+                respond("", HttpStatusCode.NoContent)
+            }
+        )
 
         client.deleteAllItemsByStore(STORE_ID)
 
@@ -209,7 +214,10 @@ class CartClientTest {
         assertEquals(HttpMethod.Post, captured!!.method)
         assertEquals("/orders", captured!!.url.encodedPath)
         val body = Json.parseToJsonElement((captured!!.body as TextContent).text)
-        assertEquals(JsonObject(mapOf("store_id" to JsonPrimitive(5), "cart_id" to JsonPrimitive(42))), body)
+        assertEquals(
+            JsonObject(mapOf("store_id" to JsonPrimitive(5), "cart_id" to JsonPrimitive(42))),
+            body
+        )
     }
 
     @Test

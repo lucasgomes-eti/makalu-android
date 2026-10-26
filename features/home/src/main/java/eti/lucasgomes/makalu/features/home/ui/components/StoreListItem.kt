@@ -55,8 +55,18 @@ internal fun LazyItemScope.StoreListItem(store: StoreUiState.Data, onStoreClicke
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                Text(store.name, style = typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(store.category, style = typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(
+                    store.name,
+                    style = typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    store.category,
+                    style = typography.labelMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
             AsyncImage(
                 modifier = Modifier.size(80.dp),
@@ -74,14 +84,15 @@ internal fun LazyItemScope.StoreListItem(store: StoreUiState.Data, onStoreClicke
 private fun StoreListItemPreview() {
     LazyColumn {
         item {
-            StoreListItem(StoreUiState.Data(
-                1,
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-                "Ut placerat feugiat nisi, a maximus turpis varius in. Maecenas at auctor ipsum. Suspendisse potenti. Donec tincidunt magna sit amet massa convallis, id pretium mauris placerat.",
-                1,
-                1
-            )) {}
+            StoreListItem(
+                StoreUiState.Data(
+                    1,
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                    "Ut placerat feugiat nisi, a maximus turpis varius in. Maecenas at auctor ipsum. Suspendisse potenti. Donec tincidunt magna sit amet massa convallis, id pretium mauris placerat.",
+                    1,
+                    1
+                )
+            ) {}
         }
     }
-
 }

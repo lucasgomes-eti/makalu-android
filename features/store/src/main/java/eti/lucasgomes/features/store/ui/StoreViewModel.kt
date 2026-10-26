@@ -69,11 +69,13 @@ internal class StoreViewModel(
                             MenuItemUiState(
                                 id = itemResponse.id,
                                 category = itemResponse.category,
-                                name = itemResponse.name, price = itemResponse.price,
-                                imageId = itemResponse.imageId,
+                                name = itemResponse.name,
+                                price = itemResponse.price,
+                                imageId = itemResponse.imageId
                             )
                         }
-                    })
+                    }
+                )
             }
         }
     }

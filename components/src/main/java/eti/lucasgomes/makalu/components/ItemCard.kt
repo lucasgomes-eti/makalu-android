@@ -35,7 +35,7 @@ fun ItemCard(
     notes: String?,
     configurations: List<ItemConfigurationUiState>,
     modifier: Modifier = Modifier,
-    footer: @Composable ColumnScope.() -> Unit = {},
+    footer: @Composable ColumnScope.() -> Unit = {}
 ) {
     Card(modifier) {
         Column(
@@ -147,15 +147,30 @@ private val previewConfigurations = listOf(
         id = 1,
         name = "Sauces",
         options = listOf(
-            ItemOptionUiState(id = 1, name = "Teriyaki", additionalPrice = BigDecimal("1.50"), quantity = 2),
-            ItemOptionUiState(id = 2, name = "Spicy mayo", additionalPrice = BigDecimal("1.00"), quantity = 1)
+            ItemOptionUiState(
+                id = 1,
+                name = "Teriyaki",
+                additionalPrice = BigDecimal("1.50"),
+                quantity = 2
+            ),
+            ItemOptionUiState(
+                id = 2,
+                name = "Spicy mayo",
+                additionalPrice = BigDecimal("1.00"),
+                quantity = 1
+            )
         )
     ),
     ItemConfigurationUiState(
         id = 2,
         name = "Extras",
         options = listOf(
-            ItemOptionUiState(id = 3, name = "Cream cheese", additionalPrice = BigDecimal("2.00"), quantity = 1)
+            ItemOptionUiState(
+                id = 3,
+                name = "Cream cheese",
+                additionalPrice = BigDecimal("2.00"),
+                quantity = 1
+            )
         )
     )
 )

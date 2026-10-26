@@ -35,7 +35,7 @@ class AddressViewModel(
     private val app: Application,
     private val addressClient: AddressClient,
     private val navigator: Navigator,
-    private val dataStore: DataStore<Settings>,
+    private val dataStore: DataStore<Settings>
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddressUiState())
@@ -50,16 +50,29 @@ class AddressViewModel(
     fun onAction(action: AddressAction) {
         when (action) {
             is AddressAction.ZipCodeChanged -> onZipCodeChanged(action.text)
+
             is AddressAction.StreetChanged -> onStreetChanged(action.text)
+
             is AddressAction.NumberChanged -> onNumberChanged(action.text)
+
             is AddressAction.ComplementChanged -> onComplementChanged(action.text)
+
             AddressAction.SaveAddressClicked -> onSaveAddressClicked()
-            is AddressAction.GetCurrentLocationClicked -> onGetCurrentLocationClicked(action.permissionGranted)
+
+            is AddressAction.GetCurrentLocationClicked -> onGetCurrentLocationClicked(
+                action.permissionGranted
+            )
+
             AddressAction.PermissionDeniedDismissed -> onPermissionDeniedDismissed()
+
             AddressAction.PermissionRationaleRequested -> onPermissionRationaleRequested()
+
             AddressAction.PermissionRationaleDismissed -> onPermissionRationaleDismissed()
+
             AddressAction.GoToSystemSettingsClicked -> onGoToSystemSettingsClicked()
+
             AddressAction.LocationSettingsPromptShown -> onLocationSettingsPromptShown()
+
             is AddressAction.LocationSettingsResult -> onLocationSettingsResult(action.enabled)
         }
     }
@@ -71,9 +84,13 @@ class AddressViewModel(
                 state.copy(
                     isLoading = false,
                     isLocationLoading = false,
-                    generalError = if (error.httpCode == 404) UiText.Empty else UiText.PlainText(
-                        error.formatedMessage
-                    )
+                    generalError = if (error.httpCode == 404) {
+                        UiText.Empty
+                    } else {
+                        UiText.PlainText(
+                            error.formatedMessage
+                        )
+                    }
                 )
             }
         }.onSuccess { response ->
@@ -93,8 +110,9 @@ class AddressViewModel(
     }
 
     private fun onZipCodeChanged(text: String) = withViewModelScope {
-        if (text.length > MAX_ZIP_CODE_LENGTH)
+        if (text.length > MAX_ZIP_CODE_LENGTH) {
             return@withViewModelScope
+        }
         _uiState.update { state ->
             state.copy(
                 zipCode = state.zipCode.copy(
@@ -176,9 +194,10 @@ class AddressViewModel(
     private suspend fun withValidUiState(block: suspend (AddressRequest) -> Unit) {
         val state = uiState.value
         val isStateValid =
-            isZipCodeValid(state.zipCode.text) and isStreetValid(state.street.text) and isLocationValid(
-                state.location
-            )
+            isZipCodeValid(state.zipCode.text) and isStreetValid(state.street.text) and
+                isLocationValid(
+                    state.location
+                )
 
         if (isStateValid) {
             block(buildAddressRequest(state))
@@ -192,7 +211,9 @@ class AddressViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    zipCode = state.zipCode.copy(error = UiText.StringResource(R.string.zip_code_is_required))
+                    zipCode = state.zipCode.copy(
+                        error = UiText.StringResource(R.string.zip_code_is_required)
+                    )
                 )
             }
             return false
@@ -205,7 +226,9 @@ class AddressViewModel(
             _uiState.update { state ->
                 state.copy(
                     isLoading = false,
-                    street = state.street.copy(error = UiText.StringResource(R.string.street_name_is_required))
+                    street = state.street.copy(
+                        error = UiText.StringResource(R.string.street_name_is_required)
+                    )
                 )
             }
             return false
@@ -253,13 +276,17 @@ class AddressViewModel(
 
     private fun checkLocationSettings() {
         val request = LocationSettingsRequest.Builder()
-            .addLocationRequest(LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 0L).build())
+            .addLocationRequest(
+                LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 0L).build()
+            )
             .build()
         settingsClient.checkLocationSettings(request)
             .addOnSuccessListener { fetchCurrentLocation() }
             .addOnFailureListener { exception ->
                 if (exception is ResolvableApiException) {
-                    _uiState.update { state -> state.copy(locationSettingsResolution = exception.resolution) }
+                    _uiState.update { state ->
+                        state.copy(locationSettingsResolution = exception.resolution)
+                    }
                 } else {
                     fetchCurrentLocation()
                 }

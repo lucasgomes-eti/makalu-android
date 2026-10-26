@@ -26,6 +26,10 @@ import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.unmockkAll
 import io.mockk.verify
+import java.io.File
+import java.io.IOException
+import java.io.OutputStream
+import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -44,10 +48,6 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.Shadows.shadowOf
-import java.io.File
-import java.io.IOException
-import java.io.OutputStream
-import java.util.concurrent.ConcurrentHashMap
 
 @RunWith(AndroidJUnit4::class)
 class ImageCropperViewModelTest {
@@ -78,13 +78,21 @@ class ImageCropperViewModelTest {
         every { ImageDecoder.createSource(any<ContentResolver>(), any<Uri>()) } answers {
             mockk<ImageDecoder.Source>().also { sourceUris[it] = secondArg() }
         }
-        every { ImageDecoder.decodeBitmap(any(), any<ImageDecoder.OnHeaderDecodedListener>()) } answers {
-            val source = firstArg<ImageDecoder.Source>()
-            val (bitmap, size) = images[sourceUris[source]] ?: throw IOException("Cannot decode")
-            val info = mockk<ImageDecoder.ImageInfo> { every { this@mockk.size } returns size }
-            secondArg<ImageDecoder.OnHeaderDecodedListener>().onHeaderDecoded(decoder, info, source)
-            bitmap
-        }
+        every {
+            ImageDecoder.decodeBitmap(any(), any<ImageDecoder.OnHeaderDecodedListener>())
+        } answers
+            {
+                val source = firstArg<ImageDecoder.Source>()
+                val (bitmap, size) = images[sourceUris[source]]
+                    ?: throw IOException("Cannot decode")
+                val info = mockk<ImageDecoder.ImageInfo> { every { this@mockk.size } returns size }
+                secondArg<ImageDecoder.OnHeaderDecodedListener>().onHeaderDecoded(
+                    decoder,
+                    info,
+                    source
+                )
+                bitmap
+            }
         registerImage(initialUri, initialBitmap)
     }
 
@@ -104,15 +112,21 @@ class ImageCropperViewModelTest {
         every { FileProvider.getUriForFile(any(), any(), capture(outputFile)) } returns outputUri
     }
 
-    private fun croppedBitmap(bytesForQuality: (Int) -> Int, qualities: MutableList<Int> = mutableListOf()) =
-        mockk<Bitmap> {
-            every { compress(Bitmap.CompressFormat.JPEG, any(), any()) } answers {
-                val quality = secondArg<Int>()
-                qualities += quality
-                thirdArg<OutputStream>().write(ByteArray(bytesForQuality(quality)) { quality.toByte() })
-                true
-            }
+    private fun croppedBitmap(
+        bytesForQuality: (Int) -> Int,
+        qualities: MutableList<Int> = mutableListOf()
+    ) = mockk<Bitmap> {
+        every { compress(Bitmap.CompressFormat.JPEG, any(), any()) } answers {
+            val quality = secondArg<Int>()
+            qualities += quality
+            thirdArg<OutputStream>().write(
+                ByteArray(bytesForQuality(quality)) {
+                    quality.toByte()
+                }
+            )
+            true
         }
+    }
 
     private fun viewModel(uri: String = initialUri) = ImageCropperViewModel(
         navigator = navigator,
@@ -123,13 +137,16 @@ class ImageCropperViewModelTest {
         uriStr = uri
     )
 
-    private suspend fun ImageCropperViewModel.awaitState(predicate: (ImageCropperUiState) -> Boolean) =
-        withContext(Dispatchers.Default) { withTimeout(5_000) { uiState.first(predicate) } }
+    private suspend fun ImageCropperViewModel.awaitState(
+        predicate: (ImageCropperUiState) -> Boolean
+    ) = withContext(Dispatchers.Default) { withTimeout(5_000) { uiState.first(predicate) } }
 
     private suspend fun ImageCropperViewModel.awaitLoaded() = awaitState { it.bitmap != null }
 
     private suspend fun awaitNavigatedUpWith(result: String) = withContext(Dispatchers.Default) {
-        coVerify(timeout = 5_000) { navigator.navigateUpWithResult(RequestKey.ImageCroppedUriOutput, result) }
+        coVerify(timeout = 5_000) {
+            navigator.navigateUpWithResult(RequestKey.ImageCroppedUriOutput, result)
+        }
     }
 
     @Test
@@ -226,7 +243,9 @@ class ImageCropperViewModelTest {
         viewModel.awaitLoaded()
         viewModel.onAction(ImageCropperAction.AddImageClicked)
 
-        viewModel.onAction(ImageCropperAction.GalleryImageObtained(Uri.parse("content://images/gallery")))
+        viewModel.onAction(
+            ImageCropperAction.GalleryImageObtained(Uri.parse("content://images/gallery"))
+        )
 
         val state = viewModel.awaitState { it.bitmap === galleryBitmap }
         assertFalse(state.isImagePickerVisible)
@@ -234,18 +253,21 @@ class ImageCropperViewModelTest {
     }
 
     @Test
-    fun `gallery image that cannot be decoded keeps the previous bitmap and sets the load error`() = runTest {
-        val viewModel = viewModel()
-        viewModel.awaitLoaded()
-        viewModel.onAction(ImageCropperAction.AddImageClicked)
+    fun `gallery image that cannot be decoded keeps the previous bitmap and sets the load error`() =
+        runTest {
+            val viewModel = viewModel()
+            viewModel.awaitLoaded()
+            viewModel.onAction(ImageCropperAction.AddImageClicked)
 
-        viewModel.onAction(ImageCropperAction.GalleryImageObtained(Uri.parse("content://missing/image")))
+            viewModel.onAction(
+                ImageCropperAction.GalleryImageObtained(Uri.parse("content://missing/image"))
+            )
 
-        val state = viewModel.awaitState { it.error != UiText.Empty }
-        assertEquals(UiText.StringResource(R.string.image_load_error), state.error)
-        assertSame(initialBitmap, state.bitmap)
-        assertFalse(state.isImagePickerVisible)
-    }
+            val state = viewModel.awaitState { it.error != UiText.Empty }
+            assertEquals(UiText.StringResource(R.string.image_load_error), state.error)
+            assertSame(initialBitmap, state.bitmap)
+            assertFalse(state.isImagePickerVisible)
+        }
 
     @Test
     fun `successful image load clears a previous load error`() = runTest {
@@ -303,20 +325,26 @@ class ImageCropperViewModelTest {
     }
 
     @Test
-    fun `granted camera permission captures with the cropper prefix and launches the camera`() = runTest {
-        val cameraUri = Uri.parse("content://eti.lucasgomes.makalu.provider/cache/camera.jpg")
-        coEvery { cameraCaptureManager.capture(any(), any()) } coAnswers {
-            secondArg<(Uri) -> Unit>().invoke(cameraUri)
+    fun `granted camera permission captures with the cropper prefix and launches the camera`() =
+        runTest {
+            val cameraUri = Uri.parse("content://eti.lucasgomes.makalu.provider/cache/camera.jpg")
+            coEvery { cameraCaptureManager.capture(any(), any()) } coAnswers {
+                secondArg<(Uri) -> Unit>().invoke(cameraUri)
+            }
+            val launched = mutableListOf<Uri>()
+            val viewModel = viewModel()
+
+            viewModel.onAction(
+                ImageCropperAction.PermissionLauncherResultReceived(true) {
+                    launched +=
+                        it
+                }
+            )
+
+            coVerify { cameraCaptureManager.capture("cropped_profile_pic_", any()) }
+            assertEquals(listOf(cameraUri), launched)
+            assertFalse(viewModel.uiState.value.isPermissionDeniedDialogVisible)
         }
-        val launched = mutableListOf<Uri>()
-        val viewModel = viewModel()
-
-        viewModel.onAction(ImageCropperAction.PermissionLauncherResultReceived(true) { launched += it })
-
-        coVerify { cameraCaptureManager.capture("cropped_profile_pic_", any()) }
-        assertEquals(listOf(cameraUri), launched)
-        assertFalse(viewModel.uiState.value.isPermissionDeniedDialogVisible)
-    }
 
     @Test
     fun `denied camera permission shows the permission dialog without capturing`() = runTest {
@@ -396,7 +424,13 @@ class ImageCropperViewModelTest {
         val viewModel = viewModel()
         viewModel.awaitLoaded()
 
-        viewModel.onAction(ImageCropperAction.ImageCropped(croppedBitmap({ MAX_OUTPUT_BYTES }, qualities)))
+        viewModel.onAction(
+            ImageCropperAction.ImageCropped(
+                croppedBitmap({
+                    MAX_OUTPUT_BYTES
+                }, qualities)
+            )
+        )
 
         awaitNavigatedUpWith(outputUri.toString())
         assertEquals(listOf(100), qualities)
@@ -410,7 +444,9 @@ class ImageCropperViewModelTest {
         val viewModel = viewModel()
         viewModel.awaitLoaded()
 
-        viewModel.onAction(ImageCropperAction.ImageCropped(croppedBitmap(bytesForQuality, qualities)))
+        viewModel.onAction(
+            ImageCropperAction.ImageCropped(croppedBitmap(bytesForQuality, qualities))
+        )
 
         awaitNavigatedUpWith(outputUri.toString())
         assertEquals(listOf(100, 90, 80), qualities)
@@ -424,11 +460,22 @@ class ImageCropperViewModelTest {
         val viewModel = viewModel()
         viewModel.awaitLoaded()
 
-        viewModel.onAction(ImageCropperAction.ImageCropped(croppedBitmap({ MAX_OUTPUT_BYTES + 1 }, qualities)))
+        viewModel.onAction(
+            ImageCropperAction.ImageCropped(
+                croppedBitmap({
+                    MAX_OUTPUT_BYTES + 1
+                }, qualities)
+            )
+        )
 
         awaitNavigatedUpWith(outputUri.toString())
         assertEquals(listOf(100, 90, 80, 70, 60), qualities)
-        assertArrayEquals(ByteArray(MAX_OUTPUT_BYTES + 1) { 60.toByte() }, outputFile.captured.readBytes())
+        assertArrayEquals(
+            ByteArray(MAX_OUTPUT_BYTES + 1) {
+                60.toByte()
+            },
+            outputFile.captured.readBytes()
+        )
     }
 
     @Test

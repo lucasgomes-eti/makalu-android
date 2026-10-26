@@ -21,14 +21,14 @@ import eti.lucasgomes.makalu.testing.MainDispatcherRule
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import java.math.BigDecimal
+import kotlin.time.Instant
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import java.math.BigDecimal
-import kotlin.time.Instant
 
 class CartViewModelTest {
 
@@ -99,7 +99,9 @@ class CartViewModelTest {
             name = "Size",
             options = listOf(option)
         )
-        givenCart(cartResponse(items = listOf(cartItemResponse(configurations = listOf(configuration)))))
+        givenCart(
+            cartResponse(items = listOf(cartItemResponse(configurations = listOf(configuration))))
+        )
 
         val viewModel = createViewModel()
 
@@ -202,7 +204,10 @@ class CartViewModelTest {
     fun `remove item success drops the item and updates the total price`() = runTest {
         givenCart()
         coEvery { cartClient.deleteByItem(STORE_ID, 1L) } returns Resource.Success(
-            cartResponse(items = listOf(cartItemResponse(id = 2L, name = "Soda")), total = BigDecimal("15.00"))
+            cartResponse(
+                items = listOf(cartItemResponse(id = 2L, name = "Soda")),
+                total = BigDecimal("15.00")
+            )
         )
         val viewModel = createViewModel()
 
@@ -334,7 +339,9 @@ class CartViewModelTest {
 
         viewModel.onAction(CartAction.MakeOrderClicked)
 
-        coVerify(exactly = 1) { cartClient.submitOrder(CreateOrderRequest(storeId = STORE_ID, cartId = 42L)) }
+        coVerify(exactly = 1) {
+            cartClient.submitOrder(CreateOrderRequest(storeId = STORE_ID, cartId = 42L))
+        }
     }
 
     @Test

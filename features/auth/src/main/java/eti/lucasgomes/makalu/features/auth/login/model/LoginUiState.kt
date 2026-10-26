@@ -14,12 +14,12 @@ data class LoginUiState(
     val generalError: UiText = UiText.Empty
 ) : TextFieldErrorsAssignable {
 
-    override fun assignFieldErrors(fieldErrors: List<MakaluError.FieldError>): TextFieldErrorsAssignable {
-        return fieldErrors.withFieldErrorsAsMap {
-            copy(
-                email = email.copy(error = getOrElse(::email.name) { UiText.Empty }),
-                password = password.copy(error = getOrElse(::password.name) { UiText.Empty })
-            )
-        }
+    override fun assignFieldErrors(
+        fieldErrors: List<MakaluError.FieldError>
+    ): TextFieldErrorsAssignable = fieldErrors.withFieldErrorsAsMap {
+        copy(
+            email = email.copy(error = getOrElse(::email.name) { UiText.Empty }),
+            password = password.copy(error = getOrElse(::password.name) { UiText.Empty })
+        )
     }
 }

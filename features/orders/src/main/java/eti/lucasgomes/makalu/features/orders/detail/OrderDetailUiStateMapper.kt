@@ -18,27 +18,26 @@ internal fun OrderDetailedResponse.toCardUiState(): OrderCardUiState = OrderCard
     totalPrice = total.total
 )
 
-internal fun OrderDetailedResponse.toUiItems(): List<OrderDetailUiState.Item> =
-    items.map { item ->
-        OrderDetailUiState.Item(
-            id = item.id,
-            name = item.name,
-            imageUrl = mapImageUrl(item.imageId),
-            price = item.price,
-            notes = item.notes,
-            configurations = item.configurations.map { configuration ->
-                ItemConfigurationUiState(
-                    id = configuration.id,
-                    name = configuration.name,
-                    options = configuration.options.map { option ->
-                        ItemOptionUiState(
-                            id = option.id,
-                            name = option.name,
-                            additionalPrice = option.additionalPrice,
-                            quantity = option.quantity
-                        )
-                    }
-                )
-            }
-        )
-    }
+internal fun OrderDetailedResponse.toUiItems(): List<OrderDetailUiState.Item> = items.map { item ->
+    OrderDetailUiState.Item(
+        id = item.id,
+        name = item.name,
+        imageUrl = mapImageUrl(item.imageId),
+        price = item.price,
+        notes = item.notes,
+        configurations = item.configurations.map { configuration ->
+            ItemConfigurationUiState(
+                id = configuration.id,
+                name = configuration.name,
+                options = configuration.options.map { option ->
+                    ItemOptionUiState(
+                        id = option.id,
+                        name = option.name,
+                        additionalPrice = option.additionalPrice,
+                        quantity = option.quantity
+                    )
+                }
+            )
+        }
+    )
+}

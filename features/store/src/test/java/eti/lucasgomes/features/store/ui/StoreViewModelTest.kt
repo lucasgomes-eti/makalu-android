@@ -20,6 +20,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifyOrder
 import io.mockk.mockk
+import java.math.BigDecimal
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -28,7 +29,6 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import java.math.BigDecimal
 
 class StoreViewModelTest {
 
@@ -81,21 +81,22 @@ class StoreViewModelTest {
     }
 
     @Test
-    fun `initial fetch shows loading and loading title while store request is in flight`() = runTest {
-        val gate = CompletableDeferred<Unit>()
-        coEvery { client.getStore(storeId) } coAnswers {
-            gate.await()
-            Resource.Success(storeResponse(id = storeId))
+    fun `initial fetch shows loading and loading title while store request is in flight`() =
+        runTest {
+            val gate = CompletableDeferred<Unit>()
+            coEvery { client.getStore(storeId) } coAnswers {
+                gate.await()
+                Resource.Success(storeResponse(id = storeId))
+            }
+            givenMenu(Resource.Success(emptyList()))
+
+            val viewModel = createViewModel()
+
+            val state = viewModel.uiState.value
+            assertTrue(state.isLoading)
+            assertEquals(UiText.StringResource(R.string.loading), state.name)
+            gate.complete(Unit)
         }
-        givenMenu(Resource.Success(emptyList()))
-
-        val viewModel = createViewModel()
-
-        val state = viewModel.uiState.value
-        assertTrue(state.isLoading)
-        assertEquals(UiText.StringResource(R.string.loading), state.name)
-        gate.complete(Unit)
-    }
 
     @Test
     fun `store success keeps loading while menu request is in flight`() = runTest {
@@ -118,7 +119,11 @@ class StoreViewModelTest {
     @Test
     fun `initial fetch success populates store data and stops loading`() = runTest {
         givenSuccessfulFetch(
-            store = storeResponse(id = storeId, name = "Burger Place", deliveryFee = BigDecimal("7.25"))
+            store = storeResponse(
+                id = storeId,
+                name = "Burger Place",
+                deliveryFee = BigDecimal("7.25")
+            )
         )
 
         val viewModel = createViewModel()
@@ -211,7 +216,8 @@ class StoreViewModelTest {
 
     @Test
     fun `menu failure after store success sets general error and stops loading`() = runTest {
-        val error = makaluError(httpCode = 500, message = "Menu unavailable", internalCode = "MK-500")
+        val error =
+            makaluError(httpCode = 500, message = "Menu unavailable", internalCode = "MK-500")
         givenStore(Resource.Success(storeResponse(id = storeId, name = "Pizzeria")))
         givenMenu(Resource.Error(error))
 

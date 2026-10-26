@@ -11,7 +11,10 @@ class OrderStatusMapperTest {
     @Test
     fun `pending maps to the pending string`() {
         assertEquals(
-            OrderStatusUiState(OrderStatus.PENDING, UiText.StringResource(R.string.order_status_pending)),
+            OrderStatusUiState(
+                OrderStatus.PENDING,
+                UiText.StringResource(R.string.order_status_pending)
+            ),
             OrderStatus.PENDING.toUiStatus()
         )
     }
@@ -19,7 +22,10 @@ class OrderStatusMapperTest {
     @Test
     fun `accepted maps to the accepted string`() {
         assertEquals(
-            OrderStatusUiState(OrderStatus.ACCEPTED, UiText.StringResource(R.string.order_status_accepted)),
+            OrderStatusUiState(
+                OrderStatus.ACCEPTED,
+                UiText.StringResource(R.string.order_status_accepted)
+            ),
             OrderStatus.ACCEPTED.toUiStatus()
         )
     }
@@ -27,7 +33,10 @@ class OrderStatusMapperTest {
     @Test
     fun `cancelled maps to the cancelled string`() {
         assertEquals(
-            OrderStatusUiState(OrderStatus.CANCELLED, UiText.StringResource(R.string.order_status_cancelled)),
+            OrderStatusUiState(
+                OrderStatus.CANCELLED,
+                UiText.StringResource(R.string.order_status_cancelled)
+            ),
             OrderStatus.CANCELLED.toUiStatus()
         )
     }
@@ -35,7 +44,10 @@ class OrderStatusMapperTest {
     @Test
     fun `in route maps to the in route string`() {
         assertEquals(
-            OrderStatusUiState(OrderStatus.IN_ROUTE, UiText.StringResource(R.string.order_status_in_route)),
+            OrderStatusUiState(
+                OrderStatus.IN_ROUTE,
+                UiText.StringResource(R.string.order_status_in_route)
+            ),
             OrderStatus.IN_ROUTE.toUiStatus()
         )
     }
@@ -43,7 +55,10 @@ class OrderStatusMapperTest {
     @Test
     fun `finished maps to the finished string`() {
         assertEquals(
-            OrderStatusUiState(OrderStatus.FINISHED, UiText.StringResource(R.string.order_status_finished)),
+            OrderStatusUiState(
+                OrderStatus.FINISHED,
+                UiText.StringResource(R.string.order_status_finished)
+            ),
             OrderStatus.FINISHED.toUiStatus()
         )
     }

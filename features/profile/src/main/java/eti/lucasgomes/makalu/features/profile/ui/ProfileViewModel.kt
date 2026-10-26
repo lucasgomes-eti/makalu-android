@@ -23,7 +23,7 @@ class ProfileViewModel(
     private val profileClient: ProfileClient,
     private val navigator: Navigator,
     private val cameraCaptureManager: CameraCaptureManager,
-    private val osNavigation: OSNavigation,
+    private val osNavigation: OSNavigation
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -36,15 +36,25 @@ class ProfileViewModel(
     fun onAction(action: ProfileAction) {
         when (action) {
             ProfileAction.LogoutClicked -> onLogoutClicked()
+
             ProfileAction.ErrorDismiss -> onErrorDismiss()
+
             ProfileAction.LogoutDialogDismissed -> onLogoutDialogDismissed()
+
             ProfileAction.LogoutConfirmed -> onLogoutConfirmed()
+
             ProfileAction.ProfileImageClicked -> onProfileImageClicked()
+
             is ProfileAction.CameraImageTaken -> onCameraImageTaken(action.isImageSaved)
+
             is ProfileAction.GalleryImageObtained -> onGalleryImageObtained(action.uri)
+
             ProfileAction.GoToSystemSettingsClicked -> onGoToSystemSettingsClicked()
+
             ProfileAction.ImagePickerDismissed -> onImagePickerDismissed()
+
             ProfileAction.PermissionDeniedDialogDismissed -> onPermissionDeniedDialogDismissed()
+
             is ProfileAction.PermissionLauncherResultReceived -> onPermissionLauncherResultReceived(
                 action.isGranted,
                 action.launchCamera

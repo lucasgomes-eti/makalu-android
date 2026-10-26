@@ -11,6 +11,7 @@ import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.unmockkAll
 import io.mockk.verify
+import java.io.File
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -21,7 +22,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
-import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class CameraCaptureManagerTest {
@@ -40,7 +40,8 @@ class CameraCaptureManagerTest {
 
     private fun stubFileProvider() {
         mockkStatic(FileProvider::class)
-        every { FileProvider.getUriForFile(any(), any(), capture(providedFile)) } returns providedUri
+        every { FileProvider.getUriForFile(any(), any(), capture(providedFile)) } returns
+            providedUri
     }
 
     @After
