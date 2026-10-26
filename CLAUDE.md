@@ -20,7 +20,19 @@ to a separate backend API.
 ./gradlew :features:orders:testDebugUnitTest --tests "*OrdersViewModelTest"  # single test class
 ```
 
-There is no lint/format tooling configured beyond the default `./gradlew lint`.
+### Code style (ktlint)
+
+ktlint (`ktlint-cli` from the catalog) runs from root-level `JavaExec` tasks over every module's
+`src/**/*.kt` and all `*.kts` files; rules are configured in `.editorconfig` (`android_studio` code
+style, 100 columns, `@Composable` functions exempt from function naming, backtick test names exempt
+from the line length).
+
+```bash
+./gradlew ktlintCheck    # fails on violations; checkstyle report → build/reports/ktlint/ktlint.xml
+./gradlew ktlintFormat   # auto-fixes what it can; fix the rest by hand
+```
+
+The checkstyle report is passed to SonarQube via `sonar.kotlin.ktlint.reportPaths`.
 
 ### Unit tests
 

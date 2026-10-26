@@ -33,6 +33,7 @@ robolectric = "4.17"
 androidxTestCore = "1.7.0"
 jacoco = "0.8.15"
 sonarqube = "7.5.0.8588"
+ktlint = "1.8.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -73,6 +74,7 @@ maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = 
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+ktlint-cli = { group = "com.pinterest.ktlint", name = "ktlint-cli", version.ref = "ktlint" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

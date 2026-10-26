@@ -1,8 +1,8 @@
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.LibraryExtension
-import org.sonarqube.gradle.SonarExtension
 import java.io.StringReader
 import java.util.Properties
+import org.sonarqube.gradle.SonarExtension
 
 plugins {
     alias(libs.plugins.android.application) apply false
@@ -28,13 +28,13 @@ val coverageExclusions = listOf(
     "**/ui/theme/**",
     "**/components/ColorKt*",
     "**/*ModuleKt.class",
-    "**/*ModuleKt$*.class",
+    "**/*ModuleKt$*.class"
 )
 
 val sonarCoverageExclusions = listOf(
     "**/ui/theme/**",
     "**/components/Color.kt",
-    "**/*Module.kt",
+    "**/*Module.kt"
 )
 
 val localProperties = Properties().apply {
@@ -68,9 +68,52 @@ val jacocoAggregatedReport = tasks.register<JacocoReport>("jacocoAggregatedRepor
     }
 }
 
+val ktlint = configurations.create("ktlint")
+
+dependencies {
+    ktlint(libs.ktlint.cli) {
+        attributes {
+            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling.EXTERNAL))
+        }
+    }
+}
+
+val ktlintSources = listOf("**/src/**/*.kt", "**/*.kts", "!**/build/**")
+val ktlintReport = layout.buildDirectory.file("reports/ktlint/ktlint.xml")
+
+tasks.register<JavaExec>("ktlintCheck") {
+    group = "verification"
+    description = "Checks the Kotlin code style of every module with ktlint."
+    classpath = ktlint
+    mainClass = "com.pinterest.ktlint.Main"
+    inputs.files(
+        fileTree(layout.projectDirectory) {
+            include("**/*.kt", "**/*.kts", ".editorconfig")
+            exclude("**/build/**", ".gradle/**", ".kotlin/**")
+        }
+    )
+    outputs.file(ktlintReport)
+    args(
+        "--reporter=plain",
+        "--reporter=checkstyle,output=${ktlintReport.get().asFile.absolutePath}"
+    )
+    args(ktlintSources)
+}
+
+tasks.register<JavaExec>("ktlintFormat") {
+    group = "formatting"
+    description = "Fixes the Kotlin code style violations of every module that ktlint can fix."
+    classpath = ktlint
+    mainClass = "com.pinterest.ktlint.Main"
+    jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED")
+    args("-F")
+    args(ktlintSources)
+}
+
 sonar {
     properties {
         property("sonar.sources", existing("build.gradle.kts", "settings.gradle.kts"))
+        property("sonar.kotlin.ktlint.reportPaths", ktlintReport.get().asFile.absolutePath)
         sonarProjectKey?.let { property("sonar.projectKey", it) }
         sonarProjectName?.let { property("sonar.projectName", it) }
         sonarHostUrl?.let { property("sonar.host.url", it) }
@@ -84,8 +127,8 @@ tasks.named("sonar") {
     doFirst {
         if (!isConfigured) {
             throw GradleException(
-                "SONAR_HOST_URL, SONAR_TOKEN and SONAR_PROJECT_KEY must be set in local.properties " +
-                    "or as environment variables"
+                "SONAR_HOST_URL, SONAR_TOKEN and SONAR_PROJECT_KEY must be set in " +
+                    "local.properties or as environment variables"
             )
         }
     }
@@ -101,7 +144,12 @@ subprojects {
         properties {
             property(
                 "sonar.sources",
-                existing("src/main/java", "src/main/kotlin", "src/main/AndroidManifest.xml", "build.gradle.kts")
+                existing(
+                    "src/main/java",
+                    "src/main/kotlin",
+                    "src/main/AndroidManifest.xml",
+                    "build.gradle.kts"
+                )
             )
             property("sonar.tests", existing("src/test/java", "src/test/kotlin"))
             property(
@@ -120,7 +168,7 @@ subprojects {
         configureAndroidSonar()
         configureCoverage(
             testTaskName = "testDebugUnitTest",
-            classesDir = "intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes",
+            classesDir = "intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes"
         )
     }
     plugins.withId("com.android.library") {
@@ -131,7 +179,7 @@ subprojects {
         configureAndroidSonar()
         configureCoverage(
             testTaskName = "testDebugUnitTest",
-            classesDir = "intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes",
+            classesDir = "intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes"
         )
     }
     plugins.withId("org.jetbrains.kotlin.jvm") {
@@ -185,12 +233,16 @@ fun Project.configureAndroidSonar() {
                 "sonar.java.binaries",
                 listOf(
                     intermediates.resolve("built_in_kotlinc/debug/compileDebugKotlin/classes"),
-                    intermediates.resolve("javac/debug/compileDebugJavaWithJavac/classes"),
+                    intermediates.resolve("javac/debug/compileDebugJavaWithJavac/classes")
                 )
             )
             property(
                 "sonar.java.test.binaries",
-                listOf(intermediates.resolve("built_in_kotlinc/debugUnitTest/compileDebugUnitTestKotlin/classes"))
+                listOf(
+                    intermediates.resolve(
+                        "built_in_kotlinc/debugUnitTest/compileDebugUnitTestKotlin/classes"
+                    )
+                )
             )
         }
     }
