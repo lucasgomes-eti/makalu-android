@@ -71,8 +71,26 @@ with AGP 9 built-in Kotlin, so the root build script sets `sonar.sources`/`sonar
   a top-level `MakaluConfig` object (`import MakaluConfig`), used by `HttpClientManager`.
 - `MAPS_API_KEY` – injected into `:features:address`'s manifest by the Google secrets Gradle plugin.
 - `SONAR_HOST_URL`, `SONAR_TOKEN`, `SONAR_PROJECT_KEY`, `SONAR_PROJECT_NAME` – only needed by
-  `./gradlew sonar`; environment variables of the same name are used as a fallback. The project
-  name is optional and defaults to the Gradle root project name (`Makalu`).
+  `./gradlew sonar`. The project name is optional and defaults to the Gradle root project name
+  (`Makalu`).
+- `RELEASE_KEYSTORE_BASE64`, `RELEASE_STORE_PASSWORD`, `RELEASE_KEY_ALIAS`,
+  `RELEASE_KEY_PASSWORD` – only needed to package a release; the keystore is the base64 of the
+  `.jks` file (`base64 -w0`).
+
+Every setting is read from `local.properties` only, never from environment variables; CI writes the
+file before building.
+
+### Release build
+
+```bash
+./gradlew :app:buildRelease   # signed APK + AAB + R8 mapping → app/build/release/
+```
+
+The `release` build type runs R8 (shrinking, optimization, obfuscation) and resource shrinking on
+`:app`; library modules stay unminified and contribute keep rules through `consumer-rules.pro`.
+`prepareReleaseKeystore` decodes the keystore into `app/build/signing/release.jks` before signing
+and fails if a signing entry is missing; without them the release variant is left unsigned. Keep
+the mapping file of every shipped build to retrace obfuscated stack traces.
 
 ### Build setup notes
 

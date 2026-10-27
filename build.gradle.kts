@@ -42,14 +42,13 @@ val localProperties = Properties().apply {
         ?.let { text -> StringReader(text).use { load(it) } }
 }
 
-fun localOrEnv(name: String): String? =
+fun localProperty(name: String): String? =
     localProperties.getProperty(name)?.trim()?.takeIf { it.isNotEmpty() }
-        ?: providers.environmentVariable(name).orNull
 
-val sonarHostUrl = localOrEnv("SONAR_HOST_URL")
-val sonarToken = localOrEnv("SONAR_TOKEN")
-val sonarProjectKey = localOrEnv("SONAR_PROJECT_KEY")
-val sonarProjectName = localOrEnv("SONAR_PROJECT_NAME")
+val sonarHostUrl = localProperty("SONAR_HOST_URL")
+val sonarToken = localProperty("SONAR_TOKEN")
+val sonarProjectKey = localProperty("SONAR_PROJECT_KEY")
+val sonarProjectName = localProperty("SONAR_PROJECT_NAME")
 
 val aggregatedCoverageXml = layout.buildDirectory.file("reports/jacoco/aggregated/jacoco.xml")
 
@@ -128,7 +127,7 @@ tasks.named("sonar") {
         if (!isConfigured) {
             throw GradleException(
                 "SONAR_HOST_URL, SONAR_TOKEN and SONAR_PROJECT_KEY must be set in " +
-                    "local.properties or as environment variables"
+                    "local.properties"
             )
         }
     }
