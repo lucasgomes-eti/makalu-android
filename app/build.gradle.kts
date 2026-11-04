@@ -37,6 +37,18 @@ val missingReleaseSigningProperties = mapOf(
 ).filterValues { it == null }.keys
 val releaseKeystore = layout.buildDirectory.file("signing/release.jks")
 
+fun requiredLocalProperty(name: String): Provider<String> = providers.provider {
+    localProperty(name) ?: throw GradleException("$name is missing from local.properties")
+}
+
+val appVersionName = requiredLocalProperty("VERSION_NAME")
+val appVersionCode = requiredLocalProperty("VERSION_CODE").map { code ->
+    code.toIntOrNull()
+        ?: throw GradleException(
+            "VERSION_CODE in local.properties must be an integer (got \"$code\")"
+        )
+}
+
 android {
     namespace = "eti.lucasgomes.makalu"
     compileSdk = libs.versions.compileSdk.get().toInt()
@@ -45,8 +57,6 @@ android {
         applicationId = "eti.lucasgomes.makalu"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = libs.versions.versionCode.get().toInt()
-        versionName = libs.versions.versionName.get()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -117,20 +127,27 @@ tasks.matching {
 }
 
 androidComponents {
+    onVariants { variant ->
+        variant.outputs.forEach { output ->
+            output.versionName.set(appVersionName)
+            output.versionCode.set(appVersionCode)
+        }
+    }
     onVariants(selector().withBuildType("release")) { variant ->
-        val version = "${libs.versions.versionName.get()}-${libs.versions.versionCode.get()}"
+        val version = appVersionName.zip(appVersionCode) { name, code -> "$name-$code" }
         tasks.register<Sync>("buildRelease") {
             group = "build"
             description = "Builds the signed and minified release APK and AAB with the R8 mapping."
+            inputs.property("version", version)
             from(variant.artifacts.get(SingleArtifact.APK)) {
                 include("*.apk")
-                rename { "makalu-$version.apk" }
+                rename { "makalu-${version.get()}.apk" }
             }
             from(variant.artifacts.get(SingleArtifact.BUNDLE)) {
-                rename { "makalu-$version.aab" }
+                rename { "makalu-${version.get()}.aab" }
             }
             from(variant.artifacts.get(SingleArtifact.OBFUSCATION_MAPPING_FILE)) {
-                rename { "makalu-$version-mapping.txt" }
+                rename { "makalu-${version.get()}-mapping.txt" }
             }
             into(layout.buildDirectory.dir("release"))
         }
