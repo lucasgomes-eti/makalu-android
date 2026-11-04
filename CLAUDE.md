@@ -87,6 +87,17 @@ with AGP 9 built-in Kotlin, so the root build script sets `sonar.sources`/`sonar
 Every setting is read from `local.properties` only, never from environment variables; CI writes the
 file before building.
 
+### CI and release (GitHub Actions)
+
+- `.github/workflows/ci.yml` – on pushes to `main` and pull requests: versinc, write
+  `local.properties` from the `main` environment secrets (one secret per property, same names),
+  `ktlintCheck`, `assembleDebug`, unit tests, `jacocoAggregatedReport`. On pushes to `main` it
+  also runs `sonar` and `:app:buildRelease`, uploading `app/build/release/` (plus `version.txt`)
+  as the `release` artifact.
+- `.github/workflows/release.yml` – runs after a successful CI run of a push to `main`, downloads
+  that `release` artifact (nothing is rebuilt), and publishes a GitHub release tagged
+  `v<version>` on that commit with the APK and the R8 mapping. It skips versions already tagged.
+
 ### Release build
 
 ```bash
