@@ -69,6 +69,11 @@ with AGP 9 built-in Kotlin, so the root build script sets `sonar.sources`/`sonar
 
 - `BASE_URL` – backend base URL. The `:shared` module's `generateConfig` task reads it and generates
   a top-level `MakaluConfig` object (`import MakaluConfig`), used by `HttpClientManager`.
+- `VERSION_NAME`, `VERSION_CODE` – the app version, the only source of it; the build fails when
+  a task needs them and they're missing. CI writes the version calculated by
+  [versinc](https://github.com/lucasgomes-eti/version-included) (config in `versinc.toml`) and
+  the commit count (`git rev-list --count HEAD`); locally, `versinc` and that command give the
+  same values.
 - `MAPS_API_KEY` – injected into `:features:address`'s manifest placeholder and `BuildConfig`
   explicitly. Never pass `local.properties` wholesale into `BuildConfig` (e.g. with the Google
   secrets plugin): every key would be compiled into the APK.
