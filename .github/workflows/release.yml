@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  release:
+    name: Publish release
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      SHA: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - name: Download release build
+        uses: actions/download-artifact@v8
+        with:
+          name: release
+          path: release
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+
+      - name: Read version
+        id: version
+        run: |
+          version=$(cat release/version.txt)
+          semver='^[0-9]+\.[0-9]+\.[0-9]+$'
+          if ! [[ "$version" =~ $semver ]]; then
+            echo "::error title=Release::version.txt is not a release version: \"$version\""
+            exit 1
+          fi
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+
+      - name: Check existing tag
+        id: tag
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          if gh api "repos/$GH_REPO/git/ref/tags/$TAG" --silent 2> /dev/null; then
+            echo "::notice title=Release::$TAG already exists, skipping the release"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish release
+        if: steps.tag.outputs.exists == 'false'
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          gh release create "$TAG" \
+            --target "$SHA" \
+            --title "$TAG" \
+            --generate-notes \
+            release/*.apk release/*-mapping.txt

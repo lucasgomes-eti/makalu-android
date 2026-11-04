@@ -1,0 +1,117 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'main' || '' }}
+    env:
+      IS_MAIN_PUSH: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+      - name: Calculate version
+        id: versinc
+        uses: lucasgomes-eti/version-included@v0.4.1
+
+      - name: Write local.properties
+        env:
+          VERSION_NAME: ${{ steps.versinc.outputs.version }}
+          BASE_URL: ${{ vars.BASE_URL }}
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+          SONAR_PROJECT_NAME: ${{ secrets.SONAR_PROJECT_NAME }}
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: |
+          version_code=$(git rev-list --count HEAD)
+          {
+            echo "VERSION_NAME=$VERSION_NAME"
+            echo "VERSION_CODE=$version_code"
+            echo "BASE_URL=$BASE_URL"
+            if [ "$IS_MAIN_PUSH" = true ]; then
+              for name in MAPS_API_KEY \
+                SONAR_HOST_URL SONAR_TOKEN SONAR_PROJECT_KEY SONAR_PROJECT_NAME \
+                RELEASE_KEYSTORE_BASE64 RELEASE_STORE_PASSWORD RELEASE_KEY_ALIAS \
+                RELEASE_KEY_PASSWORD; do
+                echo "$name=${!name}"
+              done
+            else
+              echo "MAPS_API_KEY=pull-request-placeholder"
+            fi
+          } > local.properties
+          echo "Building $VERSION_NAME ($version_code)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Lint
+        run: ./gradlew ktlintCheck
+
+      - name: Compile
+        run: ./gradlew assembleDebug
+
+      - name: Unit tests
+        run: ./gradlew testDebugUnitTest :shared:test
+
+      - name: Coverage report
+        run: ./gradlew jacocoAggregatedReport
+
+      - name: Static analysis
+        if: env.IS_MAIN_PUSH == 'true'
+        run: ./gradlew sonar
+
+      - name: Build release
+        if: env.IS_MAIN_PUSH == 'true'
+        env:
+          VERSION_NAME: ${{ steps.versinc.outputs.version }}
+        run: |
+          ./gradlew :app:buildRelease
+          echo "$VERSION_NAME" > app/build/release/version.txt
+
+      - name: Upload release build
+        if: env.IS_MAIN_PUSH == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: release
+          path: app/build/release/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: reports
+          path: |
+            build/reports/
+            **/build/reports/tests/
+          if-no-files-found: ignore
+          retention-days: 14
