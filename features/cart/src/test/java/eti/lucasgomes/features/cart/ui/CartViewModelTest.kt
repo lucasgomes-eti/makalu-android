@@ -17,10 +17,12 @@ import eti.lucasgomes.makalu.shared.navigation.NavOptions
 import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.shared.navigation.PopUpToOptions
 import eti.lucasgomes.makalu.shared.network.Resource
+import eti.lucasgomes.makalu.shared.tracking.OrderTrackingLauncher
 import eti.lucasgomes.makalu.testing.MainDispatcherRule
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import io.mockk.verify
 import java.math.BigDecimal
 import kotlin.time.Instant
 import kotlinx.coroutines.CompletableDeferred
@@ -38,7 +40,9 @@ class CartViewModelTest {
     private val cartClient = mockk<CartClient>()
     private val navigator = mockk<Navigator>(relaxed = true)
 
-    private fun createViewModel() = CartViewModel(STORE_ID, cartClient, navigator)
+    private val orderTracking = mockk<OrderTrackingLauncher>(relaxed = true)
+
+    private fun createViewModel() = CartViewModel(STORE_ID, cartClient, navigator, orderTracking)
 
     private fun givenCart(response: CartResponse = twoItemCart()) {
         coEvery { cartClient.getByStore(STORE_ID) } returns Resource.Success(response)
@@ -358,6 +362,28 @@ class CartViewModelTest {
                 NavOptions(popUpTo = PopUpToOptions(Destination.Graph.Root))
             )
         }
+    }
+
+    @Test
+    fun `make order success starts tracking the new order`() = runTest {
+        givenCart()
+        coEvery { cartClient.submitOrder(any()) } returns Resource.Success(orderResponse(77L))
+        val viewModel = createViewModel()
+
+        viewModel.onAction(CartAction.MakeOrderClicked)
+
+        verify(exactly = 1) { orderTracking.onOrderPlaced(77L) }
+    }
+
+    @Test
+    fun `make order failure tracks nothing`() = runTest {
+        givenCart()
+        coEvery { cartClient.submitOrder(any()) } returns Resource.Error(testError)
+        val viewModel = createViewModel()
+
+        viewModel.onAction(CartAction.MakeOrderClicked)
+
+        verify(exactly = 0) { orderTracking.onOrderPlaced(any()) }
     }
 
     @Test

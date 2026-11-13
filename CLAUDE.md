@@ -187,6 +187,35 @@ Keep classes `internal` to their feature module unless `:app` needs them (usuall
   `ContentResolver`, location client) are provided in `:app`'s `appModule` so `:shared` stays
   Android-free.
 
+## Order tracking (`features/orders/.../tracking`)
+
+Live order status for the customer, from order creation to a final status. See
+`docs/play-foreground-service.md` for the Play declaration that describes it.
+
+- **REST is the truth, MQTT is a hint.** Updates arrive over MQTT 3.1.1 (HiveMQ client,
+  secure WebSocket) from a self-hosted Emitter broker, at most once, and nothing is kept
+  for an offline client. `OrderTracker` therefore refetches `GET /orders` when it starts,
+  on every (re)connect, when connectivity returns, when an event cannot be applied, and
+  once a minute while some order has no live subscription (which is also how it works
+  when the API has realtime switched off).
+- `OrderTrackingReducer` holds every state rule as pure functions (`TrackingState`,
+  `shouldRun`); `OrderTracker` does the I/O; `OrderTrackingService` (foreground service,
+  type `specialUse`) only ties the tracker to the service lifecycle and to
+  `OrderNotifications`. Put new rules in the reducer and test them there.
+- The service is started through `OrderTrackingLauncher` (`:shared`), by `CartViewModel`
+  when an order is placed and by `MainActivity.onStart`. Both are moments when the app is
+  on screen, the only time Android allows a foreground service to start.
+- Screens never talk to MQTT: they read `OrderTrackingRepository.statuses`.
+- Each order has its own read-only key from `GET /orders/{id}/realtime`; one connection
+  carries all subscriptions. Emitter delivers on `<channel>` while the subscription is
+  `<key>/<channel>`, so messages are read from the client's global stream.
+- The HiveMQ WebSocket transport needs the optional `hivemq-mqtt-client-websocket`
+  platform; without it the client hangs on connect instead of failing. R8 rules for
+  Netty live in `features/orders/consumer-rules.pro`.
+- An order that has not changed for 12 hours is no longer followed
+  (`TRACKING_GIVES_UP_AFTER`): nothing moves an order to `FINISHED` yet, and without the
+  limit the service would never stop.
+
 ## Git Commit Message
 
 In the repository we use and enforce the commit message conventions.

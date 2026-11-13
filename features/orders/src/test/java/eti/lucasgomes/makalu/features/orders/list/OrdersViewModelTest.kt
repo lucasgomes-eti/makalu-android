@@ -3,7 +3,9 @@ package eti.lucasgomes.makalu.features.orders.list
 import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.features.orders.OrdersClient
 import eti.lucasgomes.makalu.features.orders.orderSimpleResponse
+import eti.lucasgomes.makalu.features.orders.tracking.OrderTrackingRepository
 import eti.lucasgomes.makalu.shared.model.OrderSimpleResponse
+import eti.lucasgomes.makalu.shared.model.OrderStatus
 import eti.lucasgomes.makalu.shared.navigation.Destination
 import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.shared.network.MakaluError
@@ -13,6 +15,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -33,7 +36,22 @@ class OrdersViewModelTest {
         coEvery { ordersClient.getOrders() } returns result
     }
 
-    private fun createViewModel() = OrdersViewModel(ordersClient, navigator)
+    private val statuses = MutableStateFlow<Map<Long, OrderStatus>>(emptyMap())
+    private val orderTracking = object : OrderTrackingRepository {
+        override val statuses = this@OrdersViewModelTest.statuses
+    }
+
+    private fun createViewModel() = OrdersViewModel(ordersClient, navigator, orderTracking)
+
+    @Test
+    fun `a change reported by the tracking service reloads the list`() = runTest {
+        coEvery { ordersClient.getOrders() } returns Resource.Success(emptyList())
+        createViewModel()
+
+        statuses.value = mapOf(1L to OrderStatus.ACCEPTED)
+
+        coVerify(exactly = 2) { ordersClient.getOrders() }
+    }
 
     @Test
     fun `init fetches the orders once`() = runTest {

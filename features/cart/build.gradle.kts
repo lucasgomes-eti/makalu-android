@@ -49,6 +49,10 @@ dependencies {
     implementation(projects.shared)
     implementation(projects.components)
 
+    // Android
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.activity.compose)
+
     // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
