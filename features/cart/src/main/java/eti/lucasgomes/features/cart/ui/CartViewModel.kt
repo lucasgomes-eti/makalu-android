@@ -13,6 +13,7 @@ import eti.lucasgomes.makalu.shared.navigation.Navigator
 import eti.lucasgomes.makalu.shared.navigation.PopUpToOptions
 import eti.lucasgomes.makalu.shared.network.onError
 import eti.lucasgomes.makalu.shared.network.onSuccess
+import eti.lucasgomes.makalu.shared.tracking.OrderTrackingLauncher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -20,7 +21,8 @@ import kotlinx.coroutines.flow.update
 internal class CartViewModel(
     private val storeId: Long,
     private val cartClient: CartClient,
-    private val navigator: Navigator
+    private val navigator: Navigator,
+    private val orderTracking: OrderTrackingLauncher
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<CartUiState>(CartUiState.Loading)
@@ -156,6 +158,9 @@ internal class CartViewModel(
                 CartUiState.Error(generalError = UiText.PlainText(error.formatedMessage))
             }
         }.onSuccess { response ->
+            // The app is on screen right now, which is when Android allows the
+            // tracking service to be started.
+            orderTracking.onOrderPlaced(response.id)
             navigator.navigate(
                 Destination.Screen.OderDetail(response.id),
                 navOptions = NavOptions(popUpTo = PopUpToOptions(Destination.Graph.Root))

@@ -99,6 +99,13 @@ android {
         compose = true
         buildConfig = true
     }
+    packaging {
+        resources {
+            // Duplicated across the Netty artifacts the MQTT client brings in.
+            excludes += "META-INF/INDEX.LIST"
+            excludes += "META-INF/io.netty.versions.properties"
+        }
+    }
 }
 
 val prepareReleaseKeystore by tasks.registering {

@@ -14,4 +14,19 @@
         <item quantity="other">%1$d items - delivery %2$s</item>
     </plurals>
     <string name="order_card_total">Total: %1$s</string>
+    <string name="tracking_channel_ongoing_name">Orders in progress</string>
+    <string name="tracking_channel_ongoing_description">A silent notification for each order on its way, showing where it is.</string>
+    <string name="tracking_channel_updates_name">Order updates</string>
+    <string name="tracking_channel_updates_description">An alert whenever the status of one of your orders changes.</string>
+    <string name="tracking_checking_title">Following your order</string>
+    <string name="tracking_checking_text">Checking its status…</string>
+    <string name="tracking_ongoing_text">Order Nº %1$s · %2$s</string>
+    <string name="tracking_update_title">%1$s: %2$s</string>
+    <string name="tracking_update_text">Order Nº %1$s</string>
+    <string name="tracking_message_pending">Waiting for the store to accept</string>
+    <string name="tracking_message_accepted">The store is preparing your order</string>
+    <string name="tracking_message_in_route">Your order is on its way</string>
+    <string name="tracking_message_finished">Your order was delivered</string>
+    <string name="tracking_message_cancelled">Your order was cancelled</string>
+    <string name="tracking_special_use_description">Shows the live status of a food order the customer has just placed, in an ongoing notification, from the moment it is placed until it is delivered or cancelled.</string>
 </resources>
