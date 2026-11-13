@@ -54,6 +54,15 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
 
+    // Android
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.kotlinx.coroutines.core)
+
+    // Realtime: MQTT 3.1.1 over secure WebSocket. The websocket platform adds the
+    // optional Netty HTTP codec; without it the client hangs on connect.
+    implementation(libs.hivemq.mqtt.client)
+    implementation(platform(libs.hivemq.mqtt.client.websocket))
+
     // Image Loading
     implementation(libs.bundles.coil)
 

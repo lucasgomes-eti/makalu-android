@@ -4,6 +4,8 @@ import eti.lucasgomes.makalu.components.dsl.UiText
 import eti.lucasgomes.makalu.features.orders.OrdersClient
 import eti.lucasgomes.makalu.features.orders.model.OrderDetailedResponse
 import eti.lucasgomes.makalu.features.orders.orderDetailedResponse
+import eti.lucasgomes.makalu.features.orders.tracking.OrderTrackingRepository
+import eti.lucasgomes.makalu.shared.model.OrderStatus
 import eti.lucasgomes.makalu.shared.network.MakaluError
 import eti.lucasgomes.makalu.shared.network.Resource
 import eti.lucasgomes.makalu.testing.MainDispatcherRule
@@ -11,6 +13,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -39,7 +42,36 @@ class OrderDetailViewModelTest {
         }
     }
 
-    private fun createViewModel() = OrderDetailViewModel(42, ordersClient)
+    private val statuses = MutableStateFlow<Map<Long, OrderStatus>>(emptyMap())
+    private val orderTracking = object : OrderTrackingRepository {
+        override val statuses = this@OrderDetailViewModelTest.statuses
+    }
+
+    private fun createViewModel() = OrderDetailViewModel(42, ordersClient, orderTracking)
+
+    @Test
+    fun `a status reported by the tracking service reloads the order`() = runTest {
+        givenOrder(Resource.Success(response))
+        val viewModel = createViewModel()
+        val changed = response.copy(status = OrderStatus.IN_ROUTE)
+        givenOrder(Resource.Success(changed))
+
+        statuses.value = mapOf(42L to OrderStatus.IN_ROUTE)
+
+        assertEquals(OrderStatus.IN_ROUTE, viewModel.uiState.value.card?.status?.data)
+        assertFalse(viewModel.uiState.value.isLoading)
+        coVerify(exactly = 2) { ordersClient.getOrder(42) }
+    }
+
+    @Test
+    fun `a status the screen already shows reloads nothing`() = runTest {
+        givenOrder(Resource.Success(response))
+        createViewModel()
+
+        statuses.value = mapOf(42L to response.status, 7L to OrderStatus.FINISHED)
+
+        coVerify(exactly = 1) { ordersClient.getOrder(42) }
+    }
 
     @Test
     fun `initial state carries the order id`() = runTest {

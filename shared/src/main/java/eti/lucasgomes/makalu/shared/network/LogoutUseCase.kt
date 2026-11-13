@@ -19,7 +19,8 @@ class LogoutUseCase(private val dataStore: DataStore<Settings>, private val navi
                     accessToken = null,
                     refreshToken = null,
                     addressId = null,
-                    addressName = null
+                    addressName = null,
+                    trackedOrderIds = emptyList()
                 )
             }
             if (wasLoggedIn) {
