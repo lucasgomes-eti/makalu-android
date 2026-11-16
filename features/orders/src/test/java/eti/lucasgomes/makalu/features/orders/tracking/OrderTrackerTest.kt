@@ -24,7 +24,6 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrderTrackerTest {
-
     private val ordersClient = mockk<OrdersClient>()
     private val realtime = FakeRealtimeClient()
     private val settings = InMemorySettings()
@@ -119,7 +118,6 @@ class OrderTrackerTest {
         runCurrent()
         connect()
         fetches(3)
-        // A new connection has no subscriptions: they are made again.
         assertEquals(2, realtime.subscriptions.count { it == "key-1/makalu/order/1/" })
     }
 
@@ -214,7 +212,6 @@ class OrderTrackerTest {
         connect()
         assertTrue(realtime.subscriptions.isEmpty())
 
-        // Nothing is live, so the poll fetches again and subscribes with a new key.
         advanceTimeBy(OrderTracker.POLL_INTERVAL)
         runCurrent()
 

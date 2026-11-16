@@ -189,8 +189,7 @@ Keep classes `internal` to their feature module unless `:app` needs them (usuall
 
 ## Order tracking (`features/orders/.../tracking`)
 
-Live order status for the customer, from order creation to a final status. See
-`docs/play-foreground-service.md` for the Play declaration that describes it.
+Live order status for the customer, from order creation to a final status.
 
 - **REST is the truth, MQTT is a hint.** Updates arrive over MQTT 3.1.1 (HiveMQ client,
   secure WebSocket) from a self-hosted Emitter broker, at most once, and nothing is kept
@@ -212,9 +211,10 @@ Live order status for the customer, from order creation to a final status. See
 - The HiveMQ WebSocket transport needs the optional `hivemq-mqtt-client-websocket`
   platform; without it the client hangs on connect instead of failing. R8 rules for
   Netty live in `features/orders/consumer-rules.pro`.
-- An order that has not changed for 12 hours is no longer followed
-  (`TRACKING_GIVES_UP_AFTER`): nothing moves an order to `FINISHED` yet, and without the
-  limit the service would never stop.
+- The customer finishes an order from the order screen while it is `IN_ROUTE`
+  (`OrdersClient.finishOrder`). An order that has not changed for 12 hours is no longer
+  followed (`TRACKING_GIVES_UP_AFTER`), which is also when the store may finish it.
+- The code carries no comments: say it with the name of the function or the variable.
 
 ## Git Commit Message
 

@@ -49,6 +49,72 @@ class OrderDetailViewModelTest {
 
     private fun createViewModel() = OrderDetailViewModel(42, ordersClient, orderTracking)
 
+    private val inRoute = response.copy(status = OrderStatus.IN_ROUTE)
+
+    @Test
+    fun `the customer can confirm delivery only while the order is in route`() = runTest {
+        givenOrder(Resource.Success(response.copy(status = OrderStatus.ACCEPTED)))
+        assertFalse(createViewModel().uiState.value.canCustomerConfirmDelivery)
+
+        givenOrder(Resource.Success(inRoute))
+        assertTrue(createViewModel().uiState.value.canCustomerConfirmDelivery)
+    }
+
+    @Test
+    fun `confirming delivery finishes the order and shows it finished`() = runTest {
+        givenOrder(Resource.Success(inRoute))
+        coEvery { ordersClient.finishOrder(42) } returns
+            Resource.Success(response.copy(status = OrderStatus.FINISHED))
+        val viewModel = createViewModel()
+
+        viewModel.onAction(OrderDetailAction.OnConfirmDeliveryClicked)
+
+        assertEquals(OrderStatus.FINISHED, viewModel.uiState.value.card?.status?.data)
+        assertFalse(viewModel.uiState.value.isConfirmingDelivery)
+        assertFalse(viewModel.uiState.value.canCustomerConfirmDelivery)
+    }
+
+    @Test
+    fun `confirming delivery shows progress until the API answers`() = runTest {
+        givenOrder(Resource.Success(inRoute))
+        val gate = CompletableDeferred<Unit>()
+        coEvery { ordersClient.finishOrder(42) } coAnswers {
+            gate.await()
+            Resource.Success(response.copy(status = OrderStatus.FINISHED))
+        }
+        val viewModel = createViewModel()
+
+        viewModel.onAction(OrderDetailAction.OnConfirmDeliveryClicked)
+        viewModel.onAction(OrderDetailAction.OnConfirmDeliveryClicked)
+
+        assertTrue(viewModel.uiState.value.isConfirmingDelivery)
+        coVerify(exactly = 1) { ordersClient.finishOrder(42) }
+        gate.complete(Unit)
+    }
+
+    @Test
+    fun `a refused delivery confirmation keeps the order in route and says why`() = runTest {
+        givenOrder(Resource.Success(inRoute))
+        coEvery { ordersClient.finishOrder(42) } returns Resource.Error(error)
+        val viewModel = createViewModel()
+
+        viewModel.onAction(OrderDetailAction.OnConfirmDeliveryClicked)
+
+        assertEquals(OrderStatus.IN_ROUTE, viewModel.uiState.value.card?.status?.data)
+        assertEquals(UiText.PlainText(error.formatedMessage), viewModel.uiState.value.generalError)
+        assertFalse(viewModel.uiState.value.isConfirmingDelivery)
+    }
+
+    @Test
+    fun `delivery cannot be confirmed for an order that is not in route`() = runTest {
+        givenOrder(Resource.Success(response.copy(status = OrderStatus.PENDING)))
+        val viewModel = createViewModel()
+
+        viewModel.onAction(OrderDetailAction.OnConfirmDeliveryClicked)
+
+        coVerify(exactly = 0) { ordersClient.finishOrder(any()) }
+    }
+
     @Test
     fun `a status reported by the tracking service reloads the order`() = runTest {
         givenOrder(Resource.Success(response))

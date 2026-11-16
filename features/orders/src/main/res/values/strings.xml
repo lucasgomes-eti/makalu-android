@@ -9,6 +9,7 @@
     <string name="order_detail_title">Order Nº %1$s</string>
     <string name="order_detail_title_empty">Order</string>
     <string name="order_detail_items">Items</string>
+    <string name="order_detail_confirm_delivery">I received my order</string>
     <plurals name="order_card_summary">
         <item quantity="one">%1$d item - delivery %2$s</item>
         <item quantity="other">%1$d items - delivery %2$s</item>

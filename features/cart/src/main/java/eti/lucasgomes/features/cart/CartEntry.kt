@@ -24,9 +24,6 @@ fun CartEntry(innerPadding: PaddingValues, storeId: Long) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    // Placing an order is when notifications start to matter, so that is when the
-    // permission is asked for. The order goes ahead whatever the answer: without the
-    // permission the order is still tracked and the order screen still updates.
     val notificationPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) {

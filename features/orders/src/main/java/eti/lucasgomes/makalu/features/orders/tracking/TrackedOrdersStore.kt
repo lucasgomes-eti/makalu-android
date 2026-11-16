@@ -4,12 +4,7 @@ import androidx.datastore.core.DataStore
 import eti.lucasgomes.makalu.shared.settings.Settings
 import kotlinx.coroutines.flow.first
 
-/**
- * Remembers which orders were being followed, so the service can pick up after the
- * process dies. The ids are only a reminder to look: their state always comes from REST.
- */
 internal class TrackedOrdersStore(private val dataStore: DataStore<Settings>) {
-
     suspend fun read(): Set<Long> = dataStore.data.first().trackedOrderIds.toSet()
 
     suspend fun write(ids: Set<Long>) {

@@ -13,20 +13,7 @@ import eti.lucasgomes.makalu.features.orders.R
 import eti.lucasgomes.makalu.shared.model.OrderStatus
 import eti.lucasgomes.makalu.shared.tracking.OrderTrackingLauncher
 
-/**
- * Builds and posts the notifications of order tracking.
- *
- * - One ongoing, silent notification per order in progress, on a low-importance channel,
- *   with the progress through the order's steps. Shown as a Live Update where the device
- *   supports it (Android 16+), as a plain progress bar elsewhere.
- * - One audible alert per status change, on a separate high-importance channel. For a
- *   final status the alert stays until dismissed and takes the ongoing one's place.
- *
- * Posting is a no-op while the user has notifications turned off; the service and the
- * in-app screens keep working without them.
- */
 internal class OrderNotifications(private val context: Context) {
-
     private val manager = NotificationManagerCompat.from(context)
 
     fun createChannels() {
@@ -51,7 +38,6 @@ internal class OrderNotifications(private val context: Context) {
         )
     }
 
-    /** Shown while the service does not yet know what it is following. */
     fun checking(): Notification = NotificationCompat.Builder(context, CHANNEL_ONGOING)
         .setSmallIcon(R.drawable.schedule)
         .setContentTitle(context.getString(R.string.tracking_checking_title))
@@ -82,7 +68,6 @@ internal class OrderNotifications(private val context: Context) {
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)
             .setContentIntent(openOrder(order.id))
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
-            // Ignored where Live Updates do not exist or the user turned them off.
             .setRequestPromotedOngoing(true)
             .setShortCriticalText(context.getString(order.status.label))
 
@@ -100,7 +85,7 @@ internal class OrderNotifications(private val context: Context) {
         return builder.build()
     }
 
-    @SuppressLint("MissingPermission") // Guarded by areNotificationsEnabled().
+    @SuppressLint("MissingPermission")
     fun showOngoing(order: TrackedOrder) {
         if (manager.areNotificationsEnabled()) manager.notify(ongoingId(order.id), ongoing(order))
     }
@@ -109,8 +94,7 @@ internal class OrderNotifications(private val context: Context) {
 
     fun cancelChecking() = manager.cancel(CHECKING_ID)
 
-    /** The audible alert for a status change. A final status stays until dismissed. */
-    @SuppressLint("MissingPermission") // Guarded by areNotificationsEnabled().
+    @SuppressLint("MissingPermission")
     fun alert(order: TrackedOrder) {
         if (!manager.areNotificationsEnabled()) return
         val builder = NotificationCompat.Builder(context, CHANNEL_UPDATES)
@@ -127,8 +111,6 @@ internal class OrderNotifications(private val context: Context) {
             .setCategory(NotificationCompat.CATEGORY_STATUS)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(openOrder(order.id))
-        // While the order is in progress the ongoing notification carries its status;
-        // the alert is only there to make a sound and then gets out of the way.
         if (!order.status.isFinal) builder.setTimeoutAfter(ALERT_TIMEOUT_MILLIS)
         manager.notify(ALERT_TAG, ongoingId(order.id), builder.build())
     }
@@ -158,12 +140,10 @@ internal class OrderNotifications(private val context: Context) {
         private const val FIRST_ORDER_ID = 1_000
         const val LAST_STEP = 3
 
-        /** Notification id of an order's ongoing notification; never [CHECKING_ID]. */
         fun ongoingId(orderId: Long): Int = FIRST_ORDER_ID + (orderId % ID_RANGE).toInt()
     }
 }
 
-/** How far along the order is, out of [OrderNotifications.LAST_STEP]. */
 internal val OrderStatus.step: Int
     get() = when (this) {
         OrderStatus.PENDING, OrderStatus.CANCELLED -> 0

@@ -22,18 +22,10 @@ internal fun OrderSimpleResponse.toTrackedOrder() = TrackedOrder(
     updatedAt = updatedAt
 )
 
-/** Nothing follows these: the order is over. */
 internal val OrderStatus.isFinal: Boolean
     get() = this == OrderStatus.FINISHED || this == OrderStatus.CANCELLED
 
-/**
- * An order that has not changed for this long is no longer followed.
- *
- * Nothing in the product moves an order from IN_ROUTE to FINISHED yet, so without a
- * limit one forgotten order would keep the service and its notification alive forever.
- */
 internal val TRACKING_GIVES_UP_AFTER: Duration = 12.hours
 
-/** Whether the order is still worth a live notification at [now]. */
 internal fun OrderSimpleResponse.isInProgress(now: Instant): Boolean =
     !status.isFinal && now - updatedAt < TRACKING_GIVES_UP_AFTER

@@ -20,20 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.withTimeoutOrNull
 
-/**
- * MQTT 3.1.1 over (secure) WebSocket to the Emitter broker, with the HiveMQ client.
- *
- * Emitter specifics this relies on:
- * - it speaks 3.1.1 only; an MQTT 5 connection is accepted and then every subscribe fails;
- * - the subscription is `<key>/<channel>` but messages arrive on `<channel>`, so they
- *   never match a per-subscription callback and are read from the global stream;
- * - delivery is QoS 0 and nothing is kept for an offline client.
- *
- * Reconnecting is left to the library (exponential backoff, 1 s to 60 s). It holds no
- * wake lock: while the device sleeps, a drop is noticed and repaired when it wakes.
- */
 internal class HiveMqRealtimeClient(private val logger: MkLogger) : RealtimeClient {
-
     private val _isConnected = MutableStateFlow(false)
     override val isConnected: StateFlow<Boolean> = _isConnected.asStateFlow()
 
@@ -123,7 +110,6 @@ internal class HiveMqRealtimeClient(private val logger: MkLogger) : RealtimeClie
         } catch (exception: CancellationException) {
             throw exception
         } catch (_: Exception) {
-            // Best effort: the subscription dies with the connection anyway.
         }
     }
 

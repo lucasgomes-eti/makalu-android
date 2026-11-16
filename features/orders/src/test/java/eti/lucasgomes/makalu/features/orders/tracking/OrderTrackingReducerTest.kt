@@ -11,7 +11,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class OrderTrackingReducerTest {
-
     private val t0 = Instant.parse("2026-01-10T12:00:00Z")
     private val now = t0 + 5.minutes
 
@@ -26,8 +25,6 @@ class OrderTrackingReducerTest {
         status: OrderStatus = OrderStatus.ACCEPTED,
         at: Instant = t0 + 1.minutes
     ) = ParsedOrderEvent.Known(OrderEvent(id, status, at))
-
-    // region start and stop decisions
 
     @Test
     fun `a service with nothing to follow should not run`() {
@@ -156,10 +153,6 @@ class OrderTrackingReducerTest {
         assertFalse(OrderTrackingReducer.onSessionEnded().state.shouldRun)
     }
 
-    // endregion
-
-    // region events
-
     @Test
     fun `a newer status is applied and announced`() {
         val reduction = OrderTrackingReducer.onEvent(synced(tracked(1)), event())
@@ -238,10 +231,6 @@ class OrderTrackingReducerTest {
             OrderTrackingReducer.onEvent(state, ParsedOrderEvent.Invalid)
         )
     }
-
-    // endregion
-
-    // region final statuses
 
     @Test
     fun `finishing an order stops following it and announces the end`() {
@@ -333,6 +322,4 @@ class OrderTrackingReducerTest {
 
         assertTrue(reduction.effects.isEmpty())
     }
-
-    // endregion
 }

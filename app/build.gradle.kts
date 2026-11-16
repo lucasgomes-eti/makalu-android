@@ -101,7 +101,6 @@ android {
     }
     packaging {
         resources {
-            // Duplicated across the Netty artifacts the MQTT client brings in.
             excludes += "META-INF/INDEX.LIST"
             excludes += "META-INF/io.netty.versions.properties"
         }
