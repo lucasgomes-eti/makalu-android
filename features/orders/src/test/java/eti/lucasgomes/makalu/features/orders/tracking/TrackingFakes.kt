@@ -40,7 +40,6 @@ internal fun credentials(
     expiresAt = expiresAt
 )
 
-/** Stands in for the broker: the test plays its part. */
 internal class FakeRealtimeClient : RealtimeClient {
     override val isConnected = MutableStateFlow(false)
     override val messages = MutableSharedFlow<RealtimeMessage>(extraBufferCapacity = 16)
@@ -50,7 +49,6 @@ internal class FakeRealtimeClient : RealtimeClient {
     val unsubscriptions = mutableListOf<String>()
     var disconnects = 0
 
-    /** Keys the broker refuses. */
     val refusedKeys = mutableSetOf<String>()
 
     override fun connect(url: String) {

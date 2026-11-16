@@ -11,9 +11,11 @@ import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpRequestData
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.TextContent
 import java.math.BigDecimal
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -176,4 +178,34 @@ class OrdersClientTest {
 
         assertEquals(Resource.Error(MakaluError(404, "Order not found", "MK-404")), result)
     }
+
+    @Test
+    fun `finishOrder sends PATCH with the finished status to the order status path`() = runTest {
+        val client = clientResponding(orderDetailedJson())
+
+        client.finishOrder(42)
+
+        assertEquals(HttpMethod.Patch, capturedRequest?.method)
+        assertEquals("/orders/42/status", capturedRequest?.url?.encodedPath)
+        assertEquals(
+            """{"status":"FINISHED"}""",
+            (capturedRequest?.body as TextContent).text.filterNot(Char::isWhitespace)
+        )
+    }
+
+    @Test
+    fun `getRealtimeCredentials sends GET to the order realtime path and reads the key`() =
+        runTest {
+            val client = clientResponding(
+                """{"url":"wss://broker.test/","channel":"makalu/order/42/","key":"read-key",""" +
+                    """"expires_at":"2026-11-14T18:04:11Z"}"""
+            )
+
+            val credentials = client.getRealtimeCredentials(42).successData()
+
+            assertEquals("/orders/42/realtime", capturedRequest?.url?.encodedPath)
+            assertEquals("makalu/order/42/", credentials.channel)
+            assertEquals("read-key", credentials.key)
+            assertFalse(credentials.toString().contains("read-key"))
+        }
 }

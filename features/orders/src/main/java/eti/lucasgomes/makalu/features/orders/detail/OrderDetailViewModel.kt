@@ -16,7 +16,6 @@ internal class OrderDetailViewModel(
     private val ordersClient: OrdersClient,
     private val orderTracking: OrderTrackingRepository
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(OrderDetailUiState(id))
     val uiState = _uiState.asStateFlow()
 
@@ -28,6 +27,7 @@ internal class OrderDetailViewModel(
     fun onAction(action: OrderDetailAction) {
         when (action) {
             OrderDetailAction.OnDismissError -> onDismissError()
+            OrderDetailAction.OnConfirmDeliveryClicked -> onConfirmDeliveryClicked()
         }
     }
 
@@ -51,10 +51,6 @@ internal class OrderDetailViewModel(
         }
     }
 
-    /**
-     * The tracking service reports a status this screen does not show yet: load the
-     * order again, quietly, so everything derived from the status is right too.
-     */
     private fun observeLiveStatus() = withViewModelScope {
         orderTracking.statusOf(id).collect { status ->
             val shown = uiState.value.card?.status?.data
@@ -66,6 +62,30 @@ internal class OrderDetailViewModel(
         ordersClient.getOrder(id).onSuccess { response ->
             _uiState.update { state ->
                 state.copy(card = response.toCardUiState(), items = response.toUiItems())
+            }
+        }
+    }
+
+    private fun onConfirmDeliveryClicked() = withViewModelScope {
+        val state = uiState.value
+        if (!state.canCustomerConfirmDelivery || state.isConfirmingDelivery) {
+            return@withViewModelScope
+        }
+        _uiState.update { it.copy(isConfirmingDelivery = true, generalError = UiText.Empty) }
+        ordersClient.finishOrder(id).onError { error ->
+            _uiState.update {
+                it.copy(
+                    isConfirmingDelivery = false,
+                    generalError = UiText.PlainText(error.formatedMessage)
+                )
+            }
+        }.onSuccess { response ->
+            _uiState.update {
+                it.copy(
+                    isConfirmingDelivery = false,
+                    card = response.toCardUiState(),
+                    items = response.toUiItems()
+                )
             }
         }
     }

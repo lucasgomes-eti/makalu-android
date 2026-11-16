@@ -19,7 +19,6 @@ internal class OrdersViewModel(
     private val navigator: Navigator,
     private val orderTracking: OrderTrackingRepository
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(OrdersUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -51,7 +50,6 @@ internal class OrdersViewModel(
         }
     }
 
-    /** A followed order changed while the list is open: load the list again, quietly. */
     private fun observeLiveStatuses() = withViewModelScope {
         orderTracking.statuses.drop(1).collect {
             ordersClient.getOrders().onSuccess { response ->

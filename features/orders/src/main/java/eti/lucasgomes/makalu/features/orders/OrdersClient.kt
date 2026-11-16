@@ -2,10 +2,14 @@ package eti.lucasgomes.makalu.features.orders
 
 import eti.lucasgomes.makalu.features.orders.model.OrderDetailedResponse
 import eti.lucasgomes.makalu.features.orders.model.RealtimeCredentialsResponse
+import eti.lucasgomes.makalu.features.orders.model.UpdateOrderStatusRequest
 import eti.lucasgomes.makalu.shared.model.OrderSimpleResponse
+import eti.lucasgomes.makalu.shared.model.OrderStatus
 import eti.lucasgomes.makalu.shared.network.HttpClientManager
 import eti.lucasgomes.makalu.shared.network.Resource
 import io.ktor.client.request.get
+import io.ktor.client.request.patch
+import io.ktor.client.request.setBody
 
 internal class OrdersClient(private val httpClientManager: HttpClientManager) {
 
@@ -19,12 +23,15 @@ internal class OrdersClient(private val httpClientManager: HttpClientManager) {
             get("/orders/$id")
         }
 
-    /**
-     * A read-only key for the order's realtime channel. The API answers 503 (`MK-801`)
-     * while realtime is switched off.
-     */
     suspend fun getRealtimeCredentials(orderId: Long): Resource<RealtimeCredentialsResponse> =
         httpClientManager.withApiResource {
             get("/orders/$orderId/realtime")
+        }
+
+    suspend fun finishOrder(orderId: Long): Resource<OrderDetailedResponse> =
+        httpClientManager.withApiResource {
+            patch("/orders/$orderId/status") {
+                setBody(UpdateOrderStatusRequest(OrderStatus.FINISHED))
+            }
         }
 }

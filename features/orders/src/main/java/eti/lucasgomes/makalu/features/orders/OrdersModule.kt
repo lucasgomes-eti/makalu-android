@@ -23,7 +23,6 @@ val ordersModule = module {
     viewModelOf(::OrdersViewModel)
     singleOf(::OrdersClient)
 
-    // Order tracking
     singleOf(::TrackedOrdersStore)
     single<RealtimeClient> { HiveMqRealtimeClient(get()) }
     single { OrderTracker(get(), get(), get(), Clock.System::now, get()) } binds

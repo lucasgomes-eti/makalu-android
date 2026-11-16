@@ -24,6 +24,7 @@ import eti.lucasgomes.makalu.components.appBars.ConfigureTopBar
 import eti.lucasgomes.makalu.components.appBars.LocalTopBarUiController
 import eti.lucasgomes.makalu.components.appBars.TopBarUiController
 import eti.lucasgomes.makalu.components.banners.ErrorBanner
+import eti.lucasgomes.makalu.components.buttons.ExpressiveLoadingButton
 import eti.lucasgomes.makalu.components.buttons.FabUiController
 import eti.lucasgomes.makalu.components.buttons.LocalFabUiController
 import eti.lucasgomes.makalu.components.dsl.UiText
@@ -64,6 +65,17 @@ internal fun OrderDetailScreen(uiState: OrderDetailUiState, onAction: (OrderDeta
             }
         }
         uiState.card?.let { card -> item { OrderCard(card) } }
+        if (uiState.canCustomerConfirmDelivery) {
+            item {
+                ExpressiveLoadingButton(
+                    onClick = { onAction(OrderDetailAction.OnConfirmDeliveryClicked) },
+                    isLoading = uiState.isConfirmingDelivery,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(stringResource(R.string.order_detail_confirm_delivery))
+                }
+            }
+        }
         if (uiState.items.isNotEmpty()) {
             item {
                 Text(stringResource(R.string.order_detail_items), style = typography.titleLarge)

@@ -16,14 +16,12 @@ internal class DefaultOrderTrackingLauncher(
     private val clock: () -> Instant,
     private val logger: MkLogger
 ) : OrderTrackingLauncher {
-
     override fun onOrderPlaced(orderId: Long) {
         startService(orderId)
     }
 
     override suspend fun onAppOpened() {
         if (tracker.isRunning) {
-            // The app was away: catch up on anything missed meanwhile.
             tracker.requestRefresh()
             return
         }
@@ -40,8 +38,6 @@ internal class DefaultOrderTrackingLauncher(
                 OrderTrackingService.intent(context, orderId)
             )
         } catch (exception: IllegalStateException) {
-            // Not allowed from the background. The order is still there; tracking
-            // starts the next time the app is opened.
             logger.logDebug("OrderTracking", "service start refused: ${exception.message}")
         }
     }

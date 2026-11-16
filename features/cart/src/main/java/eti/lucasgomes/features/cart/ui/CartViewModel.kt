@@ -24,7 +24,6 @@ internal class CartViewModel(
     private val navigator: Navigator,
     private val orderTracking: OrderTrackingLauncher
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow<CartUiState>(CartUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
@@ -158,8 +157,6 @@ internal class CartViewModel(
                 CartUiState.Error(generalError = UiText.PlainText(error.formatedMessage))
             }
         }.onSuccess { response ->
-            // The app is on screen right now, which is when Android allows the
-            // tracking service to be started.
             orderTracking.onOrderPlaced(response.id)
             navigator.navigate(
                 Destination.Screen.OderDetail(response.id),
